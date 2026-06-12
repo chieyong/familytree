@@ -1,0 +1,4202 @@
+{
+  "persons": [
+    {
+      "id": "Q32500",
+      "givenNames": [
+        "Keizer Karel V"
+      ],
+      "displayName": "Keizer Karel V",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1500,
+          "month": 2,
+          "day": 24
+        },
+        "place": {
+          "name": "Gent",
+          "lat": 51.05361111111111,
+          "lon": 3.725277777777778,
+          "wikidataId": "Q1296"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1558,
+          "month": 9,
+          "day": 21
+        },
+        "place": {
+          "name": "Klooster van Yuste",
+          "lat": 40.114166666667,
+          "lon": -5.7388888888889,
+          "wikidataId": "Q936453"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q32500"
+      }
+    },
+    {
+      "id": "Q157098",
+      "givenNames": [
+        "Filips I van Castilië"
+      ],
+      "displayName": "Filips I van Castilië",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1478,
+          "month": 6,
+          "day": 22
+        },
+        "place": {
+          "name": "Brugge",
+          "lat": 51.208888888888886,
+          "lon": 3.2241666666666666,
+          "wikidataId": "Q12994"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1506,
+          "month": 9,
+          "day": 25
+        },
+        "place": {
+          "name": "Burgos",
+          "lat": 42.340833333333,
+          "lon": -3.6997222222222,
+          "wikidataId": "Q9580"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q157098"
+      }
+    },
+    {
+      "id": "Q171136",
+      "givenNames": [
+        "Johanna van Castilië"
+      ],
+      "displayName": "Johanna van Castilië",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1479,
+          "month": 11,
+          "day": 6
+        },
+        "place": {
+          "name": "Toledo",
+          "lat": 39.866666666667,
+          "lon": -4.0333333333333,
+          "wikidataId": "Q5836"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1555,
+          "month": 4,
+          "day": 12
+        },
+        "place": {
+          "name": "Tordesillas",
+          "lat": 41.5008635,
+          "lon": -5.0004844,
+          "wikidataId": "Q286004"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q171136"
+      }
+    },
+    {
+      "id": "Q331575",
+      "givenNames": [
+        "Isabella van Portugal"
+      ],
+      "displayName": "Isabella van Portugal",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1503,
+          "month": 10,
+          "day": 24
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1539,
+          "month": 5,
+          "day": 1
+        },
+        "place": {
+          "name": "Toledo",
+          "lat": 39.866666666667,
+          "lon": -4.0333333333333,
+          "wikidataId": "Q5836"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q331575"
+      }
+    },
+    {
+      "id": "Q34417",
+      "givenNames": [
+        "Filips II van Spanje"
+      ],
+      "displayName": "Filips II van Spanje",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1527,
+          "month": 5,
+          "day": 21
+        },
+        "place": {
+          "name": "Palacio de Pimentel",
+          "lat": 41.65638889,
+          "lon": -4.72444444,
+          "wikidataId": "Q11697419"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1598,
+          "month": 9,
+          "day": 13
+        },
+        "place": {
+          "name": "Escorial",
+          "lat": 40.589167,
+          "lon": -4.147778,
+          "wikidataId": "Q28471"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q34417"
+      }
+    },
+    {
+      "id": "Q159660",
+      "givenNames": [
+        "Maria van Spanje"
+      ],
+      "displayName": "Maria van Spanje",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1528,
+          "month": 6,
+          "day": 21
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1603,
+          "month": 2,
+          "day": 26
+        },
+        "place": {
+          "name": "Monasterio de las Descalzas Reales",
+          "lat": 40.418267,
+          "lon": -3.706192,
+          "wikidataId": "Q2268271"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q159660"
+      }
+    },
+    {
+      "id": "Q70764308",
+      "givenNames": [
+        "Infante Fernando of Austria"
+      ],
+      "displayName": "Infante Fernando of Austria",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1529,
+          "month": 11,
+          "day": 21
+        },
+        "place": {
+          "name": "Alcázar van Toledo",
+          "lat": 39.85805556,
+          "lon": -4.02055556,
+          "wikidataId": "Q1326589"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1530,
+          "month": 6
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q70764308"
+      }
+    },
+    {
+      "id": "Q170264",
+      "givenNames": [
+        "Johanna van Habsburg"
+      ],
+      "displayName": "Johanna van Habsburg",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1535,
+          "month": 6,
+          "day": 24
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1573,
+          "month": 9,
+          "day": 7
+        },
+        "place": {
+          "name": "San Lorenzo de El Escorial",
+          "lat": 40.59361111111111,
+          "lon": -4.142777777777778,
+          "wikidataId": "Q371748"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q170264"
+      }
+    },
+    {
+      "id": "Q938778",
+      "givenNames": [
+        "Isabel, Infanta of Castille"
+      ],
+      "displayName": "Isabel, Infanta of Castille",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1518,
+          "month": 8,
+          "day": 20
+        },
+        "place": {
+          "name": "Valencia",
+          "lat": 39.47,
+          "lon": -0.3763888888888889,
+          "wikidataId": "Q8818"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1565
+        },
+        "place": {
+          "name": "Perpignan",
+          "lat": 42.6975,
+          "lon": 2.8947222222222,
+          "wikidataId": "Q6730"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q938778"
+      }
+    },
+    {
+      "id": "Q307815",
+      "givenNames": [
+        "Margaretha van Parma"
+      ],
+      "displayName": "Margaretha van Parma",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1522,
+          "month": 7,
+          "day": 5
+        },
+        "place": {
+          "name": "Oudenaarde",
+          "lat": 50.85,
+          "lon": 3.6,
+          "wikidataId": "Q12992"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1586,
+          "month": 1,
+          "day": 18
+        },
+        "place": {
+          "name": "Ortona",
+          "lat": 42.355658333333,
+          "lon": 14.403594444444,
+          "wikidataId": "Q51256"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q307815"
+      }
+    },
+    {
+      "id": "Q6137930",
+      "givenNames": [
+        "Tadea van Oostenrijk"
+      ],
+      "displayName": "Tadea van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1523
+        },
+        "place": {
+          "name": "Bologna",
+          "lat": 44.493888888889,
+          "lon": 11.342777777778,
+          "wikidataId": "Q1891"
+        }
+      },
+      "death": {
+        "place": {
+          "name": "Rome",
+          "lat": 41.893055555556,
+          "lon": 12.482777777778,
+          "wikidataId": "Q220"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q6137930"
+      }
+    },
+    {
+      "id": "Q157107",
+      "givenNames": [
+        "Juan van Oostenrijk"
+      ],
+      "displayName": "Juan van Oostenrijk",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1547,
+          "month": 2,
+          "day": 24
+        },
+        "place": {
+          "name": "Regensburg",
+          "lat": 49.016666666666666,
+          "lon": 12.083333333333334,
+          "wikidataId": "Q2978"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1578,
+          "month": 10,
+          "day": 1
+        },
+        "place": {
+          "name": "Namen",
+          "lat": 50.466666666667,
+          "lon": 4.8666666666667,
+          "wikidataId": "Q134121"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q157107"
+      }
+    },
+    {
+      "id": "Q84519057",
+      "givenNames": [
+        "Juan Austria y Portugal"
+      ],
+      "displayName": "Juan Austria y Portugal",
+      "sex": "m",
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q84519057"
+      }
+    },
+    {
+      "id": "Q134910298",
+      "givenNames": [
+        "Q134910298"
+      ],
+      "displayName": "Q134910298",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1523
+        },
+        "place": {
+          "name": "Valencia",
+          "lat": 39.47,
+          "lon": -0.3763888888888889,
+          "wikidataId": "Q8818"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1530
+        },
+        "place": {
+          "name": "Valencia",
+          "lat": 39.47,
+          "lon": -0.3763888888888889,
+          "wikidataId": "Q8818"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q134910298"
+      }
+    },
+    {
+      "id": "Q150726",
+      "givenNames": [
+        "Keizer Maximiliaan I"
+      ],
+      "displayName": "Keizer Maximiliaan I",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1459,
+          "month": 3,
+          "day": 22
+        },
+        "place": {
+          "name": "Wiener Neustadt",
+          "lat": 47.816666666667,
+          "lon": 16.25,
+          "wikidataId": "Q131612"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1519,
+          "month": 1,
+          "day": 12
+        },
+        "place": {
+          "name": "Wels",
+          "lat": 48.15,
+          "lon": 14.016666666667,
+          "wikidataId": "Q178582"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q150726"
+      }
+    },
+    {
+      "id": "Q157073",
+      "givenNames": [
+        "Maria van Bourgondië"
+      ],
+      "displayName": "Maria van Bourgondië",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1457,
+          "month": 2,
+          "day": 13
+        },
+        "place": {
+          "name": "Koudenbergpaleis",
+          "lat": 50.84261,
+          "lon": 4.360689,
+          "wikidataId": "Q1131821"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1482,
+          "month": 3,
+          "day": 27
+        },
+        "place": {
+          "name": "Brugge",
+          "lat": 51.208888888888886,
+          "lon": 3.2241666666666666,
+          "wikidataId": "Q12994"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q157073"
+      }
+    },
+    {
+      "id": "Q156045",
+      "givenNames": [
+        "Eleonora van Oostenrijk"
+      ],
+      "displayName": "Eleonora van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1498,
+          "month": 11,
+          "day": 15
+        },
+        "place": {
+          "name": "Leuven",
+          "lat": 50.8775,
+          "lon": 4.704444,
+          "wikidataId": "Q118958"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1558,
+          "month": 2,
+          "day": 18
+        },
+        "place": {
+          "name": "Talavera la Real",
+          "lat": 38.876388888889,
+          "lon": -6.7736111111111,
+          "wikidataId": "Q1387075"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q156045"
+      }
+    },
+    {
+      "id": "Q157884",
+      "givenNames": [
+        "Isabella van Habsburg"
+      ],
+      "displayName": "Isabella van Habsburg",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1501,
+          "month": 7,
+          "day": 18
+        },
+        "place": {
+          "name": "Brussel",
+          "lat": 50.846666666666664,
+          "lon": 4.351666666666667,
+          "wikidataId": "Q239"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1526,
+          "month": 1,
+          "day": 19
+        },
+        "place": {
+          "name": "Gent",
+          "lat": 51.05361111111111,
+          "lon": 3.725277777777778,
+          "wikidataId": "Q1296"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q157884"
+      }
+    },
+    {
+      "id": "Q150611",
+      "givenNames": [
+        "Keizer Ferdinand I"
+      ],
+      "displayName": "Keizer Ferdinand I",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1503,
+          "month": 3,
+          "day": 10
+        },
+        "place": {
+          "name": "Alcalá de Henares",
+          "lat": 40.481815,
+          "lon": -3.364305,
+          "wikidataId": "Q46940"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1564,
+          "month": 7,
+          "day": 25
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q150611"
+      }
+    },
+    {
+      "id": "Q157077",
+      "givenNames": [
+        "Maria van Hongarije"
+      ],
+      "displayName": "Maria van Hongarije",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1505,
+          "month": 9,
+          "day": 15
+        },
+        "place": {
+          "name": "Stedelijk gebied Brussel",
+          "lat": 50.846666666667,
+          "lon": 4.3525,
+          "wikidataId": "Q9005"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1558,
+          "month": 10,
+          "day": 18
+        },
+        "place": {
+          "name": "Cigales",
+          "lat": 41.758055555556,
+          "lon": -4.6997222222222,
+          "wikidataId": "Q1769167"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q157077"
+      }
+    },
+    {
+      "id": "Q157834",
+      "givenNames": [
+        "Catharina van Oostenrijk"
+      ],
+      "displayName": "Catharina van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1507,
+          "month": 1,
+          "day": 14
+        },
+        "place": {
+          "name": "Torquemada",
+          "lat": 42.0340573,
+          "lon": -4.3189266,
+          "wikidataId": "Q603164"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1578,
+          "month": 2,
+          "day": 12
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q157834"
+      }
+    },
+    {
+      "id": "Q61459936",
+      "givenNames": [
+        "Rietje Koane"
+      ],
+      "displayName": "Rietje Koane",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1500,
+          "month": 2,
+          "day": 23
+        },
+        "place": {
+          "name": "Maldegem",
+          "lat": 51.20146,
+          "lon": 3.44716,
+          "wikidataId": "Q31824087"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q61459936"
+      }
+    },
+    {
+      "id": "Q12860",
+      "givenNames": [
+        "Ferdinand II van Aragon"
+      ],
+      "displayName": "Ferdinand II van Aragon",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1452,
+          "month": 3,
+          "day": 10
+        },
+        "place": {
+          "name": "Palacio de los Sada",
+          "lat": 42.494722222222,
+          "lon": -1.2155555555556,
+          "wikidataId": "Q29345592"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1516,
+          "month": 1,
+          "day": 23
+        },
+        "place": {
+          "name": "Casa de Santa María",
+          "wikidataId": "Q43114927"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q12860"
+      }
+    },
+    {
+      "id": "Q45859",
+      "givenNames": [
+        "Isabella I van Castilië"
+      ],
+      "displayName": "Isabella I van Castilië",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1451,
+          "month": 4,
+          "day": 22
+        },
+        "place": {
+          "name": "Monasterio de Nuestra Señora de Gracia",
+          "lat": 41.08695833,
+          "lon": -4.99574722,
+          "wikidataId": "Q6021277"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1504,
+          "month": 11,
+          "day": 26
+        },
+        "place": {
+          "name": "Palacio Testamentario",
+          "lat": 41.308133333333,
+          "lon": -4.9160777777778,
+          "wikidataId": "Q6057812"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q45859"
+      }
+    },
+    {
+      "id": "Q191231",
+      "givenNames": [
+        "Emanuel I van Portugal"
+      ],
+      "displayName": "Emanuel I van Portugal",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1469,
+          "month": 5,
+          "day": 31
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1521,
+          "month": 12,
+          "day": 13
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q191231"
+      }
+    },
+    {
+      "id": "Q229816",
+      "givenNames": [
+        "Maria van Aragón"
+      ],
+      "displayName": "Maria van Aragón",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1482,
+          "month": 6,
+          "day": 29
+        },
+        "place": {
+          "name": "Córdoba",
+          "lat": 37.89,
+          "lon": -4.78,
+          "wikidataId": "Q5818"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1517,
+          "month": 3,
+          "day": 7
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q229816"
+      }
+    },
+    {
+      "id": "Q230894",
+      "givenNames": [
+        "Maria Emanuela van Portugal"
+      ],
+      "displayName": "Maria Emanuela van Portugal",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1527,
+          "month": 10,
+          "day": 15
+        },
+        "place": {
+          "name": "Coimbra",
+          "lat": 40.21111111111111,
+          "lon": -8.428888888888888,
+          "wikidataId": "Q45412"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1545,
+          "month": 7,
+          "day": 12
+        },
+        "place": {
+          "name": "Valladolid",
+          "lat": 41.651980555556,
+          "lon": -4.7285611111111,
+          "wikidataId": "Q8356"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q230894"
+      }
+    },
+    {
+      "id": "Q82674",
+      "givenNames": [
+        "Maria I van Engeland"
+      ],
+      "displayName": "Maria I van Engeland",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1516,
+          "month": 2,
+          "day": 18
+        },
+        "place": {
+          "name": "Palace of Placentia",
+          "lat": 51.482222222222,
+          "lon": -0.0066666666666667,
+          "wikidataId": "Q1424839"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1558,
+          "month": 11,
+          "day": 17
+        },
+        "place": {
+          "name": "St. James's Palace",
+          "lat": 51.50472222222222,
+          "lon": -0.1377777777777778,
+          "wikidataId": "Q272162"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q82674"
+      }
+    },
+    {
+      "id": "Q176041",
+      "givenNames": [
+        "Elisabeth van Valois"
+      ],
+      "displayName": "Elisabeth van Valois",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1545,
+          "month": 4,
+          "day": 2
+        },
+        "place": {
+          "name": "Fontainebleau",
+          "lat": 48.408888888889,
+          "lon": 2.7016666666667,
+          "wikidataId": "Q182872"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1568,
+          "month": 10,
+          "day": 3
+        },
+        "place": {
+          "name": "Aranjuez",
+          "lat": 40.033333333333,
+          "lon": -3.6027777777778,
+          "wikidataId": "Q486792"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q176041"
+      }
+    },
+    {
+      "id": "Q156657",
+      "givenNames": [
+        "Anna van Oostenrijk"
+      ],
+      "displayName": "Anna van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1549,
+          "month": 11,
+          "day": 1
+        },
+        "place": {
+          "name": "Palace of the Counts of Benavente, Cigales",
+          "lat": 41.757311,
+          "lon": -4.696242,
+          "wikidataId": "Q17624310"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1580,
+          "month": 10,
+          "day": 26
+        },
+        "place": {
+          "name": "Badajoz",
+          "lat": 38.87789,
+          "lon": -6.970609,
+          "wikidataId": "Q15679"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q156657"
+      }
+    },
+    {
+      "id": "Q159817",
+      "givenNames": [
+        "Carlos van Spanje"
+      ],
+      "displayName": "Carlos van Spanje",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1545,
+          "month": 7,
+          "day": 8
+        },
+        "place": {
+          "name": "Valladolid",
+          "lat": 41.651980555556,
+          "lon": -4.7285611111111,
+          "wikidataId": "Q8356"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1568,
+          "month": 7,
+          "day": 24
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q159817"
+      }
+    },
+    {
+      "id": "Q158256",
+      "givenNames": [
+        "Isabella van Spanje"
+      ],
+      "displayName": "Isabella van Spanje",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1566,
+          "month": 10,
+          "day": 12
+        },
+        "place": {
+          "name": "Segovia",
+          "lat": 40.948055555556,
+          "lon": -4.1183333333333,
+          "wikidataId": "Q15684"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1633,
+          "month": 12,
+          "day": 1
+        },
+        "place": {
+          "name": "Brussel",
+          "lat": 50.846666666666664,
+          "lon": 4.351666666666667,
+          "wikidataId": "Q239"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q158256"
+      }
+    },
+    {
+      "id": "Q233187",
+      "givenNames": [
+        "Catharina Michaella van Oostenrijk"
+      ],
+      "displayName": "Catharina Michaella van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1567,
+          "month": 10,
+          "day": 10
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1597,
+          "month": 11,
+          "day": 6
+        },
+        "place": {
+          "name": "Turijn",
+          "lat": 45.079166666666666,
+          "lon": 7.676111111111111,
+          "wikidataId": "Q495"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q233187"
+      }
+    },
+    {
+      "id": "Q574024",
+      "givenNames": [
+        "Ferdinand, Prince of Asturias"
+      ],
+      "displayName": "Ferdinand, Prince of Asturias",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1571,
+          "month": 12,
+          "day": 4
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1578,
+          "month": 10,
+          "day": 18
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q574024"
+      }
+    },
+    {
+      "id": "Q69307605",
+      "givenNames": [
+        "Infante Carlos Lorenzo of Spain"
+      ],
+      "displayName": "Infante Carlos Lorenzo of Spain",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1573,
+          "month": 8,
+          "day": 12
+        },
+        "place": {
+          "name": "Galapagar",
+          "lat": 40.576388888888886,
+          "lon": -4.001944444444445,
+          "wikidataId": "Q1615953"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1575,
+          "month": 7,
+          "day": 9
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q69307605"
+      }
+    },
+    {
+      "id": "Q668424",
+      "givenNames": [
+        "Diego, Prince of Asturias"
+      ],
+      "displayName": "Diego, Prince of Asturias",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1575,
+          "month": 8,
+          "day": 15
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1582,
+          "month": 11,
+          "day": 21
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q668424"
+      }
+    },
+    {
+      "id": "Q34464",
+      "givenNames": [
+        "Filips III van Spanje"
+      ],
+      "displayName": "Filips III van Spanje",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1578,
+          "month": 4,
+          "day": 14
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1621,
+          "month": 3,
+          "day": 31
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q34464"
+      }
+    },
+    {
+      "id": "Q3847598",
+      "givenNames": [
+        "Maria d'Asburgo"
+      ],
+      "displayName": "Maria d'Asburgo",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1580,
+          "month": 2,
+          "day": 14
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1583,
+          "month": 8,
+          "day": 4
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q3847598"
+      }
+    },
+    {
+      "id": "Q101438677",
+      "givenNames": [
+        "Pedro de Osorio"
+      ],
+      "displayName": "Pedro de Osorio",
+      "sex": "m",
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q101438677"
+      }
+    },
+    {
+      "id": "Q150862",
+      "givenNames": [
+        "Keizer Maximiliaan II"
+      ],
+      "displayName": "Keizer Maximiliaan II",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1527,
+          "month": 7,
+          "day": 31
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1576,
+          "month": 10,
+          "day": 12
+        },
+        "place": {
+          "name": "Regensburg",
+          "lat": 49.016666666666666,
+          "lon": 12.083333333333334,
+          "wikidataId": "Q2978"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q150862"
+      }
+    },
+    {
+      "id": "Q150586",
+      "givenNames": [
+        "Keizer Rudolf II"
+      ],
+      "displayName": "Keizer Rudolf II",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1552,
+          "month": 7,
+          "day": 18
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1612,
+          "month": 1,
+          "day": 20
+        },
+        "place": {
+          "name": "Praag",
+          "lat": 50.0875,
+          "lon": 14.421388888888888,
+          "wikidataId": "Q1085"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q150586"
+      }
+    },
+    {
+      "id": "Q327156",
+      "givenNames": [
+        "Ernst van Oostenrijk"
+      ],
+      "displayName": "Ernst van Oostenrijk",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1553,
+          "month": 6,
+          "day": 15
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1595,
+          "month": 2,
+          "day": 12
+        },
+        "place": {
+          "name": "Stedelijk gebied Brussel",
+          "lat": 50.846666666667,
+          "lon": 4.3525,
+          "wikidataId": "Q9005"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q327156"
+      }
+    },
+    {
+      "id": "Q164512",
+      "givenNames": [
+        "Elisabeth van Oostenrijk"
+      ],
+      "displayName": "Elisabeth van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1554,
+          "month": 7,
+          "day": 5
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1592,
+          "month": 1,
+          "day": 22
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q164512"
+      }
+    },
+    {
+      "id": "Q152157",
+      "givenNames": [
+        "Keizer Matthias"
+      ],
+      "displayName": "Keizer Matthias",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1557,
+          "month": 2,
+          "day": 24
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1619,
+          "month": 3,
+          "day": 20
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q152157"
+      }
+    },
+    {
+      "id": "Q283909",
+      "givenNames": [
+        "Maximiliaan III van Oostenrijk"
+      ],
+      "displayName": "Maximiliaan III van Oostenrijk",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1558,
+          "month": 10,
+          "day": 12
+        },
+        "place": {
+          "name": "Wiener Neustadt",
+          "lat": 47.816666666667,
+          "lon": 16.25,
+          "wikidataId": "Q131612"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1618,
+          "month": 11,
+          "day": 2
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q283909"
+      }
+    },
+    {
+      "id": "Q311452",
+      "givenNames": [
+        "Albrecht van Oostenrijk"
+      ],
+      "displayName": "Albrecht van Oostenrijk",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1559,
+          "month": 11,
+          "day": 15
+        },
+        "place": {
+          "name": "Wiener Neustadt",
+          "lat": 47.816666666667,
+          "lon": 16.25,
+          "wikidataId": "Q131612"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1621,
+          "month": 7,
+          "day": 13
+        },
+        "place": {
+          "name": "Brussel",
+          "lat": 50.846666666666664,
+          "lon": 4.351666666666667,
+          "wikidataId": "Q239"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q311452"
+      }
+    },
+    {
+      "id": "Q113754",
+      "givenNames": [
+        "Wenceslaus van Oostenrijk"
+      ],
+      "displayName": "Wenceslaus van Oostenrijk",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1561,
+          "month": 3,
+          "day": 9
+        },
+        "place": {
+          "name": "Wiener Neustadt",
+          "lat": 47.816666666667,
+          "lon": 16.25,
+          "wikidataId": "Q131612"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1578,
+          "month": 9,
+          "day": 22
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q113754"
+      }
+    },
+    {
+      "id": "Q79158",
+      "givenNames": [
+        "Archduchess Margaret of Austria"
+      ],
+      "displayName": "Archduchess Margaret of Austria",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1567,
+          "month": 1,
+          "day": 25
+        },
+        "place": {
+          "name": "Wiener Neustadt",
+          "lat": 47.816666666667,
+          "lon": 16.25,
+          "wikidataId": "Q131612"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1633,
+          "month": 7,
+          "day": 5
+        },
+        "place": {
+          "name": "Madrid",
+          "lat": 40.41694444444445,
+          "lon": -3.703333333333333,
+          "wikidataId": "Q2807"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q79158"
+      }
+    },
+    {
+      "id": "Q75286659",
+      "givenNames": [
+        "Ferdinand von Habsburg"
+      ],
+      "displayName": "Ferdinand von Habsburg",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1551
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1552
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q75286659"
+      }
+    },
+    {
+      "id": "Q75286675",
+      "givenNames": [
+        "Friedrich von Habsburg"
+      ],
+      "displayName": "Friedrich von Habsburg",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1562
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1563
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q75286675"
+      }
+    },
+    {
+      "id": "Q75286679",
+      "givenNames": [
+        "Marie von Habsburg"
+      ],
+      "displayName": "Marie von Habsburg",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1555
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1556
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q75286679"
+      }
+    },
+    {
+      "id": "Q75286677",
+      "givenNames": [
+        "Karl von Habsburg"
+      ],
+      "displayName": "Karl von Habsburg",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1565
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1566
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q75286677"
+      }
+    },
+    {
+      "id": "Q75286682",
+      "givenNames": [
+        "Eleonore Erzherzogin von Österreich"
+      ],
+      "displayName": "Eleonore Erzherzogin von Österreich",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1568
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1580
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q75286682"
+      }
+    },
+    {
+      "id": "Q75286681",
+      "givenNames": [
+        "Marie von Habsburg"
+      ],
+      "displayName": "Marie von Habsburg",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1564
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1564
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q75286681"
+      }
+    },
+    {
+      "id": "Q442501",
+      "givenNames": [
+        "Johan Manuel van Portugal"
+      ],
+      "displayName": "Johan Manuel van Portugal",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1537,
+          "month": 6,
+          "day": 3
+        },
+        "place": {
+          "name": "Évora",
+          "lat": 38.5725,
+          "lon": -7.9072222222222,
+          "wikidataId": "Q179948"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1554,
+          "month": 1,
+          "day": 2
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q442501"
+      }
+    },
+    {
+      "id": "Q272899",
+      "givenNames": [
+        "Sebastiaan van Portugal"
+      ],
+      "displayName": "Sebastiaan van Portugal",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1554,
+          "month": 1,
+          "day": 20
+        },
+        "place": {
+          "name": "Ribeirapaleis",
+          "lat": 38.70684444444444,
+          "lon": -9.137044444444445,
+          "wikidataId": "Q1939953"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1578,
+          "month": 8,
+          "day": 4
+        },
+        "place": {
+          "name": "Ksar-el-Kebir",
+          "lat": 35,
+          "lon": -5.9,
+          "wikidataId": "Q52603"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q272899"
+      }
+    },
+    {
+      "id": "Q236902",
+      "givenNames": [
+        "Germaine de Foix"
+      ],
+      "displayName": "Germaine de Foix",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1488
+        },
+        "place": {
+          "name": "Mazères",
+          "lat": 43.251666666667,
+          "lon": 1.6780555555556,
+          "wikidataId": "Q624304"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1536,
+          "month": 10,
+          "day": 15
+        },
+        "place": {
+          "name": "Marines",
+          "lat": 39.675055555556,
+          "lon": -0.56111111111111,
+          "wikidataId": "Q1989785"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q236902"
+      }
+    },
+    {
+      "id": "Q465138",
+      "givenNames": [
+        "Johanna van der Gheynst"
+      ],
+      "displayName": "Johanna van der Gheynst",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1500
+        },
+        "place": {
+          "name": "Oudenaarde",
+          "lat": 50.85,
+          "lon": 3.6,
+          "wikidataId": "Q12992"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1541,
+          "month": 12,
+          "day": 15
+        },
+        "place": {
+          "name": "Brussel",
+          "lat": 50.846666666666664,
+          "lon": 4.351666666666667,
+          "wikidataId": "Q239"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q465138"
+      }
+    },
+    {
+      "id": "Q442497",
+      "givenNames": [
+        "Ottavio Farnese"
+      ],
+      "displayName": "Ottavio Farnese",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1524,
+          "month": 10,
+          "day": 9
+        },
+        "place": {
+          "name": "Valentano",
+          "lat": 42.565277777778,
+          "lon": 11.826944444444,
+          "wikidataId": "Q180050"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1586,
+          "month": 9,
+          "day": 18
+        },
+        "place": {
+          "name": "Parma",
+          "lat": 44.801472222222,
+          "lon": 10.328,
+          "wikidataId": "Q2683"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q442497"
+      }
+    },
+    {
+      "id": "Q378232",
+      "givenNames": [
+        "Alessandro de' Medici"
+      ],
+      "displayName": "Alessandro de' Medici",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1510,
+          "month": 6,
+          "day": 22
+        },
+        "place": {
+          "name": "Florence",
+          "lat": 43.771388888889,
+          "lon": 11.254166666667,
+          "wikidataId": "Q2044"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1537,
+          "month": 1,
+          "day": 6
+        },
+        "place": {
+          "name": "Florence",
+          "lat": 43.771388888889,
+          "lon": 11.254166666667,
+          "wikidataId": "Q2044"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q378232"
+      }
+    },
+    {
+      "id": "Q312903",
+      "givenNames": [
+        "Alexander Farnese"
+      ],
+      "displayName": "Alexander Farnese",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1545,
+          "month": 8,
+          "day": 27
+        },
+        "place": {
+          "name": "Rome",
+          "lat": 41.893055555556,
+          "lon": 12.482777777778,
+          "wikidataId": "Q220"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1592,
+          "month": 12,
+          "day": 3
+        },
+        "place": {
+          "name": "Arras",
+          "lat": 50.289166666667,
+          "lon": 2.78,
+          "wikidataId": "Q131329"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q312903"
+      }
+    },
+    {
+      "id": "Q41739627",
+      "givenNames": [
+        "Orsolina della Penna"
+      ],
+      "displayName": "Orsolina della Penna",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1500
+        },
+        "place": {
+          "name": "Perugia",
+          "lat": 43.11191816,
+          "lon": 12.38854847,
+          "wikidataId": "Q3437"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1536
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q41739627"
+      }
+    },
+    {
+      "id": "Q258770",
+      "givenNames": [
+        "Barbara Blomberg"
+      ],
+      "displayName": "Barbara Blomberg",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1527
+        },
+        "place": {
+          "name": "Regensburg",
+          "lat": 49.016666666666666,
+          "lon": 12.083333333333334,
+          "wikidataId": "Q2978"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1597,
+          "month": 12,
+          "day": 17
+        },
+        "place": {
+          "name": "Ambrosero",
+          "lat": 43.417777777778,
+          "lon": -3.5480555555556,
+          "wikidataId": "Q968304"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q258770"
+      }
+    },
+    {
+      "id": "Q6003321",
+      "givenNames": [
+        "Ana de Austria y Mendoza"
+      ],
+      "displayName": "Ana de Austria y Mendoza",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1568
+        },
+        "place": {
+          "name": "Palace of Duke of Pastrana",
+          "lat": 40.4182,
+          "lon": -2.923,
+          "wikidataId": "Q9054339"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1629
+        },
+        "place": {
+          "name": "Burgos",
+          "lat": 42.340833333333,
+          "lon": -3.6997222222222,
+          "wikidataId": "Q9580"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q6003321"
+      }
+    },
+    {
+      "id": "Q56718982",
+      "givenNames": [
+        "Giovanna of Austria"
+      ],
+      "displayName": "Giovanna of Austria",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1573,
+          "month": 9,
+          "day": 11
+        },
+        "place": {
+          "name": "Napels",
+          "lat": 40.83583333333333,
+          "lon": 14.248611111111112,
+          "wikidataId": "Q2634"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1630,
+          "month": 2,
+          "day": 8
+        },
+        "place": {
+          "name": "Napels",
+          "lat": 40.83583333333333,
+          "lon": 14.248611111111112,
+          "wikidataId": "Q2634"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q56718982"
+      }
+    },
+    {
+      "id": "Q150966",
+      "givenNames": [
+        "Keizer Frederik III"
+      ],
+      "displayName": "Keizer Frederik III",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1415,
+          "month": 9,
+          "day": 21
+        },
+        "place": {
+          "name": "Innsbruck",
+          "lat": 47.268333333333,
+          "lon": 11.393333333333,
+          "wikidataId": "Q1735"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1493,
+          "month": 8,
+          "day": 19
+        },
+        "place": {
+          "name": "Linz",
+          "lat": 48.30583333333333,
+          "lon": 14.286388888888888,
+          "wikidataId": "Q41329"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q150966"
+      }
+    },
+    {
+      "id": "Q161149",
+      "givenNames": [
+        "Eleonora Helena van Portugal"
+      ],
+      "displayName": "Eleonora Helena van Portugal",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1434,
+          "month": 9,
+          "day": 18
+        },
+        "place": {
+          "name": "Torres Vedras",
+          "lat": 39.083333333333,
+          "lon": -9.2666666666667,
+          "wikidataId": "Q917319"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1467,
+          "month": 9,
+          "day": 3
+        },
+        "place": {
+          "name": "Wiener Neustadt",
+          "lat": 47.816666666667,
+          "lon": 16.25,
+          "wikidataId": "Q131612"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q161149"
+      }
+    },
+    {
+      "id": "Q201143",
+      "givenNames": [
+        "Anna van Bretagne"
+      ],
+      "displayName": "Anna van Bretagne",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1477,
+          "month": 1,
+          "day": 25
+        },
+        "place": {
+          "name": "Château des ducs de Bretagne",
+          "lat": 47.21614,
+          "lon": -1.54914,
+          "wikidataId": "Q1289258"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1514,
+          "month": 1,
+          "day": 9
+        },
+        "place": {
+          "name": "Blois",
+          "lat": 47.593055555556,
+          "lon": 1.3272222222222,
+          "wikidataId": "Q160927"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q201143"
+      }
+    },
+    {
+      "id": "Q161136",
+      "givenNames": [
+        "Bianca Maria Sforza"
+      ],
+      "displayName": "Bianca Maria Sforza",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1472,
+          "month": 4,
+          "day": 5
+        },
+        "place": {
+          "name": "Milaan",
+          "lat": 45.466944444444,
+          "lon": 9.19,
+          "wikidataId": "Q490"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1510,
+          "month": 12,
+          "day": 31
+        },
+        "place": {
+          "name": "Innsbruck",
+          "lat": 47.268333333333,
+          "lon": 11.393333333333,
+          "wikidataId": "Q1735"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q161136"
+      }
+    },
+    {
+      "id": "Q157100",
+      "givenNames": [
+        "Margaretha van Oostenrijk"
+      ],
+      "displayName": "Margaretha van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1480,
+          "month": 1,
+          "day": 10
+        },
+        "place": {
+          "name": "Brussel",
+          "lat": 50.84668,
+          "lon": 4.3525,
+          "wikidataId": "Q111901161"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1530,
+          "month": 12,
+          "day": 1
+        },
+        "place": {
+          "name": "Mechelen",
+          "lat": 51.028055555555554,
+          "lon": 4.480277777777777,
+          "wikidataId": "Q162022"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q157100"
+      }
+    },
+    {
+      "id": "Q552986",
+      "givenNames": [
+        "Joris van Oostenrijk"
+      ],
+      "displayName": "Joris van Oostenrijk",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1504
+        },
+        "place": {
+          "name": "Gent",
+          "lat": 51.05361111111111,
+          "lon": 3.725277777777778,
+          "wikidataId": "Q1296"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1557,
+          "month": 5,
+          "day": 4
+        },
+        "place": {
+          "name": "Luik",
+          "lat": 50.639722222222225,
+          "lon": 5.570555555555556,
+          "wikidataId": "Q3992"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q552986"
+      }
+    },
+    {
+      "id": "Q922141",
+      "givenNames": [
+        "Leopoldo de Austria"
+      ],
+      "displayName": "Leopoldo de Austria",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1515
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1557,
+          "month": 9,
+          "day": 27
+        },
+        "place": {
+          "name": "Córdoba",
+          "lat": 37.89,
+          "lon": -4.78,
+          "wikidataId": "Q5818"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q922141"
+      }
+    },
+    {
+      "id": "Q2376894",
+      "givenNames": [
+        "Barbara Disquis"
+      ],
+      "displayName": "Barbara Disquis",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1482
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1568,
+          "month": 9,
+          "day": 22
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q2376894"
+      }
+    },
+    {
+      "id": "Q13407861",
+      "givenNames": [
+        "Kornelius Rakouský"
+      ],
+      "displayName": "Kornelius Rakouský",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1507
+        },
+        "place": {
+          "name": "Salzburg",
+          "lat": 47.8,
+          "lon": 13.045,
+          "wikidataId": "Q34713"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q13407861"
+      }
+    },
+    {
+      "id": "Q67507195",
+      "givenNames": [
+        "Barbara von Rottal"
+      ],
+      "displayName": "Barbara von Rottal",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1500,
+          "month": 6,
+          "day": 29
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1550,
+          "month": 3,
+          "day": 31
+        },
+        "place": {
+          "name": "Wenen",
+          "lat": 48.208333333333336,
+          "lon": 16.3725,
+          "wikidataId": "Q1741"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q67507195"
+      }
+    },
+    {
+      "id": "Q75286761",
+      "givenNames": [
+        "Franz von Habsburg"
+      ],
+      "displayName": "Franz von Habsburg",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1481
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1481
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q75286761"
+      }
+    },
+    {
+      "id": "Q28777523",
+      "givenNames": [
+        "Marguerite de Helfenstein"
+      ],
+      "displayName": "Marguerite de Helfenstein",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1480
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1537
+        },
+        "place": {
+          "name": "Luik",
+          "lat": 50.639722222222225,
+          "lon": 5.570555555555556,
+          "wikidataId": "Q3992"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q28777523"
+      }
+    },
+    {
+      "id": "Q110588406",
+      "givenNames": [
+        "Dorothea van Oostenrijk"
+      ],
+      "displayName": "Dorothea van Oostenrijk",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1516
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1572
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q110588406"
+      }
+    },
+    {
+      "id": "Q151120",
+      "givenNames": [
+        "Karel de Stoute"
+      ],
+      "displayName": "Karel de Stoute",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1433,
+          "month": 11,
+          "day": 10
+        },
+        "place": {
+          "name": "Dijon",
+          "lat": 47.323055555556,
+          "lon": 5.0419444444444,
+          "wikidataId": "Q7003"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1477,
+          "month": 1,
+          "day": 5
+        },
+        "place": {
+          "name": "Nancy",
+          "lat": 48.692777777778,
+          "lon": 6.1836111111111,
+          "wikidataId": "Q40898"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q151120"
+      }
+    },
+    {
+      "id": "Q466300",
+      "givenNames": [
+        "Isabella van Bourbon"
+      ],
+      "displayName": "Isabella van Bourbon",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1437
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1465,
+          "month": 9,
+          "day": 25
+        },
+        "place": {
+          "name": "Sint-Michielsabdij",
+          "lat": 51.215048,
+          "lon": 4.393192,
+          "wikidataId": "Q2554516"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q466300"
+      }
+    },
+    {
+      "id": "Q129857",
+      "givenNames": [
+        "Frans I van Frankrijk"
+      ],
+      "displayName": "Frans I van Frankrijk",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1494,
+          "month": 9,
+          "day": 12
+        },
+        "place": {
+          "name": "Cognac",
+          "lat": 45.695833333333,
+          "lon": -0.32916666666667,
+          "wikidataId": "Q285"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1547,
+          "month": 3,
+          "day": 31
+        },
+        "place": {
+          "name": "Rambouillet",
+          "lat": 48.643611111111,
+          "lon": 1.83,
+          "wikidataId": "Q191119"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q129857"
+      }
+    },
+    {
+      "id": "Q2308890",
+      "givenNames": [
+        "Infanta Maria, Duchess of Viseu"
+      ],
+      "displayName": "Infanta Maria, Duchess of Viseu",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1521,
+          "month": 6,
+          "day": 8
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1577,
+          "month": 10,
+          "day": 10
+        },
+        "place": {
+          "name": "Lissabon",
+          "lat": 38.708042,
+          "lon": -9.139016,
+          "wikidataId": "Q597"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q2308890"
+      }
+    },
+    {
+      "id": "Q154460",
+      "givenNames": [
+        "Christiaan II van Denemarken"
+      ],
+      "displayName": "Christiaan II van Denemarken",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1481,
+          "month": 7,
+          "day": 2
+        },
+        "place": {
+          "name": "Nyborg",
+          "lat": 55.309722222222,
+          "lon": 10.791666666667,
+          "wikidataId": "Q3530435"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1559,
+          "month": 1,
+          "day": 25
+        },
+        "place": {
+          "name": "Kalundborg",
+          "lat": 55.681388888889,
+          "lon": 11.085,
+          "wikidataId": "Q204957"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q154460"
+      }
+    },
+    {
+      "id": "Q3428831",
+      "givenNames": [
+        "Johan van Denemarken"
+      ],
+      "displayName": "Johan van Denemarken",
+      "sex": "m",
+      "birth": {
+        "date": {
+          "year": 1518,
+          "month": 2,
+          "day": 21
+        },
+        "place": {
+          "name": "Kopenhagen",
+          "lat": 55.676111111111,
+          "lon": 12.568888888889,
+          "wikidataId": "Q1748"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1532,
+          "month": 8,
+          "day": 11
+        },
+        "place": {
+          "name": "Regensburg",
+          "lat": 49.016666666666666,
+          "lon": 12.083333333333334,
+          "wikidataId": "Q2978"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q3428831"
+      }
+    },
+    {
+      "id": "Q272252",
+      "givenNames": [
+        "Dorothea van Denemarken"
+      ],
+      "displayName": "Dorothea van Denemarken",
+      "sex": "f",
+      "birth": {
+        "date": {
+          "year": 1520,
+          "month": 11,
+          "day": 10
+        },
+        "place": {
+          "name": "Kopenhagen",
+          "lat": 55.676111111111,
+          "lon": 12.568888888889,
+          "wikidataId": "Q1748"
+        }
+      },
+      "death": {
+        "date": {
+          "year": 1580,
+          "month": 5,
+          "day": 31
+        },
+        "place": {
+          "name": "Neumarkt in der Oberpfalz",
+          "lat": 49.283333333333,
+          "lon": 11.466666666667,
+          "wikidataId": "Q14887"
+        }
+      },
+      "visibility": "public",
+      "meta": {
+        "wikidataId": "Q272252"
+      }
+    }
+  ],
+  "unions": [
+    {
+      "id": "u-Q32500-Q331575",
+      "partners": [
+        "Q32500",
+        "Q331575"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1526,
+        "month": 3,
+        "day": 11
+      },
+      "end": {
+        "date": {
+          "year": 1539,
+          "month": 5,
+          "day": 1
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q157098-Q171136",
+      "partners": [
+        "Q157098",
+        "Q171136"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1496,
+        "month": 10,
+        "day": 20
+      },
+      "end": {
+        "date": {
+          "year": 1506,
+          "month": 9,
+          "day": 25
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q230894-Q34417",
+      "partners": [
+        "Q34417",
+        "Q230894"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1543,
+        "month": 11,
+        "day": 12
+      },
+      "end": {
+        "date": {
+          "year": 1545,
+          "month": 7,
+          "day": 12
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q34417-Q82674",
+      "partners": [
+        "Q34417",
+        "Q82674"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1554,
+        "month": 7,
+        "day": 25
+      },
+      "end": {
+        "date": {
+          "year": 1558,
+          "month": 11,
+          "day": 17
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q176041-Q34417",
+      "partners": [
+        "Q34417",
+        "Q176041"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1560,
+        "month": 2,
+        "day": 2
+      },
+      "end": {
+        "date": {
+          "year": 1568,
+          "month": 10,
+          "day": 3
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q156657-Q34417",
+      "partners": [
+        "Q34417",
+        "Q156657"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1570,
+        "month": 11,
+        "day": 12
+      },
+      "end": {
+        "date": {
+          "year": 1580,
+          "month": 10,
+          "day": 26
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q150862-Q159660",
+      "partners": [
+        "Q159660",
+        "Q150862"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1548,
+        "month": 9,
+        "day": 13
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q170264-Q442501",
+      "partners": [
+        "Q170264",
+        "Q442501"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1552
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q307815-Q442497",
+      "partners": [
+        "Q307815",
+        "Q442497"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1538,
+        "month": 11,
+        "day": 4
+      },
+      "end": {
+        "date": {
+          "year": 1586,
+          "month": 1,
+          "day": 18
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q307815-Q378232",
+      "partners": [
+        "Q307815",
+        "Q378232"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1536,
+        "month": 2,
+        "day": 29
+      },
+      "end": {
+        "date": {
+          "year": 1537,
+          "month": 1,
+          "day": 6
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q150726-Q157073",
+      "partners": [
+        "Q150726",
+        "Q157073"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1477,
+        "month": 8,
+        "day": 18
+      },
+      "end": {
+        "date": {
+          "year": 1482,
+          "month": 3,
+          "day": 27
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q150726-Q201143",
+      "partners": [
+        "Q150726",
+        "Q201143"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1490
+      },
+      "end": {
+        "date": {
+          "year": 1491
+        },
+        "reason": "divorce"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q150726-Q161136",
+      "partners": [
+        "Q150726",
+        "Q161136"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1493,
+        "month": 11,
+        "day": 30
+      },
+      "end": {
+        "date": {
+          "year": 1510,
+          "month": 12,
+          "day": 31
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q156045-Q191231",
+      "partners": [
+        "Q156045",
+        "Q191231"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1518,
+        "month": 7,
+        "day": 16
+      },
+      "end": {
+        "date": {
+          "year": 1521,
+          "month": 12,
+          "day": 13
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q129857-Q156045",
+      "partners": [
+        "Q156045",
+        "Q129857"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1530,
+        "month": 7,
+        "day": 4
+      },
+      "end": {
+        "date": {
+          "year": 1547,
+          "month": 3,
+          "day": 31
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q154460-Q157884",
+      "partners": [
+        "Q157884",
+        "Q154460"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1515,
+        "month": 8,
+        "day": 12
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q12860-Q45859",
+      "partners": [
+        "Q12860",
+        "Q45859"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1469,
+        "month": 10,
+        "day": 14
+      },
+      "end": {
+        "date": {
+          "year": 1504,
+          "month": 11,
+          "day": 26
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q12860-Q236902",
+      "partners": [
+        "Q12860",
+        "Q236902"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1505
+      },
+      "end": {
+        "date": {
+          "year": 1516
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q191231-Q229816",
+      "partners": [
+        "Q191231",
+        "Q229816"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1500,
+        "month": 8,
+        "day": 30
+      },
+      "end": {
+        "date": {
+          "year": 1517,
+          "month": 3,
+          "day": 7
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q158256-Q311452",
+      "partners": [
+        "Q158256",
+        "Q311452"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1598
+      },
+      "end": {
+        "date": {
+          "year": 1621
+        },
+        "reason": "death"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q150966-Q161149",
+      "partners": [
+        "Q150966",
+        "Q161149"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1452,
+        "month": 3,
+        "day": 16
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "u-Q151120-Q466300",
+      "partners": [
+        "Q151120",
+        "Q466300"
+      ],
+      "type": "marriage",
+      "start": {
+        "year": 1454,
+        "month": 10,
+        "day": 30
+      },
+      "visibility": "public"
+    }
+  ],
+  "parentLinks": [
+    {
+      "id": "pl-Q157098-Q32500",
+      "parent": "Q157098",
+      "child": "Q32500",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q171136-Q32500",
+      "parent": "Q171136",
+      "child": "Q32500",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q157098",
+      "parent": "Q150726",
+      "child": "Q157098",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157073-Q157098",
+      "parent": "Q157073",
+      "child": "Q157098",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q12860-Q171136",
+      "parent": "Q12860",
+      "child": "Q171136",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q45859-Q171136",
+      "parent": "Q45859",
+      "child": "Q171136",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q191231-Q331575",
+      "parent": "Q191231",
+      "child": "Q331575",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q229816-Q331575",
+      "parent": "Q229816",
+      "child": "Q331575",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q34417",
+      "parent": "Q32500",
+      "child": "Q34417",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q331575-Q34417",
+      "parent": "Q331575",
+      "child": "Q34417",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q159660",
+      "parent": "Q32500",
+      "child": "Q159660",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q331575-Q159660",
+      "parent": "Q331575",
+      "child": "Q159660",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q70764308",
+      "parent": "Q32500",
+      "child": "Q70764308",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q331575-Q70764308",
+      "parent": "Q331575",
+      "child": "Q70764308",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q170264",
+      "parent": "Q32500",
+      "child": "Q170264",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q331575-Q170264",
+      "parent": "Q331575",
+      "child": "Q170264",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q938778",
+      "parent": "Q32500",
+      "child": "Q938778",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q236902-Q938778",
+      "parent": "Q236902",
+      "child": "Q938778",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q307815",
+      "parent": "Q32500",
+      "child": "Q307815",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q465138-Q307815",
+      "parent": "Q465138",
+      "child": "Q307815",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q6137930",
+      "parent": "Q32500",
+      "child": "Q6137930",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q41739627-Q6137930",
+      "parent": "Q41739627",
+      "child": "Q6137930",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q157107",
+      "parent": "Q32500",
+      "child": "Q157107",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q258770-Q157107",
+      "parent": "Q258770",
+      "child": "Q157107",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q84519057",
+      "parent": "Q32500",
+      "child": "Q84519057",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q331575-Q84519057",
+      "parent": "Q331575",
+      "child": "Q84519057",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q32500-Q134910298",
+      "parent": "Q32500",
+      "child": "Q134910298",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150966-Q150726",
+      "parent": "Q150966",
+      "child": "Q150726",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q161149-Q150726",
+      "parent": "Q161149",
+      "child": "Q150726",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q151120-Q157073",
+      "parent": "Q151120",
+      "child": "Q157073",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q466300-Q157073",
+      "parent": "Q466300",
+      "child": "Q157073",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157098-Q156045",
+      "parent": "Q157098",
+      "child": "Q156045",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q171136-Q156045",
+      "parent": "Q171136",
+      "child": "Q156045",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157098-Q157884",
+      "parent": "Q157098",
+      "child": "Q157884",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q171136-Q157884",
+      "parent": "Q171136",
+      "child": "Q157884",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157098-Q150611",
+      "parent": "Q157098",
+      "child": "Q150611",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q171136-Q150611",
+      "parent": "Q171136",
+      "child": "Q150611",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157098-Q157077",
+      "parent": "Q157098",
+      "child": "Q157077",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q171136-Q157077",
+      "parent": "Q171136",
+      "child": "Q157077",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157098-Q157834",
+      "parent": "Q157098",
+      "child": "Q157834",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q171136-Q157834",
+      "parent": "Q171136",
+      "child": "Q157834",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157098-Q61459936",
+      "parent": "Q157098",
+      "child": "Q61459936",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q171136-Q61459936",
+      "parent": "Q171136",
+      "child": "Q61459936",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q12860-Q229816",
+      "parent": "Q12860",
+      "child": "Q229816",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q45859-Q229816",
+      "parent": "Q45859",
+      "child": "Q229816",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157834-Q230894",
+      "parent": "Q157834",
+      "child": "Q230894",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q156657",
+      "parent": "Q150862",
+      "child": "Q156657",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q156657",
+      "parent": "Q159660",
+      "child": "Q156657",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q159817",
+      "parent": "Q34417",
+      "child": "Q159817",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q230894-Q159817",
+      "parent": "Q230894",
+      "child": "Q159817",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q158256",
+      "parent": "Q34417",
+      "child": "Q158256",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q176041-Q158256",
+      "parent": "Q176041",
+      "child": "Q158256",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q233187",
+      "parent": "Q34417",
+      "child": "Q233187",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q176041-Q233187",
+      "parent": "Q176041",
+      "child": "Q233187",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q574024",
+      "parent": "Q34417",
+      "child": "Q574024",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q156657-Q574024",
+      "parent": "Q156657",
+      "child": "Q574024",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q69307605",
+      "parent": "Q34417",
+      "child": "Q69307605",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q156657-Q69307605",
+      "parent": "Q156657",
+      "child": "Q69307605",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q668424",
+      "parent": "Q34417",
+      "child": "Q668424",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q156657-Q668424",
+      "parent": "Q156657",
+      "child": "Q668424",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q34464",
+      "parent": "Q34417",
+      "child": "Q34464",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q156657-Q34464",
+      "parent": "Q156657",
+      "child": "Q34464",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q3847598",
+      "parent": "Q34417",
+      "child": "Q3847598",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q156657-Q3847598",
+      "parent": "Q156657",
+      "child": "Q3847598",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q34417-Q101438677",
+      "parent": "Q34417",
+      "child": "Q101438677",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150611-Q150862",
+      "parent": "Q150611",
+      "child": "Q150862",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q150586",
+      "parent": "Q150862",
+      "child": "Q150586",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q150586",
+      "parent": "Q159660",
+      "child": "Q150586",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q327156",
+      "parent": "Q150862",
+      "child": "Q327156",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q327156",
+      "parent": "Q159660",
+      "child": "Q327156",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q164512",
+      "parent": "Q150862",
+      "child": "Q164512",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q164512",
+      "parent": "Q159660",
+      "child": "Q164512",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q152157",
+      "parent": "Q150862",
+      "child": "Q152157",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q152157",
+      "parent": "Q159660",
+      "child": "Q152157",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q283909",
+      "parent": "Q150862",
+      "child": "Q283909",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q283909",
+      "parent": "Q159660",
+      "child": "Q283909",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q311452",
+      "parent": "Q150862",
+      "child": "Q311452",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q311452",
+      "parent": "Q159660",
+      "child": "Q311452",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q113754",
+      "parent": "Q150862",
+      "child": "Q113754",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q113754",
+      "parent": "Q159660",
+      "child": "Q113754",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q79158",
+      "parent": "Q150862",
+      "child": "Q79158",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q79158",
+      "parent": "Q159660",
+      "child": "Q79158",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q75286659",
+      "parent": "Q150862",
+      "child": "Q75286659",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q75286659",
+      "parent": "Q159660",
+      "child": "Q75286659",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q75286675",
+      "parent": "Q150862",
+      "child": "Q75286675",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q75286675",
+      "parent": "Q159660",
+      "child": "Q75286675",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q75286679",
+      "parent": "Q150862",
+      "child": "Q75286679",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q75286679",
+      "parent": "Q159660",
+      "child": "Q75286679",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q75286677",
+      "parent": "Q150862",
+      "child": "Q75286677",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q75286677",
+      "parent": "Q159660",
+      "child": "Q75286677",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q75286682",
+      "parent": "Q150862",
+      "child": "Q75286682",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q75286682",
+      "parent": "Q159660",
+      "child": "Q75286682",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150862-Q75286681",
+      "parent": "Q150862",
+      "child": "Q75286681",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q159660-Q75286681",
+      "parent": "Q159660",
+      "child": "Q75286681",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157834-Q442501",
+      "parent": "Q157834",
+      "child": "Q442501",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q442501-Q272899",
+      "parent": "Q442501",
+      "child": "Q272899",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q170264-Q272899",
+      "parent": "Q170264",
+      "child": "Q272899",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q442497-Q312903",
+      "parent": "Q442497",
+      "child": "Q312903",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q307815-Q312903",
+      "parent": "Q307815",
+      "child": "Q312903",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157107-Q6003321",
+      "parent": "Q157107",
+      "child": "Q6003321",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157107-Q56718982",
+      "parent": "Q157107",
+      "child": "Q56718982",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q157100",
+      "parent": "Q150726",
+      "child": "Q157100",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157073-Q157100",
+      "parent": "Q157073",
+      "child": "Q157100",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q552986",
+      "parent": "Q150726",
+      "child": "Q552986",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q922141",
+      "parent": "Q150726",
+      "child": "Q922141",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q2376894",
+      "parent": "Q150726",
+      "child": "Q2376894",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q13407861",
+      "parent": "Q150726",
+      "child": "Q13407861",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q67507195",
+      "parent": "Q150726",
+      "child": "Q67507195",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q75286761",
+      "parent": "Q150726",
+      "child": "Q75286761",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157073-Q75286761",
+      "parent": "Q157073",
+      "child": "Q75286761",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q28777523",
+      "parent": "Q150726",
+      "child": "Q28777523",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q150726-Q110588406",
+      "parent": "Q150726",
+      "child": "Q110588406",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q191231-Q2308890",
+      "parent": "Q191231",
+      "child": "Q2308890",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q156045-Q2308890",
+      "parent": "Q156045",
+      "child": "Q2308890",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q154460-Q3428831",
+      "parent": "Q154460",
+      "child": "Q3428831",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157884-Q3428831",
+      "parent": "Q157884",
+      "child": "Q3428831",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q154460-Q272252",
+      "parent": "Q154460",
+      "child": "Q272252",
+      "role": "biological",
+      "visibility": "public"
+    },
+    {
+      "id": "pl-Q157884-Q272252",
+      "parent": "Q157884",
+      "child": "Q272252",
+      "role": "biological",
+      "visibility": "public"
+    }
+  ]
+}

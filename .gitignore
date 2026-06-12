@@ -1,0 +1,4 @@
+.DS_Store
+familieboom/node_modules/
+familieboom/dist/
+*.tsbuildinfo
