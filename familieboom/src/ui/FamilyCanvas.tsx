@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { select } from 'd3-selection';
+import 'd3-transition';
 import { zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from 'd3-zoom';
 import type { FamilyGraph, Person, PersonID } from '../data/types';
 import { flowLayout } from '../layout/flowLayout';
@@ -20,7 +21,6 @@ interface Props {
 }
 
 const LABEL_ZOOM = 1.5;
-const NAV_BASE = 940; // referentiemaat van de oude navigatie-camera
 const CURRENT_YEAR = 2026;
 
 const spring = { type: 'spring', stiffness: 110, damping: 20 } as const;
@@ -47,13 +47,35 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
   const art = useMemo(() => flowLayout(fullGraph), [fullGraph]);
   const [minX, minY, width, height] = art.bounds;
 
+  // Werkelijke schermmaat: de navigatie-schaal en tikvlakken denken in
+  // schermpixels, anders worden nodes op een telefoon onraakbaar klein.
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [clientSize, setClientSize] = useState({ cw: 1200, ch: 800 });
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width: cw, height: ch } = entry.contentRect;
+      if (cw > 0 && ch > 0) setClientSize({ cw, ch });
+    });
+    observer.observe(svg);
+    return () => observer.disconnect();
+  }, []);
+  // Schermpixels per user-unit bij zoomniveau 1 ("meet": kleinste ratio wint).
+  const screenScale = Math.min(clientSize.cw / width, clientSize.ch / height) || 1;
+
   // Navigatie-layout, geprojecteerd in de canvas-ruimte van het kunstwerk.
   const nav = useMemo(() => {
     if (!egoGraph) return undefined;
     const raw = egoLayout(egoGraph, focusId, branches);
     const [nx, ny, nw, nh] = raw.bounds;
-    const unit = Math.min(width, height) / NAV_BASE;
-    const k = Math.min(Math.max(Math.min(width / nw, height / nh) * 0.92, 0.58 * unit), 1.15 * unit);
+    // Fit binnen het zichtbare vlak (incl. letterbox-ruimte), geklemd op een
+    // leesbare nodegrootte in schérmpixels (r ≈ 13–30 px); wat niet past is
+    // bereikbaar via pannen.
+    const visW = clientSize.cw / screenScale;
+    const visH = clientSize.ch / screenScale;
+    const kFit = Math.min(visW / nw, visH / nh) * 0.9;
+    const k = Math.min(Math.max(kFit, 13 / (22 * screenScale)), 30 / (22 * screenScale));
     const tx = minX + width / 2 - (nx + nw / 2) * k;
     const ty = minY + height / 2 - (ny + nh / 2) * k;
     return {
@@ -65,19 +87,23 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
         raw.links.map((l) => [l.id, { ...l, path: affinePath(l.path, k, tx, ty) }]),
       ),
     };
-  }, [egoGraph, focusId, branches, width, height, minX, minY]);
+  }, [egoGraph, focusId, branches, width, height, minX, minY, clientSize, screenScale]);
 
   const isNav = mode === 'navigation' && nav !== undefined;
 
-  // Camera: pan/zoom in beide modi; reset bij mode- of focuswissel.
-  const svgRef = useRef<SVGSVGElement>(null);
+  // Camera: pan/zoom in beide modi.
   const behaviorRef = useRef<ZoomBehavior<SVGSVGElement, unknown>>(null);
   const [view, setView] = useState<ZoomTransform>(zoomIdentity);
+  const viewRef = useRef(view);
+  viewRef.current = view;
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
     const behavior = zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.5, 9])
+      // Een tik op een telefoon beweegt altijd een paar pixels; zonder
+      // ruime clickDistance onderdrukt d3-zoom dan elk click-event.
+      .clickDistance(12)
       .on('zoom', (event) => setView(event.transform));
     behaviorRef.current = behavior;
     select(svg).call(behavior);
@@ -85,11 +111,30 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
       select(svg).on('.zoom', null);
     };
   }, []);
+  // Bij moduswissel: vloeiend terug naar het overzicht.
   useEffect(() => {
     const svg = svgRef.current;
     const behavior = behaviorRef.current;
-    if (svg && behavior) select(svg).call(behavior.transform, zoomIdentity);
-  }, [mode, focusId]);
+    if (svg && behavior) {
+      select(svg).transition().duration(550).call(behavior.transform, zoomIdentity);
+    }
+  }, [mode]);
+  // Bij hernavigeren in de navigatie: behoud het zoomniveau van de gebruiker,
+  // glijd alleen terug naar het midden (waar de nieuwe focuspersoon landt).
+  // In het kunstwerk blijft de camera bij een tik volledig met rust.
+  const isNavRef = useRef(isNav);
+  isNavRef.current = isNav;
+  useEffect(() => {
+    const svg = svgRef.current;
+    const behavior = behaviorRef.current;
+    if (!svg || !behavior || !isNavRef.current) return;
+    const k = viewRef.current.k;
+    const cx = minX + width / 2;
+    const cy = minY + height / 2;
+    const centered = zoomIdentity.translate(cx * (1 - k), cy * (1 - k)).scale(k);
+    select(svg).transition().duration(550).call(behavior.transform, centered);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusId]);
 
   // Intro (alleen kunstwerk, één keer per dataset).
   const reducedMotion = useReducedMotion();
@@ -274,18 +319,25 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
               style={{ pointerEvents: hidden ? 'none' : undefined }}
               onClick={() => onFocus(id)}
             >
+              {/* Onzichtbaar tikvlak: minimaal ~22 schermpixels, wat zoom of canvasmaat ook is. */}
+              <circle
+                r={Math.max(active.r + 4, 22 / (screenScale * view.k))}
+                fill="transparent"
+              />
               <motion.g
                 {...(intro && !isNav
                   ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { delay: introDelayFor(id), duration: 0.8 } }
                   : {})}
               >
                 {isFocus && (
+                  // Focusring met een minimum in schermpixels: ook op een
+                  // minuscule kunstwerk-node is de selectie zichtbaar.
                   <motion.circle
-                    animate={{ r: active.r + 7 }}
+                    animate={{ r: Math.max(active.r + 7, 13 / (screenScale * view.k)) }}
                     transition={spring}
                     fill="none"
                     stroke="#E9E2D0"
-                    strokeWidth={1.2}
+                    strokeWidth={thin(1.2)}
                     opacity={0.85}
                   />
                 )}

@@ -21,7 +21,7 @@
 | CRUD / accounts / sharing | Niet gebouwd (buiten scope van deze sessie). |
 | Modus-overgang | **Echte morph** (`src/ui/FamilyCanvas.tsx`): beide weergaven zijn één canvas; gedeelde nodes en relatielijnen veren tussen de twee layouts (de navigatie-layout wordt affien in de kunstwerk-ruimte geprojecteerd), view-exclusieve elementen faden. Pan/zoom werkt in beide modi en reset bij wisselen. |
 | Navigatie bij grote families | Depth-terugval (2→1) boven 34 personen, compactere rijen met gestaggerde labels, schaal-ondergrens (58%) en pan/zoom als uitlaatklep. Werkt voor de Habsburg-extremen (16 kinderen), maar uitklappen/groeperen per tak blijft het structurele antwoord. |
-| Mobiel | Mobile-first CSS + touch via d3-zoom, maar niet gevalideerd op echte iOS/Android-devices (headless Chrome emuleert geen viewport). |
+| Mobiel | **Gevalideerd op device** (2026-06-13). Daarbij gevonden en gefixt: camera bleef niet op zoomniveau bij hernavigeren (nu: kunstwerk raakt camera niet aan, navigatie behoudt zoom en hercentreert vloeiend); Habsburg was onaanraakbaar (tikvlakken nu ≥ ~22 schermpixels i.p.v. canvas-eenheden, `clickDistance(12)` tegen d3's tik-onderdrukking, focusring met minimum-schermmaat). |
 | Wikidata | Alleen biologische ouders (P22/P25); adoptie/stief zit wel in het model maar wordt niet uit Wikidata gehaald. Geen incrementele sync. |
 | NL relatie-benoeming | **Gebouwd** (`src/domain/relationNaming.ts` + 13 unit-tests): kortste-pad-BFS, classificatie met half/stief/adoptie/aangetrouwd-nuance, pad-ondertitel tegen de neef/nicht-dubbelzinnigheid, "ook: …" bij meerdere even korte paden. Getoond in de persoonskaart t.o.v. de vaste "ik" per dataset. Resterende gaten: diepe aangetrouwde paden vallen terug op een generiek label + via-keten, en de benoeming is nog niet visibility-bewust. |
 
@@ -32,7 +32,7 @@
 3. **Renderingsperformance bij groei.** SVG draagt 85 personen moeiteloos; bij 500+ wordt het op mobiel spannend. De vluchtroute is ingebouwd (layout-laag levert pure geometrie, renderer is vervangbaar door canvas), maar labels en semantische zoom moeten dan opnieuw ontworpen worden. Niet nu doen — wel de drempel bewaken.
 4. **Layoutkwaliteit bij echte, rommelige data.** De barycentrische plaatsing geeft bij hertrouw-ketens soms lange huwelijksbogen en kruisingen (zichtbaar bij de Habsburgers — deels data-eerlijk, deels layoutbeperking). Opties: lokale optimalisatie-pass, of curated pinning voor de "muurprint"-use-case.
 5. **Wereldbol-view.** Het model is er klaar voor (`Place` met lat/lon + wikidataId, `residences` als tijdreeks; Wikidata levert coördinaten al mee), maar de demo-familie heeft alleen handmatige coördinaten — geocoding van vrije-tekstplaatsen is nog een open stuk.
-6. **Praktisch**: het project staat in Google Drive; `node_modules` synct mee. Advies: map uitsluiten van Drive-sync of het project naar `~/Documents/Projects` verplaatsen (zoals je andere apps) met de docs in Drive.
+6. ~~Praktisch: Google Drive~~ — **opgelost**: project verhuisd naar `~/Documents/Projects/202606_FamilyTree` met GitHub (https://github.com/chieyong/familytree) als bron van waarheid.
 
 ## Voorgestelde volgorde volgende sessie
 
