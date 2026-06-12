@@ -1,0 +1,10 @@
+# Netlify-buildconfiguratie — overschrijft de UI-instellingen.
+# De app leeft in familieboom/; publish is relatief aan die base.
+[build]
+  base = "familieboom"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 vereist een recente Node.
+  NODE_VERSION = "22"
