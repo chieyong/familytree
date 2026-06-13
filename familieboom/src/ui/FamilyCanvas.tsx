@@ -9,7 +9,7 @@ import { egoLayout } from '../layout/egoLayout';
 import { affinePath } from '../layout/transform';
 import type { LayoutLink, LayoutNode } from '../layout/types';
 import type { ViewMode } from './store';
-import { branchColor, lifespan, linkStyle, shortName } from './theme';
+import { branchColor, lifespan, linkStyle, PALETTES, shortName, type ThemeName } from './theme';
 
 interface Props {
   mode: ViewMode;
@@ -17,6 +17,7 @@ interface Props {
   egoGraph?: FamilyGraph;
   focusId: PersonID;
   branches?: Map<PersonID, number>;
+  theme: ThemeName;
   onFocus: (id: PersonID) => void;
 }
 
@@ -43,9 +44,12 @@ const isDeceasedStyle = (person: Person): boolean => {
  * nodes en lijnen (springs) naar hun nieuwe plek, terwijl view-exclusieve
  * elementen (levenslijnen, tijdas, de rest van de familie) in- of uitfaden.
  */
-export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onFocus }: Props) {
+export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, onFocus }: Props) {
   const art = useMemo(() => flowLayout(fullGraph), [fullGraph]);
   const [minX, minY, width, height] = art.bounds;
+
+  const palette = PALETTES[theme];
+  const bc = (branch: number) => branchColor(branch, theme);
 
   // Werkelijke schermmaat: de navigatie-schaal en tikvlakken denken in
   // schermpixels, anders worden nodes op een telefoon onraakbaar klein.
@@ -202,7 +206,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
                 x2={minX + width}
                 y1={decade.y}
                 y2={decade.y}
-                stroke="#ece6d8"
+                stroke={palette.axis}
                 strokeWidth={thin(0.5)}
                 opacity={0.07}
               />
@@ -212,14 +216,14 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
             </motion.g>
           ))}
           {art.lifelines.map((line) => {
-            const baseOpacity = line.living ? 0.26 : 0.42;
+            const baseOpacity = (line.living ? 0.26 : 0.42) * palette.lineBoost;
             const isHero = intro && line.id === heroId;
             return (
               <motion.path
                 key={line.id}
                 d={line.path}
                 fill="none"
-                stroke={branchColor(line.branch)}
+                stroke={bc(line.branch)}
                 strokeWidth={thin(isHero ? 2.8 : 2.4)}
                 strokeLinecap="round"
                 opacity={isHero ? 0.85 : baseOpacity}
@@ -243,10 +247,10 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
         {/* Relaties: morph tussen kunstwerk- en navigatiepaden */}
         {art.links.map((link) => {
           const sourceNode = art.nodes.find((n) => n.person.id === link.sourceId);
-          const color = branchColor(sourceNode?.branch ?? 0);
+          const color = bc(sourceNode?.branch ?? 0);
           const navLink = nav?.links.get(link.id);
-          const style = linkStyle(link, color);
-          let opacity = style.opacity;
+          const style = linkStyle(link, color, palette);
+          let opacity = style.opacity * palette.lineBoost;
           let strokeWidth = style.strokeWidth;
           if (!isNav) {
             if (link.kind === 'union') {
@@ -257,7 +261,8 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
             strokeWidth = thin(strokeWidth);
           } else if (navLink) {
             const touchesEgo = link.sourceId === focusId || link.targetId === focusId;
-            opacity = touchesEgo ? Math.min(1, style.opacity + 0.25) : style.opacity * 0.35;
+            const base = touchesEgo ? Math.min(1, style.opacity + 0.25) : style.opacity * 0.35;
+            opacity = base * palette.lineBoost;
             strokeWidth = (touchesEgo ? style.strokeWidth + 0.8 : style.strokeWidth) * (nav?.k ?? 1);
           } else {
             opacity = 0; // buiten de ego-kring: lost op in de achtergrond
@@ -300,7 +305,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
           const navNode = nav?.nodes.get(id);
           const active = isNav && navNode ? navNode : artNode;
           const hidden = isNav && !navNode;
-          const color = branchColor(artNode.branch);
+          const color = bc(artNode.branch);
           const deceased = isDeceasedStyle(artNode.person);
           const isFocus = id === focusId;
           const navK = nav?.k ?? 1;
@@ -336,7 +341,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
                     animate={{ r: Math.max(active.r + 7, 13 / (screenScale * view.k)) }}
                     transition={spring}
                     fill="none"
-                    stroke="#E9E2D0"
+                    stroke={palette.focusRing}
                     strokeWidth={thin(1.2)}
                     opacity={0.85}
                   />
@@ -344,7 +349,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
                 <motion.circle
                   animate={{ r: active.r }}
                   transition={spring}
-                  fill={deceased ? '#0b101f' : color}
+                  fill={deceased ? palette.deceasedFill : color}
                   stroke={color}
                   strokeWidth={deceased ? 1.6 : 0}
                   opacity={0.95}
@@ -361,7 +366,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, onF
                     textAnchor="middle"
                     className="nav-initial"
                     style={{ fontSize: 16 * navK }}
-                    fill={deceased ? color : 'rgba(11, 16, 31, 0.85)'}
+                    fill={deceased ? color : palette.nodeText}
                   >
                     {artNode.person.givenNames[0]?.[0]}
                   </text>

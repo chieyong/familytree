@@ -13,8 +13,26 @@ import { lifespan, shortName } from './ui/theme';
 const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
 
+function SunIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20 14.5A8 8 0 1 1 9.5 4a6.3 6.3 0 0 0 10.5 10.5z" />
+    </svg>
+  );
+}
+
 export default function App() {
-  const { mode, dataset, focusId, ikId, setMode, setDataset, setFocus, setIk } = useAppStore();
+  const { mode, dataset, focusId, ikId, theme, setMode, setDataset, setFocus, setIk, toggleTheme } =
+    useAppStore();
 
   // Enige plek waar een concrete repository gekozen wordt; later: ApiRepository.
   const repository: FamilyRepository = useMemo(
@@ -56,14 +74,24 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <h1>Familieboom</h1>
-        <nav className="mode-toggle" aria-label="Weergave">
-          <button className={mode === 'artwork' ? 'active' : ''} onClick={() => setMode('artwork')}>
-            Kunstwerk
+        <div className="topbar-right">
+          <nav className="mode-toggle" aria-label="Weergave">
+            <button className={mode === 'artwork' ? 'active' : ''} onClick={() => setMode('artwork')}>
+              Tableau
+            </button>
+            <button className={mode === 'navigation' ? 'active' : ''} onClick={() => setMode('navigation')}>
+              Navigatie
+            </button>
+          </nav>
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Wissel naar lichte modus' : 'Wissel naar donkere modus'}
+            title={theme === 'dark' ? 'Lichte modus' : 'Donkere modus'}
+          >
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
-          <button className={mode === 'navigation' ? 'active' : ''} onClick={() => setMode('navigation')}>
-            Navigatie
-          </button>
-        </nav>
+        </div>
       </header>
 
       <main className="stage">
@@ -75,6 +103,7 @@ export default function App() {
             egoGraph={egoGraph}
             focusId={focusId}
             branches={branches}
+            theme={theme}
             onFocus={setFocus}
           />
         )}
