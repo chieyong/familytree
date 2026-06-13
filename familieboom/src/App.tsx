@@ -80,7 +80,7 @@ export default function App() {
               Tableau
             </button>
             <button className={mode === 'navigation' ? 'active' : ''} onClick={() => setMode('navigation')}>
-              Navigatie
+              Explorer
             </button>
           </nav>
           <button
