@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { select } from 'd3-selection';
 import 'd3-transition';
@@ -177,8 +177,43 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
   const showArtLabels = !isNav && view.k >= LABEL_ZOOM;
   const thin = (w: number) => w / Math.sqrt(view.k);
 
+  // Selectie via dichtstbijzijnde node i.p.v. overlappende tikvlakken: in een
+  // dichte tableau (royals) wint zo de node onder je vinger, niet de bovenste
+  // in DOM-volgorde. Eén handler op het canvas, werkt bij elke zoom/dichtheid.
+  const contentRef = useRef<SVGGElement>(null);
+  const handleCanvasClick = (event: MouseEvent<SVGSVGElement>) => {
+    const g = contentRef.current;
+    const ctm = g?.getScreenCTM();
+    if (!g || !ctm) return;
+    const local = new DOMPoint(event.clientX, event.clientY).matrixTransform(ctm.inverse());
+    let bestId: PersonID | null = null;
+    let bestDist = Infinity;
+    let bestR = 0;
+    for (const node of art.nodes) {
+      const navNode = nav?.nodes.get(node.person.id);
+      if (isNav && !navNode) continue; // verborgen buiten de ego-kring
+      const ax = isNav && navNode ? navNode.x : node.x;
+      const ay = isNav && navNode ? navNode.y : node.y;
+      const dist = Math.hypot(local.x - ax, local.y - ay);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestId = node.person.id;
+        bestR = isNav && navNode ? navNode.r : node.r;
+      }
+    }
+    if (bestId === null) return;
+    // Afstand naar schermpixels; ruim, maar genoeg om lege klikken te negeren.
+    const pxPerUnit = screenScale * view.k;
+    if (bestDist * pxPerUnit <= Math.max(30, bestR * pxPerUnit + 12)) onFocus(bestId);
+  };
+
   return (
-    <svg ref={svgRef} className="viz" viewBox={`${minX} ${minY} ${width} ${height}`}>
+    <svg
+      ref={svgRef}
+      className="viz"
+      viewBox={`${minX} ${minY} ${width} ${height}`}
+      onClick={handleCanvasClick}
+    >
       <defs>
         <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur stdDeviation="3.5" result="blur" />
@@ -189,7 +224,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
         </filter>
       </defs>
 
-      <g transform={view.toString()}>
+      <g ref={contentRef} transform={view.toString()}>
         {/* Tijdas + levenslijnen: alleen in het kunstwerk */}
         <motion.g
           animate={{ opacity: isNav ? 0 : 1 }}
@@ -321,14 +356,8 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
               }}
               transition={spring}
               className="art-node"
-              style={{ pointerEvents: hidden ? 'none' : undefined }}
-              onClick={() => onFocus(id)}
+              style={{ pointerEvents: 'none' }}
             >
-              {/* Onzichtbaar tikvlak: minimaal ~22 schermpixels, wat zoom of canvasmaat ook is. */}
-              <circle
-                r={Math.max(active.r + 4, 22 / (screenScale * view.k))}
-                fill="transparent"
-              />
               <motion.g
                 {...(intro && !isNav
                   ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { delay: introDelayFor(id), duration: 0.8 } }
