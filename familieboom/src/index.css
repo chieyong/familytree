@@ -347,6 +347,89 @@ body {
   background: var(--surface-hover);
 }
 
+.add-relative-bar {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.add-rel-btn {
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  color: var(--accent);
+  font: 600 0.7rem var(--font-ui);
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.add-rel-btn:hover {
+  background: var(--surface-hover);
+}
+
+.add-relative-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  width: 240px;
+}
+
+.add-rel-title {
+  font-size: 0.72rem;
+  color: var(--ink-dim);
+  text-align: center;
+}
+
+.add-relative-form input,
+.add-relative-form select {
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg);
+  color: var(--ink);
+  font: 0.78rem var(--font-ui);
+}
+
+.add-rel-row {
+  display: flex;
+  gap: 6px;
+}
+
+.add-rel-row > * {
+  flex: 1;
+}
+
+.add-rel-year {
+  max-width: 90px;
+}
+
+.add-relative-form button[type='submit'] {
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 0.78rem var(--font-ui);
+  border-radius: 8px;
+  padding: 7px 9px;
+  cursor: pointer;
+}
+
+.add-rel-cancel {
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  color: var(--ink-dim);
+  font: 600 0.78rem var(--font-ui);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.add-rel-error {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #c9705d;
+  text-align: center;
+}
+
 .person-card strong {
   font-family: var(--font-display);
   font-weight: 500;

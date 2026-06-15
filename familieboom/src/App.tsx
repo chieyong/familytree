@@ -7,6 +7,7 @@ import { demoFamily } from './data/fixtures/demoFamily';
 import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
+import { AddRelative } from './ui/AddRelative';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -34,7 +35,7 @@ function MoonIcon() {
 }
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, activeFamily, setMode, setFocus, setIk, toggleTheme } =
+  const { mode, dataset, focusId, ikId, theme, activeFamily, dataVersion, setMode, setFocus, setIk, toggleTheme } =
     useAppStore();
 
   // Enige plek waar de concrete datalaag gekozen wordt. Een ingelogde "actieve
@@ -51,7 +52,7 @@ export default function App() {
 
   useEffect(() => {
     repository.getFullGraph().then(setFullGraph);
-  }, [repository]);
+  }, [repository, dataVersion]);
 
   useEffect(() => {
     // Depth 2 is de norm; bij zeer vertakte families (royals) wordt dat te
@@ -63,7 +64,7 @@ export default function App() {
         repository.getEgoGraph(focusId, 1).then(setEgoGraph);
       }
     });
-  }, [repository, focusId]);
+  }, [repository, focusId, dataVersion]);
 
   const focusPerson = fullGraph?.persons.find((person) => person.id === focusId);
   const defaultEgo = activeFamily ? activeFamily.ego : DATASET_EGO[dataset];
@@ -149,6 +150,13 @@ export default function App() {
                 </button>
               )}
             </div>
+          )}
+          {activeFamily && (
+            <AddRelative
+              familyId={activeFamily.id}
+              anchorId={focusId}
+              anchorName={focusPerson.givenNames[0] ?? 'deze persoon'}
+            />
           )}
         </footer>
       )}

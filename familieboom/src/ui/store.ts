@@ -54,6 +54,8 @@ interface AppState {
   theme: ThemeName;
   user: SessionUser | null;
   activeFamily: ActiveFamily | null;
+  /** Verhoogt na een mutatie zodat de graaf opnieuw geladen wordt. */
+  dataVersion: number;
   setMode: (mode: ViewMode) => void;
   setDataset: (dataset: DatasetId) => void;
   setFocus: (id: PersonID) => void;
@@ -61,6 +63,7 @@ interface AppState {
   toggleTheme: () => void;
   setUser: (user: SessionUser | null) => void;
   setActiveFamily: (family: ActiveFamily | null) => void;
+  bumpData: () => void;
 }
 
 const initialMode: ViewMode = params.get('view') === 'navigation' ? 'navigation' : 'artwork';
@@ -92,6 +95,7 @@ export const useAppStore = create<AppState>((set) => ({
   theme: startTheme,
   user: null,
   activeFamily: null,
+  dataVersion: 0,
   setMode: (mode) => set({ mode }),
   setDataset: (dataset) =>
     set({ dataset, activeFamily: null, focusId: DATASET_EGO[dataset], ikId: DATASET_EGO[dataset] }),
@@ -107,4 +111,5 @@ export const useAppStore = create<AppState>((set) => ({
   setUser: (user) => set({ user }),
   setActiveFamily: (family) =>
     set(family ? { activeFamily: family, focusId: family.ego, ikId: family.ego } : { activeFamily: null }),
+  bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 }));
