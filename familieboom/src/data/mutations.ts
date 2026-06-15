@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import type { ParentRole, UnionEndReason, UnionType } from './types';
 
 export type RelationKind = 'parent' | 'partner' | 'child';
 
@@ -91,5 +92,45 @@ export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
 export async function deletePerson(id: string): Promise<void> {
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('persons').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ── Relaties bewerken/ontkoppelen (RLS: beheer over ≥1 eindpunt) ───────────
+
+export async function setUnionType(id: string, type: UnionType): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.from('unions').update({ type }).eq('id', id);
+  if (error) throw error;
+}
+
+/** Markeert een verbintenis als beëindigd (reden + jaar), of weer lopend (null). */
+export async function setUnionEnd(
+  id: string,
+  reason: UnionEndReason | null,
+  year?: number,
+): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const fields = reason
+    ? { end_reason: reason, end_year: year ?? null }
+    : { end_reason: null, end_year: null, end_month: null, end_day: null };
+  const { error } = await supabase.from('unions').update(fields).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteUnion(id: string): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.from('unions').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function setParentRole(id: string, role: ParentRole): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.from('parent_links').update({ role }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteParentLink(id: string): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.from('parent_links').delete().eq('id', id);
   if (error) throw error;
 }

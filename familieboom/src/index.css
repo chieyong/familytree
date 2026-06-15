@@ -583,6 +583,64 @@ body {
   background: rgba(201, 112, 93, 0.12);
 }
 
+.relations-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+  width: 270px;
+}
+
+.rel-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rel-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 0.74rem var(--font-ui);
+}
+
+.rel-name em {
+  color: var(--ink-dim);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.66rem;
+}
+
+.relations-editor select {
+  border: 1px solid var(--surface-border);
+  background: var(--bg);
+  color: var(--ink);
+  font: 0.68rem var(--font-ui);
+  border-radius: 6px;
+  padding: 3px 4px;
+}
+
+.rel-year {
+  width: 48px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg);
+  color: var(--ink);
+  font: 0.68rem var(--font-ui);
+  border-radius: 6px;
+  padding: 3px 4px;
+}
+
+.rel-unlink {
+  border: 0;
+  background: transparent;
+  color: #c9705d;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
 .person-card strong {
   font-family: var(--font-display);
   font-weight: 500;

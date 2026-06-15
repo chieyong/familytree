@@ -10,6 +10,7 @@ import { describeRelation } from './domain/relationNaming';
 import { acceptInvite } from './data/invites';
 import { AddRelative } from './ui/AddRelative';
 import { EditPerson } from './ui/EditPerson';
+import { RelationsEditor } from './ui/RelationsEditor';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -203,6 +204,7 @@ export default function App() {
                 anchorName={focusPerson.givenNames[0] ?? 'deze persoon'}
                 candidates={fullGraph?.persons ?? []}
               />
+              <RelationsEditor person={focusPerson} graph={fullGraph} />
               <EditPerson person={focusPerson} egoId={activeFamily.ego} />
             </div>
           )}
