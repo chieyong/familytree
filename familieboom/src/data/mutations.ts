@@ -29,3 +29,36 @@ export async function addRelative(
   if (error) throw error;
   return (data as { personId: string }).personId;
 }
+
+export interface PersonEdit {
+  given: string;
+  familyName?: string;
+  sex?: 'm' | 'f' | 'x';
+  birthYear?: number;
+  deathYear?: number;
+  visibility: 'public' | 'family' | 'private';
+}
+
+/** Wijzigt een persoon (RLS: beheerder/owner, of jezelf strenger zetten). */
+export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase
+    .from('persons')
+    .update({
+      given_names: [e.given],
+      family_name: e.familyName || null,
+      sex: e.sex ?? null,
+      birth_year: e.birthYear ?? null,
+      death_year: e.deathYear ?? null,
+      visibility: e.visibility,
+    })
+    .eq('id', id);
+  if (error) throw error;
+}
+
+/** Verwijdert een persoon; relaties vervallen via FK-cascade (RLS: beheerder/owner). */
+export async function deletePerson(id: string): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.from('persons').delete().eq('id', id);
+  if (error) throw error;
+}

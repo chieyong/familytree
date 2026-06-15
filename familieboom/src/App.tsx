@@ -8,6 +8,7 @@ import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { AddRelative } from './ui/AddRelative';
+import { EditPerson } from './ui/EditPerson';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -152,11 +153,14 @@ export default function App() {
             </div>
           )}
           {activeFamily && (
-            <AddRelative
-              familyId={activeFamily.id}
-              anchorId={focusId}
-              anchorName={focusPerson.givenNames[0] ?? 'deze persoon'}
-            />
+            <div className="person-actions">
+              <AddRelative
+                familyId={activeFamily.id}
+                anchorId={focusId}
+                anchorName={focusPerson.givenNames[0] ?? 'deze persoon'}
+              />
+              <EditPerson person={focusPerson} egoId={activeFamily.ego} />
+            </div>
           )}
         </footer>
       )}
