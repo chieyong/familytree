@@ -1,0 +1,73 @@
+import { useState } from 'react';
+import { useAuth } from './useAuth';
+
+/**
+ * Account-control in de topbar: inloggen (magic link / Google) of uitloggen.
+ * De demo blijft publiek; login ontsluit straks je eigen families.
+ */
+export function AuthBar() {
+  const { user, available, signInWithEmail, signInWithGoogle, signOut } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string>();
+
+  if (!available) return null; // geen client (fixtures-only deploy)
+
+  if (user) {
+    return (
+      <button className="auth-btn" onClick={() => signOut()} title="Uitloggen">
+        {user.email?.split('@')[0] ?? 'account'} · uitloggen
+      </button>
+    );
+  }
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(undefined);
+    const { error } = await signInWithEmail(email.trim());
+    if (error) setError(error.message);
+    else setSent(true);
+  };
+
+  return (
+    <>
+      <button className="auth-btn" onClick={() => setOpen(true)}>
+        Inloggen
+      </button>
+      {open && (
+        <div className="auth-overlay" onClick={() => setOpen(false)}>
+          <div className="auth-card" onClick={(e) => e.stopPropagation()}>
+            <h2>Inloggen</h2>
+            {sent ? (
+              <p className="auth-note">
+                Check je e-mail ({email}) voor de inloglink.
+              </p>
+            ) : (
+              <>
+                <button className="auth-google" onClick={() => signInWithGoogle()}>
+                  Inloggen met Google
+                </button>
+                <div className="auth-or">of</div>
+                <form onSubmit={submit}>
+                  <input
+                    type="email"
+                    required
+                    placeholder="je@email.nl"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <button type="submit">Stuur magische link</button>
+                </form>
+                {error && <p className="auth-error">{error}</p>}
+              </>
+            )}
+            <button className="auth-close" onClick={() => setOpen(false)}>
+              sluiten
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
