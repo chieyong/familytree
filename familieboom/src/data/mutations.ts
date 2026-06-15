@@ -30,6 +30,37 @@ export async function addRelative(
   return (data as { personId: string }).personId;
 }
 
+/** Koppelt twee bestaande personen (RLS: beheer over ≥1 eindpunt). */
+export async function linkRelative(
+  familyId: string,
+  relation: RelationKind,
+  anchorId: string,
+  otherId: string,
+): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  if (relation === 'partner') {
+    const { error } = await supabase.from('unions').insert({
+      family_id: familyId,
+      partner_a: anchorId,
+      partner_b: otherId,
+      type: 'marriage',
+      existence_visibility: 'family',
+      detail_visibility: 'family',
+    });
+    if (error) throw error;
+    return;
+  }
+  const [parent, child] = relation === 'parent' ? [otherId, anchorId] : [anchorId, otherId];
+  const { error } = await supabase.from('parent_links').insert({
+    family_id: familyId,
+    parent_id: parent,
+    child_id: child,
+    existence_visibility: 'family',
+    detail_visibility: 'family',
+  });
+  if (error) throw error;
+}
+
 export interface PersonEdit {
   given: string;
   familyName?: string;

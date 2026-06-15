@@ -37,6 +37,8 @@ export interface Person {
   visibility: Visibility;
   fieldVisibility?: Record<string, Visibility>;
   meta?: { wikidataId?: string; notes?: string };
+  /** Stub uit de datalaag: afgeschermde persoon, render als silhouet. */
+  hidden?: boolean;
 }
 
 export type UnionType = 'marriage' | 'registered' | 'cohabitation' | 'relationship';

@@ -158,6 +158,7 @@ export default function App() {
                 familyId={activeFamily.id}
                 anchorId={focusId}
                 anchorName={focusPerson.givenNames[0] ?? 'deze persoon'}
+                candidates={fullGraph?.persons ?? []}
               />
               <EditPerson person={focusPerson} egoId={activeFamily.ego} />
             </div>
