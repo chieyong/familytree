@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FamilyGraph } from './data/types';
 import { FixtureRepository } from './data/FixtureRepository';
+import { SupabaseRepository } from './data/SupabaseRepository';
 import type { FamilyRepository } from './data/FamilyRepository';
 import { demoFamily } from './data/fixtures/demoFamily';
 import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { FamilyCanvas } from './ui/FamilyCanvas';
-import { DATASET_EGO, useAppStore, type DatasetId } from './ui/store';
+import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
 import { lifespan, shortName } from './ui/theme';
 
 const habsburg = habsburgJson as unknown as FamilyGraph;
@@ -34,9 +35,12 @@ export default function App() {
   const { mode, dataset, focusId, ikId, theme, setMode, setDataset, setFocus, setIk, toggleTheme } =
     useAppStore();
 
-  // Enige plek waar een concrete repository gekozen wordt; later: ApiRepository.
+  // Enige plek waar de concrete datalaag gekozen wordt: Supabase of fixtures.
   const repository: FamilyRepository = useMemo(
-    () => new FixtureRepository(graphByDataset[dataset]),
+    () =>
+      BACKEND === 'supabase'
+        ? new SupabaseRepository(DATASET_FAMILY_ID[dataset])
+        : new FixtureRepository(graphByDataset[dataset]),
     [dataset],
   );
 
