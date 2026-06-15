@@ -9,6 +9,7 @@ import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
+import { FamilyMenu } from './ui/FamilyMenu';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
 import { lifespan, shortName } from './ui/theme';
 
@@ -33,17 +34,17 @@ function MoonIcon() {
 }
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, setMode, setDataset, setFocus, setIk, toggleTheme } =
+  const { mode, dataset, focusId, ikId, theme, activeFamily, setMode, setFocus, setIk, toggleTheme } =
     useAppStore();
 
-  // Enige plek waar de concrete datalaag gekozen wordt: Supabase of fixtures.
-  const repository: FamilyRepository = useMemo(
-    () =>
-      BACKEND === 'supabase'
-        ? new SupabaseRepository(DATASET_FAMILY_ID[dataset])
-        : new FixtureRepository(graphByDataset[dataset]),
-    [dataset],
-  );
+  // Enige plek waar de concrete datalaag gekozen wordt. Een ingelogde "actieve
+  // familie" wint; anders een demo-preset (Supabase of fixtures).
+  const repository: FamilyRepository = useMemo(() => {
+    if (activeFamily) return new SupabaseRepository(activeFamily.id);
+    return BACKEND === 'supabase'
+      ? new SupabaseRepository(DATASET_FAMILY_ID[dataset])
+      : new FixtureRepository(graphByDataset[dataset]);
+  }, [dataset, activeFamily]);
 
   const [fullGraph, setFullGraph] = useState<FamilyGraph>();
   const [egoGraph, setEgoGraph] = useState<FamilyGraph>();
@@ -65,6 +66,7 @@ export default function App() {
   }, [repository, focusId]);
 
   const focusPerson = fullGraph?.persons.find((person) => person.id === focusId);
+  const defaultEgo = activeFamily ? activeFamily.ego : DATASET_EGO[dataset];
 
   // Relatie van de focuspersoon t.o.v. het gekozen perspectief ("ik").
   const ikPerson = fullGraph?.persons.find((person) => person.id === ikId);
@@ -141,8 +143,8 @@ export default function App() {
           {focusId === ikId && (
             <div className="person-card-relation">
               huidig perspectief
-              {ikId !== DATASET_EGO[dataset] && (
-                <button className="perspective-btn" onClick={() => setIk(DATASET_EGO[dataset])}>
+              {ikId !== defaultEgo && (
+                <button className="perspective-btn" onClick={() => setIk(defaultEgo)}>
                   terug naar standaard
                 </button>
               )}
@@ -151,15 +153,7 @@ export default function App() {
         </footer>
       )}
 
-      <select
-        className="dataset-select"
-        aria-label="Dataset"
-        value={dataset}
-        onChange={(event) => setDataset(event.target.value as DatasetId)}
-      >
-        <option value="demo">Demo-familie</option>
-        <option value="habsburg">Habsburg (Wikidata)</option>
-      </select>
+      <FamilyMenu />
 
       <details className="legend">
         <summary>Legenda</summary>

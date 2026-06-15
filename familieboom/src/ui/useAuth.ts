@@ -1,30 +1,28 @@
-import { useEffect, useState } from 'react';
-import type { User } from '@supabase/supabase-js';
+import { useEffect } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../data/supabaseClient';
+import { useAppStore, type SessionUser } from './store';
+
+const toUser = (session: Session | null): SessionUser | null =>
+  session?.user ? { id: session.user.id, email: session.user.email } : null;
 
 /**
- * Auth-sessie rond Supabase. Provider-onafhankelijk: magic link werkt meteen,
- * Google komt erbij zodra de OAuth-provider in het dashboard is geconfigureerd.
- * `available` is false als er geen client is (bv. de fixtures-only deploy).
+ * Auth-sessie rond Supabase, gesynchroniseerd naar de store (één bron van
+ * waarheid voor `user`). Magic link werkt meteen; Google zodra de provider
+ * geconfigureerd is. `available` is false zonder client (fixtures-only deploy).
  */
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [ready, setReady] = useState(false);
+  const user = useAppStore((s) => s.user);
+  const setUser = useAppStore((s) => s.setUser);
 
   useEffect(() => {
-    if (!supabase) {
-      setReady(true);
-      return;
-    }
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      setReady(true);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    if (!supabase) return;
+    supabase.auth.getSession().then(({ data }) => setUser(toUser(data.session)));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) =>
+      setUser(toUser(session)),
+    );
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [setUser]);
 
   const signInWithEmail = async (email: string) => {
     if (!supabase) return { error: new Error('Geen Supabase-client.') };
@@ -46,5 +44,5 @@ export function useAuth() {
     await supabase?.auth.signOut();
   };
 
-  return { user, ready, available: !!supabase, signInWithEmail, signInWithGoogle, signOut };
+  return { user, available: !!supabase, signInWithEmail, signInWithGoogle, signOut };
 }

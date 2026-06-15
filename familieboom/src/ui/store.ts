@@ -33,6 +33,18 @@ const EGO_SUPABASE: Record<DatasetId, PersonID> = {
 export const DATASET_EGO: Record<DatasetId, PersonID> =
   BACKEND === 'supabase' ? EGO_SUPABASE : EGO_FIXTURES;
 
+export interface SessionUser {
+  id: string;
+  email?: string;
+}
+
+/** Een echte (ingelogde) familie die de gebruiker bekijkt, los van de demo-presets. */
+export interface ActiveFamily {
+  id: string;
+  ego: PersonID;
+  label: string;
+}
+
 interface AppState {
   mode: ViewMode;
   dataset: DatasetId;
@@ -40,11 +52,15 @@ interface AppState {
   /** De "ik": vanuit wiens perspectief relaties benoemd worden. Default: de gebruiker van de dataset. */
   ikId: PersonID;
   theme: ThemeName;
+  user: SessionUser | null;
+  activeFamily: ActiveFamily | null;
   setMode: (mode: ViewMode) => void;
   setDataset: (dataset: DatasetId) => void;
   setFocus: (id: PersonID) => void;
   setIk: (id: PersonID) => void;
   toggleTheme: () => void;
+  setUser: (user: SessionUser | null) => void;
+  setActiveFamily: (family: ActiveFamily | null) => void;
 }
 
 const initialMode: ViewMode = params.get('view') === 'navigation' ? 'navigation' : 'artwork';
@@ -74,9 +90,11 @@ export const useAppStore = create<AppState>((set) => ({
   focusId: params.get('focus') ?? DATASET_EGO[initialDataset],
   ikId: params.get('ik') ?? DATASET_EGO[initialDataset],
   theme: startTheme,
+  user: null,
+  activeFamily: null,
   setMode: (mode) => set({ mode }),
   setDataset: (dataset) =>
-    set({ dataset, focusId: DATASET_EGO[dataset], ikId: DATASET_EGO[dataset] }),
+    set({ dataset, activeFamily: null, focusId: DATASET_EGO[dataset], ikId: DATASET_EGO[dataset] }),
   setFocus: (focusId) => set({ focusId }),
   setIk: (ikId) => set({ ikId }),
   toggleTheme: () =>
@@ -86,4 +104,7 @@ export const useAppStore = create<AppState>((set) => ({
       applyTheme(theme);
       return { theme };
     }),
+  setUser: (user) => set({ user }),
+  setActiveFamily: (family) =>
+    set(family ? { activeFamily: family, focusId: family.ego, ikId: family.ego } : { activeFamily: null }),
 }));
