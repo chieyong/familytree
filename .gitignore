@@ -2,3 +2,5 @@
 familieboom/node_modules/
 familieboom/dist/
 *.tsbuildinfo
+familieboom/.env.local
+familieboom/.env*.local
