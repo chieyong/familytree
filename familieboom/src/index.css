@@ -145,6 +145,86 @@ body {
   border-color: var(--ink-dim);
 }
 
+.share-menu {
+  position: relative;
+}
+
+.share-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--surface-border);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.share-link-btn {
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  color: var(--accent);
+  font: 600 0.78rem var(--font-ui);
+  padding: 8px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.share-link {
+  font: 0.7rem var(--mono, monospace);
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg);
+  color: var(--ink-dim);
+}
+
+.share-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font: 600 0.78rem var(--font-ui);
+  padding: 5px 4px;
+}
+
+.share-approve {
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 0.68rem var(--font-ui);
+  padding: 5px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.invite-banner {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  max-width: min(92vw, 460px);
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 0.8rem/1.4 var(--font-ui);
+  padding: 10px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  text-align: left;
+}
+
+.invite-dismiss {
+  color: var(--ink-dim);
+  margin-left: 6px;
+}
+
 .auth-overlay {
   position: fixed;
   inset: 0;

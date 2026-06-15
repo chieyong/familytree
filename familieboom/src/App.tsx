@@ -7,11 +7,13 @@ import { demoFamily } from './data/fixtures/demoFamily';
 import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
+import { acceptInvite } from './data/invites';
 import { AddRelative } from './ui/AddRelative';
 import { EditPerson } from './ui/EditPerson';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
+import { ShareFamily } from './ui/ShareFamily';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
 import { lifespan, shortName } from './ui/theme';
 
@@ -36,8 +38,32 @@ function MoonIcon() {
 }
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, activeFamily, dataVersion, setMode, setFocus, setIk, toggleTheme } =
+  const { mode, dataset, focusId, ikId, theme, activeFamily, dataVersion, user, setMode, setFocus, setIk, toggleTheme } =
     useAppStore();
+
+  // Uitnodiging accepteren: ?invite=<token> → pending lid zodra ingelogd.
+  const [inviteToken, setInviteToken] = useState(() =>
+    new URLSearchParams(window.location.search).get('invite'),
+  );
+  const [inviteMsg, setInviteMsg] = useState<string>();
+  useEffect(() => {
+    if (!inviteToken || !user) return;
+    acceptInvite(inviteToken)
+      .then((r) => {
+        setInviteMsg(
+          r.status === 'active'
+            ? `Je bent nu lid van ${r.familyName}. Kies 'm in het menu rechtsonder.`
+            : `Verzoek voor ${r.familyName} verstuurd — wacht op goedkeuring door de beheerder.`,
+        );
+      })
+      .catch((err) => setInviteMsg(err instanceof Error ? err.message : 'Uitnodiging mislukt'))
+      .finally(() => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('invite');
+        window.history.replaceState({}, '', url.toString());
+        setInviteToken(null);
+      });
+  }, [inviteToken, user]);
 
   // Enige plek waar de concrete datalaag gekozen wordt. Een ingelogde "actieve
   // familie" wint; anders een demo-preset (Supabase of fixtures).
@@ -66,6 +92,16 @@ export default function App() {
       }
     });
   }, [repository, focusId, dataVersion]);
+
+  // Vangnet: zit de focus/ik niet in de geladen graaf (bv. een uitgenodigde
+  // kijker zonder eigen knooppunt), kies dan de eerste persoon.
+  useEffect(() => {
+    if (!fullGraph || fullGraph.persons.length === 0) return;
+    const has = (id: string) => fullGraph.persons.some((p) => p.id === id);
+    if (!has(focusId)) setFocus(fullGraph.persons[0].id);
+    if (!has(ikId)) setIk(fullGraph.persons[0].id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fullGraph]);
 
   const focusPerson = fullGraph?.persons.find((person) => person.id === focusId);
   const defaultEgo = activeFamily ? activeFamily.ego : DATASET_EGO[dataset];
@@ -101,8 +137,15 @@ export default function App() {
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
           <AuthBar />
+          <ShareFamily />
         </div>
       </header>
+
+      {inviteMsg && (
+        <button className="invite-banner" onClick={() => setInviteMsg(undefined)}>
+          {inviteMsg} <span className="invite-dismiss">×</span>
+        </button>
+      )}
 
       <main className="stage">
         {fullGraph && (

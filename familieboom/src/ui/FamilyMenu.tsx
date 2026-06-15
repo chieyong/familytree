@@ -34,8 +34,9 @@ export function FamilyMenu() {
   };
 
   const chooseFamily = (f: (typeof families)[number]) => {
-    if (!f.selfPersonId) return; // zonder eigen knooppunt geen ego
-    setActiveFamily({ id: f.id, ego: f.selfPersonId, label: f.name });
+    // Zonder eigen knooppunt (uitgenodigde kijker) kiest de app na laden de
+    // eerste persoon als startpunt.
+    setActiveFamily({ id: f.id, ego: f.selfPersonId ?? '', label: f.name });
     setOpen(false);
   };
 
