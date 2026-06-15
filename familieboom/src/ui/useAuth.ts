@@ -24,11 +24,15 @@ export function useAuth() {
     return () => sub.subscription.unsubscribe();
   }, [setUser]);
 
+  // Volledige huidige URL minus hash → behoudt o.a. ?invite=<token> door de
+  // login-redirect heen, zodat de uitnodiging na inloggen verwerkt wordt.
+  const redirectUrl = () => window.location.href.split('#')[0];
+
   const signInWithEmail = async (email: string) => {
     if (!supabase) return { error: new Error('Geen Supabase-client.') };
     return supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: redirectUrl() },
     });
   };
 
@@ -36,7 +40,7 @@ export function useAuth() {
     if (!supabase) return;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: redirectUrl() },
     });
   };
 
