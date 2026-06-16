@@ -9,6 +9,7 @@ import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { acceptInvite } from './data/invites';
 import { PersonPanel } from './ui/PersonPanel';
+import { PrivacyInfo } from './ui/PrivacyInfo';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -136,6 +137,7 @@ export default function App() {
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
+          <PrivacyInfo />
           <AuthBar />
           <ShareFamily />
         </div>
