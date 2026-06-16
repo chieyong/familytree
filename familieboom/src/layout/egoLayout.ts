@@ -73,33 +73,47 @@ export function egoLayout(
   // aangetrouwden zonder eigen voorouders (bijv. een partner van een kind)
   // naast hun partner landen in plaats van op een ankerloze fallback.
   const relLevels = [...rows.keys()].filter((rel) => rel !== 0).sort((a, b) => Math.abs(a) - Math.abs(b));
+  const avg = (xs: number[]) => xs.reduce((s, v) => s + v, 0) / xs.length;
   for (const rel of relLevels) {
     const members = rows.get(rel)!;
     for (let pass = 0; pass < 2; pass++) {
-      const desired = new Map<PersonID, number>();
+      const orderKey = new Map<PersonID, number>(); // bepaalt de volgorde
+      const desired = new Map<PersonID, number>(); // bepaalt de fijne x-plaatsing
       for (const id of members) {
-        const anchors: number[] = [];
+        const parentXs: number[] = [];
         for (const link of kinship.parentLinksOf(id)) {
-          const anchorX = x.get(link.parent);
-          if (anchorX !== undefined) anchors.push(anchorX);
+          const ax = x.get(link.parent);
+          if (ax !== undefined) parentXs.push(ax);
         }
+        const childXs: number[] = [];
         for (const link of kinship.childLinksOf(id)) {
-          const anchorX = x.get(link.child);
-          if (anchorX !== undefined) anchors.push(anchorX);
+          const ax = x.get(link.child);
+          if (ax !== undefined) childXs.push(ax);
         }
+        const partnerXs: number[] = [];
         for (const union of kinship.unionsOf(id)) {
           const partner = union.partners[0] === id ? union.partners[1] : union.partners[0];
-          const anchorX = x.get(partner);
-          if (anchorX !== undefined) anchors.push(anchorX + 12);
+          const ax = x.get(partner);
+          if (ax !== undefined) partnerXs.push(ax + 12);
         }
-        desired.set(
+        const branchFallback = (branches.get(id) ?? 0) * COL_WIDTH * 2;
+        // Volgorde primair op ouder-positie: siblings van hetzelfde paar delen
+        // die exact, zodat partner/eigen kinderen de geboortejaar-volgorde niet
+        // verstoren. Pas dan kind-/partner-anker, dan tak.
+        orderKey.set(
           id,
-          anchors.length > 0
-            ? anchors.reduce((s, v) => s + v, 0) / anchors.length
-            : (branches.get(id) ?? 0) * COL_WIDTH * 2,
+          parentXs.length ? avg(parentXs)
+            : childXs.length ? avg(childXs)
+              : partnerXs.length ? avg(partnerXs)
+                : branchFallback,
         );
+        // Plaatsing weegt álle ankers mee (partner-pull houdt koppels dichtbij).
+        const all = [...parentXs, ...childXs, ...partnerXs];
+        desired.set(id, all.length ? avg(all) : branchFallback);
       }
-      members.sort((a, b) => (desired.get(a) ?? 0) - (desired.get(b) ?? 0) || compareBirth(kinship, a, b));
+      members.sort(
+        (a, b) => (orderKey.get(a) ?? 0) - (orderKey.get(b) ?? 0) || compareBirth(kinship, a, b),
+      );
       spaceOut(members, desired, gapFor(members.length)).forEach((finalX, i) => x.set(members[i], finalX));
     }
   }
