@@ -8,6 +8,7 @@ import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { acceptInvite } from './data/invites';
+import { supabase } from './data/supabaseClient';
 import { PersonPanel } from './ui/PersonPanel';
 import { PrivacyInfo } from './ui/PrivacyInfo';
 import { AuthBar } from './ui/AuthBar';
@@ -38,7 +39,7 @@ function MoonIcon() {
 }
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, activeFamily, dataVersion, user, setMode, setFocus, setIk, toggleTheme } =
+  const { mode, dataset, focusId, ikId, theme, activeFamily, dataVersion, user, setMode, setFocus, setIk, toggleTheme, setAuthOpen } =
     useAppStore();
 
   // Uitnodiging accepteren: ?invite=<token> → pending lid zodra ingelogd.
@@ -142,6 +143,15 @@ export default function App() {
           <ShareFamily />
         </div>
       </header>
+
+      {inviteToken && !user && supabase && (
+        <div className="invite-banner invite-prompt">
+          Je bent uitgenodigd voor een familieboom.
+          <button className="invite-login" onClick={() => setAuthOpen(true)}>
+            Inloggen om deel te nemen
+          </button>
+        </div>
+      )}
 
       {inviteMsg && (
         <button className="invite-banner" onClick={() => setInviteMsg(undefined)}>

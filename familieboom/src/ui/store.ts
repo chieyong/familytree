@@ -54,6 +54,8 @@ interface AppState {
   theme: ThemeName;
   user: SessionUser | null;
   activeFamily: ActiveFamily | null;
+  /** Login-modal open (gedeeld, zodat o.a. een uitnodiging 'm kan openen). */
+  authOpen: boolean;
   /** Verhoogt na een mutatie zodat de graaf opnieuw geladen wordt. */
   dataVersion: number;
   setMode: (mode: ViewMode) => void;
@@ -63,6 +65,7 @@ interface AppState {
   toggleTheme: () => void;
   setUser: (user: SessionUser | null) => void;
   setActiveFamily: (family: ActiveFamily | null) => void;
+  setAuthOpen: (open: boolean) => void;
   bumpData: () => void;
 }
 
@@ -96,6 +99,7 @@ export const useAppStore = create<AppState>((set) => ({
   theme: startTheme,
   user: null,
   activeFamily: null,
+  authOpen: false,
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
   setDataset: (dataset) =>
@@ -114,5 +118,6 @@ export const useAppStore = create<AppState>((set) => ({
     if (family) localStorage.setItem(LAST_FAMILY_KEY, family.id);
     set(family ? { activeFamily: family, focusId: family.ego, ikId: family.ego } : { activeFamily: null });
   },
+  setAuthOpen: (authOpen) => set({ authOpen }),
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 }));

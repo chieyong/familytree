@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from './useAuth';
+import { useAppStore } from './store';
 
 /**
  * Account-control in de topbar: inloggen (magic link / Google) of uitloggen.
@@ -7,7 +8,8 @@ import { useAuth } from './useAuth';
  */
 export function AuthBar() {
   const { user, available, signInWithEmail, signInWithGoogle, signOut } = useAuth();
-  const [open, setOpen] = useState(false);
+  const open = useAppStore((s) => s.authOpen);
+  const setOpen = useAppStore((s) => s.setAuthOpen);
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string>();

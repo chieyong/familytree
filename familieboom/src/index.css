@@ -305,6 +305,24 @@ body {
   margin-left: 6px;
 }
 
+.invite-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+}
+
+.invite-login {
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 0.78rem var(--font-ui);
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
 .auth-overlay {
   position: fixed;
   inset: 0;
