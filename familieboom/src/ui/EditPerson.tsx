@@ -20,6 +20,8 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const [open, setOpen] = useState(embedded ?? false);
   const [given, setGiven] = useState(person.givenNames[0] ?? '');
   const [familyName, setFamilyName] = useState(person.familyName ?? '');
+  const [familyNameZh, setFamilyNameZh] = useState(person.familyNameZh ?? '');
+  const [givenNameZh, setGivenNameZh] = useState(person.givenNameZh ?? '');
   const [sex, setSex] = useState<'m' | 'f' | 'x' | ''>(person.sex ?? '');
   const [birthYear, setBirthYear] = useState(String(person.birth?.date?.year ?? ''));
   const [deathYear, setDeathYear] = useState(String(person.death?.date?.year ?? ''));
@@ -35,6 +37,8 @@ export function EditPerson({ person, egoId, embedded }: Props) {
       await updatePerson(person.id, {
         given: given.trim(),
         familyName: familyName.trim() || undefined,
+        familyNameZh: familyNameZh.trim() || undefined,
+        givenNameZh: givenNameZh.trim() || undefined,
         sex: sex || undefined,
         birthYear: birthYear ? Number(birthYear) : undefined,
         deathYear: deathYear ? Number(deathYear) : undefined,
@@ -79,6 +83,12 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         onChange={(e) => setGiven(e.target.value)} />
       <input placeholder="Achternaam" value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
+      <div className="add-rel-row">
+        <input placeholder="Chinese achternaam 姓" value={familyNameZh}
+          onChange={(e) => setFamilyNameZh(e.target.value)} />
+        <input placeholder="Chinese voornaam 名" value={givenNameZh}
+          onChange={(e) => setGivenNameZh(e.target.value)} />
+      </div>
       <div className="add-rel-row">
         <select value={sex} onChange={(e) => setSex(e.target.value as typeof sex)}>
           <option value="">geslacht</option>

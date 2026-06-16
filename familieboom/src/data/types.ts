@@ -30,6 +30,9 @@ export interface Person {
   givenNames: string[];
   familyName?: string;
   displayName?: string;
+  /** Chinese naam in karakters, gesplitst (achternaam-eerst bij weergave). */
+  familyNameZh?: string;
+  givenNameZh?: string;
   sex?: 'm' | 'f' | 'x';
   birth?: { date?: FuzzyDate; place?: Place };
   death?: { date?: FuzzyDate; place?: Place };

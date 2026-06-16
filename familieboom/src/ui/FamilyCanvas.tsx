@@ -9,7 +9,7 @@ import { egoLayout } from '../layout/egoLayout';
 import { affinePath } from '../layout/transform';
 import type { LayoutLink, LayoutNode } from '../layout/types';
 import type { ViewMode } from './store';
-import { branchColor, lifespan, linkStyle, PALETTES, shortName, type ThemeName } from './theme';
+import { branchColor, chineseName, lifespan, linkStyle, PALETTES, shortName, type ThemeName } from './theme';
 
 interface Props {
   mode: ViewMode;
@@ -407,8 +407,18 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
                   >
                     {truncate(shortName(artNode.person))}
                   </text>
+                  {chineseName(artNode.person) && (
+                    <text
+                      y={labelY + 13 * navK}
+                      textAnchor="middle"
+                      className="label-zh"
+                      style={{ fontSize: 12 * navK }}
+                    >
+                      {chineseName(artNode.person)}
+                    </text>
+                  )}
                   <text
-                    y={labelY + 12 * navK}
+                    y={labelY + (chineseName(artNode.person) ? 26 : 12) * navK}
                     textAnchor="middle"
                     className="label-years"
                     style={{ fontSize: 10 * navK }}

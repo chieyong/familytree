@@ -16,7 +16,7 @@ import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
 import { ShareFamily } from './ui/ShareFamily';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
-import { lifespan, shortName } from './ui/theme';
+import { chineseName, lifespan, shortName } from './ui/theme';
 
 const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
@@ -178,6 +178,7 @@ export default function App() {
         <footer className="person-card">
           <div className="person-card-main">
             <strong>{shortName(focusPerson)}</strong>
+            {chineseName(focusPerson) && <span className="zh-name">{chineseName(focusPerson)}</span>}
             <span>{lifespan(focusPerson)}</span>
             {focusPerson.birth?.place && <span>{focusPerson.birth.place.name}</span>}
             {activeFamily && (

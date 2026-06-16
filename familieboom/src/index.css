@@ -459,6 +459,17 @@ body {
   fill: var(--ink-dim);
 }
 
+.label-zh {
+  font-family: var(--font-display);
+  fill: var(--ink);
+}
+
+.zh-name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--ink) !important;
+}
+
 .nav-node .label-name {
   font-size: 14.5px;
 }
