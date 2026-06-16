@@ -36,19 +36,12 @@ export function egoLayout(
   // Drukke rijen (royals: 16 kinderen) krijgen een compactere kolombreedte.
   const gapFor = (count: number) => (count > 9 ? 76 : COL_WIDTH);
 
-  // Ego-rij: partners direct rechts (kort lijntje voor de huwelijksboog);
-  // siblings en overigen om-en-om links/rechts met de dichtste verwantschap
-  // het dichtstbij. Zo blijft de rij rond de ego in balans — een jongste van
-  // zestien stond anders helemaal aan het einde, met een half leeg scherm.
+  // Ego-rij, links→rechts: oudere siblings (op geboortejaar) · ego · partner(s) ·
+  // jongere siblings · overige (aangetrouwd, neven/nichten). De ego blijft op 0
+  // (gecentreerd); siblings staan op echte geboortejaar-volgorde.
   const egoRow = rows.get(0) ?? [];
   const egoGap = gapFor(egoRow.length);
-  const closeness = (id: PersonID): number => {
-    const sibling = kinship.siblingKind(egoId, id);
-    if (sibling === 'full') return 0;
-    if (sibling === 'half') return 1;
-    if (sibling === 'step') return 2;
-    return 3 + (branches.get(id) ?? 0); // overige (aangetrouwd, neven/nichten)
-  };
+  const birthOf = (id: PersonID): number => kinship.personById.get(id)?.birth?.date?.year ?? 0;
   const partnerIds = [
     ...new Set(
       kinship
@@ -58,15 +51,20 @@ export function egoLayout(
         .filter((id) => egoRow.includes(id)),
     ),
   ];
-  const rest = egoRow
-    .filter((id) => id !== egoId && !partnerIds.includes(id))
-    .sort((a, b) => closeness(a) - closeness(b) || compareBirth(kinship, a, b));
-  const rightSide = [...partnerIds];
-  const leftSide: PersonID[] = [];
-  for (const id of rest) (leftSide.length < rightSide.length ? leftSide : rightSide).push(id);
-  x.set(egoId, 0);
-  leftSide.forEach((id, i) => x.set(id, -(i + 1) * egoGap));
-  rightSide.forEach((id, i) => x.set(id, (i + 1) * egoGap));
+  const isPartner = (id: PersonID) => partnerIds.includes(id);
+  const siblings = egoRow.filter(
+    (id) => id !== egoId && !isPartner(id) && kinship.siblingKind(egoId, id) !== null,
+  );
+  const others = egoRow.filter(
+    (id) => id !== egoId && !isPartner(id) && kinship.siblingKind(egoId, id) === null,
+  );
+  const byBirth = (a: PersonID, b: PersonID) => birthOf(a) - birthOf(b);
+  const olderSibs = siblings.filter((id) => birthOf(id) <= birthOf(egoId)).sort(byBirth);
+  const youngerSibs = siblings.filter((id) => birthOf(id) > birthOf(egoId)).sort(byBirth);
+  others.sort(byBirth);
+  const seq = [...olderSibs, egoId, ...partnerIds, ...youngerSibs, ...others];
+  const egoIndex = seq.indexOf(egoId);
+  seq.forEach((id, i) => x.set(id, (i - egoIndex) * egoGap));
 
   // Overige rijen barycentrisch t.o.v. al geplaatste buren, van binnen naar
   // buiten. Twee passes per rij: in de tweede zijn rijgenoten geplaatst, zodat

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../data/supabaseClient';
-import { useAppStore, type DatasetId } from './store';
+import { LAST_FAMILY_KEY, useAppStore, type DatasetId } from './store';
 import { useFamilies } from './useFamilies';
 
 const PRESETS: { id: DatasetId; label: string }[] = [
@@ -16,6 +16,18 @@ export function FamilyMenu() {
   const setDataset = useAppStore((s) => s.setDataset);
   const setActiveFamily = useAppStore((s) => s.setActiveFamily);
   const { families, createFamily } = useFamilies();
+
+  // Open na inloggen de laatst geopende eigen boom i.p.v. de demo (één keer).
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restored.current || activeFamily || !user || families.length === 0) return;
+    const lastId = localStorage.getItem(LAST_FAMILY_KEY);
+    const f = lastId && families.find((x) => x.id === lastId);
+    if (f) {
+      restored.current = true;
+      setActiveFamily({ id: f.id, ego: f.selfPersonId ?? '', label: f.name });
+    }
+  }, [families, user, activeFamily, setActiveFamily]);
 
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);

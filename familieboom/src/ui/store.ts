@@ -70,6 +70,7 @@ const initialMode: ViewMode = params.get('view') === 'navigation' ? 'navigation'
 const initialDataset: DatasetId = params.get('data') === 'habsburg' ? 'habsburg' : 'demo';
 
 const THEME_KEY = 'familieboom-theme';
+export const LAST_FAMILY_KEY = 'familieboom-last-family';
 
 /** Volgorde: URL-param → opgeslagen voorkeur → systeemvoorkeur → donker. */
 function initialTheme(): ThemeName {
@@ -109,7 +110,9 @@ export const useAppStore = create<AppState>((set) => ({
       return { theme };
     }),
   setUser: (user) => set({ user }),
-  setActiveFamily: (family) =>
-    set(family ? { activeFamily: family, focusId: family.ego, ikId: family.ego } : { activeFamily: null }),
+  setActiveFamily: (family) => {
+    if (family) localStorage.setItem(LAST_FAMILY_KEY, family.id);
+    set(family ? { activeFamily: family, focusId: family.ego, ikId: family.ego } : { activeFamily: null });
+  },
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 }));
