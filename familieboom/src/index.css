@@ -492,19 +492,24 @@ body {
 }
 
 .perspective-btn {
-  margin-left: 10px;
-  border: 1px solid var(--surface-border);
+  margin-left: 8px;
+  border: 0;
   background: transparent;
-  color: var(--ink);
-  font: 600 0.68rem/1 var(--font-ui);
-  padding: 4px 9px;
-  border-radius: 999px;
+  color: var(--ink-dim);
+  font: 500 0.72rem/1 var(--font-ui);
+  padding: 2px 0;
   cursor: pointer;
   vertical-align: middle;
+  opacity: 0.75;
+  text-decoration: underline;
+  text-decoration-color: var(--surface-border);
+  text-underline-offset: 3px;
 }
 
 .perspective-btn:hover {
-  background: var(--surface-hover);
+  opacity: 1;
+  color: var(--ink);
+  text-decoration-color: currentColor;
 }
 
 .add-relative-bar {
