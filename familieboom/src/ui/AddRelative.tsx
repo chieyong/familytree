@@ -92,7 +92,8 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
   const matches = candidates
     .filter((p) => p.id !== anchorId && !p.hidden)
     .filter((p) => shortName(p).toLowerCase().includes(query.trim().toLowerCase()))
-    .slice(0, 8);
+    .sort((a, b) => shortName(a).localeCompare(shortName(b)))
+    .slice(0, 50);
 
   return (
     <div className="add-relative-form">
