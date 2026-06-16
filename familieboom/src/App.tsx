@@ -119,14 +119,14 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>Familieboom</h1>
+        <h1>Bloom</h1>
         <div className="topbar-right">
           <nav className="mode-toggle" aria-label="Weergave">
             <button className={mode === 'artwork' ? 'active' : ''} onClick={() => setMode('artwork')}>
               Tableau
             </button>
             <button className={mode === 'navigation' ? 'active' : ''} onClick={() => setMode('navigation')}>
-              Explorer
+              Tree
             </button>
           </nav>
           <button
@@ -198,8 +198,8 @@ export default function App() {
             </div>
           )}
           {activeFamily && (
-            <button className="add-rel-btn edit-toggle" onClick={() => setPanelOpen(true)}>
-              ✎ bewerken
+            <button className="edit-pencil" onClick={() => setPanelOpen(true)} title="Bewerken" aria-label="Bewerken">
+              ✎
             </button>
           )}
         </footer>

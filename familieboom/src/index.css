@@ -649,6 +649,26 @@ body {
   margin-top: 2px;
 }
 
+/* Subtiel potlood om het bewerk-paneel te openen */
+.edit-pencil {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.edit-pencil:hover {
+  opacity: 1;
+  color: var(--ink);
+}
+
 .delete-btn {
   border: 1px solid rgba(201, 112, 93, 0.5);
   background: transparent;

@@ -140,8 +140,10 @@ export class KinshipService {
   }
 
   /**
-   * Stamtak per persoon, voor data-gedreven kleur: kinderen erven de tak van
-   * hun naamgevende (eerste) ouder; aangetrouwden erven die van hun partner.
+   * Stamtak per persoon, voor data-gedreven kleur. Kinderen erven de tak van
+   * hun bloed-ouder (de ouder die zélf ouders in de boom heeft), zodat alle
+   * kinderen van één paar dezelfde kleur krijgen — onafhankelijk van de
+   * opslagvolgorde van de ouder-links. Aangetrouwden krijgen een eigen tak.
    */
   branches(): Map<PersonID, number> {
     const branch = new Map<PersonID, number>();
@@ -159,12 +161,19 @@ export class KinshipService {
       let changed = false;
       for (const person of this.graph.persons) {
         if (branch.has(person.id)) continue;
-        const namingParent = this.parentLinksOf(person.id)[0];
-        const inherited =
-          (namingParent ? branch.get(namingParent.parent) : undefined) ??
-          this.unionsOf(person.id)
-            .map((u) => branch.get(u.partners[0] === person.id ? u.partners[1] : u.partners[0]))
-            .find((b) => b !== undefined);
+        const parents = this.parentLinksOf(person.id).map((l) => l.parent);
+        // Voorkeur voor bloed-ouders (die zelf ouders hebben) boven aangetrouwde;
+        // bij meerdere de laagste (al bekende) tak → deterministisch, gelijk voor siblings.
+        const blood = parents.filter((p) => this.parentLinksOf(p).length > 0);
+        const pool = blood.length > 0 ? blood : parents;
+        let inherited: number | undefined;
+        for (const p of pool) {
+          const b = branch.get(p);
+          if (b !== undefined && (inherited === undefined || b < inherited)) inherited = b;
+        }
+        inherited ??= this.unionsOf(person.id)
+          .map((u) => branch.get(u.partners[0] === person.id ? u.partners[1] : u.partners[0]))
+          .find((b) => b !== undefined);
         if (inherited !== undefined) {
           branch.set(person.id, inherited);
           changed = true;
