@@ -354,7 +354,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
                 y: active.y,
                 opacity: hidden ? 0 : 1,
               }}
-              transition={spring}
+              transition={{ default: spring, opacity: { duration: 0.25, ease: 'easeOut' } }}
               className="art-node"
               style={{ pointerEvents: 'none' }}
             >

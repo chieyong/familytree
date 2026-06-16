@@ -654,19 +654,18 @@ body {
   margin-top: 2px;
 }
 
-/* Subtiel potlood om het bewerk-paneel te openen */
+/* Subtiel potlood om het bewerk-paneel te openen (inline, na de plaats) */
 .edit-pencil {
-  position: absolute;
-  top: 8px;
-  right: 10px;
   border: 0;
   background: transparent;
   color: var(--ink-dim);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   line-height: 1;
-  padding: 4px;
+  padding: 2px 4px;
+  margin-left: 2px;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.55;
+  align-self: center;
 }
 
 .edit-pencil:hover {

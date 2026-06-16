@@ -170,6 +170,11 @@ export default function App() {
             <strong>{shortName(focusPerson)}</strong>
             <span>{lifespan(focusPerson)}</span>
             {focusPerson.birth?.place && <span>{focusPerson.birth.place.name}</span>}
+            {activeFamily && (
+              <button className="edit-pencil" onClick={() => setPanelOpen(true)} title="Bewerken" aria-label="Bewerken">
+                ✎
+              </button>
+            )}
           </div>
           {relation && ikPerson && (
             <div className="person-card-relation">
@@ -196,11 +201,6 @@ export default function App() {
                 </button>
               )}
             </div>
-          )}
-          {activeFamily && (
-            <button className="edit-pencil" onClick={() => setPanelOpen(true)} title="Bewerken" aria-label="Bewerken">
-              ✎
-            </button>
           )}
         </footer>
       )}
