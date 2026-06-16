@@ -583,6 +583,68 @@ body {
   background: rgba(201, 112, 93, 0.12);
 }
 
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+}
+
+.person-panel {
+  width: min(92vw, 340px);
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--bg-raised);
+  border-left: 1px solid var(--surface-border);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-head strong {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.panel-close {
+  border: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panel-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+}
+
+.person-panel .add-relative-form,
+.person-panel .relations-editor {
+  width: 100%;
+  margin-top: 0;
+}
+
 .relations-editor {
   display: flex;
   flex-direction: column;

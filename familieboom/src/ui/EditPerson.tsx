@@ -7,15 +7,17 @@ interface Props {
   person: Person;
   /** De ego van de actieve familie; die mag je niet verwijderen (breekt "ik"). */
   egoId: string;
+  /** In een paneel: meteen open, geen toggle/annuleer. */
+  embedded?: boolean;
 }
 
 /** CRUD: bewerk of verwijder de focuspersoon (eigen boom). */
-export function EditPerson({ person, egoId }: Props) {
+export function EditPerson({ person, egoId, embedded }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
   const setFocus = useAppStore((s) => s.setFocus);
   const activeFamily = useAppStore((s) => s.activeFamily);
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(embedded ?? false);
   const [given, setGiven] = useState(person.givenNames[0] ?? '');
   const [familyName, setFamilyName] = useState(person.familyName ?? '');
   const [sex, setSex] = useState<'m' | 'f' | 'x' | ''>(person.sex ?? '');
@@ -39,7 +41,7 @@ export function EditPerson({ person, egoId }: Props) {
         visibility,
       });
       bumpData();
-      setOpen(false);
+      if (!embedded) setOpen(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Opslaan mislukt');
     } finally {
@@ -54,7 +56,7 @@ export function EditPerson({ person, egoId }: Props) {
     try {
       await deletePerson(person.id);
       bumpData();
-      setOpen(false);
+      if (!embedded) setOpen(false);
       if (activeFamily) setFocus(activeFamily.ego); // terug naar jezelf
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Verwijderen mislukt');
@@ -97,7 +99,9 @@ export function EditPerson({ person, egoId }: Props) {
       {error && <p className="add-rel-error">{error}</p>}
       <div className="add-rel-row">
         <button type="submit" disabled={busy}>{busy ? '…' : 'Opslaan'}</button>
-        <button type="button" className="add-rel-cancel" onClick={() => setOpen(false)}>annuleer</button>
+        {!embedded && (
+          <button type="button" className="add-rel-cancel" onClick={() => setOpen(false)}>annuleer</button>
+        )}
       </div>
       {person.id !== egoId && (
         <button type="button" className="delete-btn" onClick={remove} disabled={busy}>

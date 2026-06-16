@@ -96,8 +96,16 @@ function LinkRow({ link, otherName, word }: { link: ParentChildLink; otherName: 
 }
 
 /** CRUD: relaties van de focuspersoon bewerken/ontkoppelen (eigen boom). */
-export function RelationsEditor({ person, graph }: { person: Person; graph: FamilyGraph | undefined }) {
-  const [open, setOpen] = useState(false);
+export function RelationsEditor({
+  person,
+  graph,
+  embedded,
+}: {
+  person: Person;
+  graph: FamilyGraph | undefined;
+  embedded?: boolean;
+}) {
+  const [open, setOpen] = useState(embedded ?? false);
   if (!graph) return null;
 
   const name = (id: string) => {
@@ -133,7 +141,9 @@ export function RelationsEditor({ person, graph }: { person: Person; graph: Fami
         <LinkRow key={l.id} link={l} otherName={name(l.child)} word="kind" />
       ))}
       {total === 0 && <div className="family-empty">geen relaties</div>}
-      <button className="add-rel-cancel" onClick={() => setOpen(false)}>sluiten</button>
+      {!embedded && (
+        <button className="add-rel-cancel" onClick={() => setOpen(false)}>sluiten</button>
+      )}
     </div>
   );
 }

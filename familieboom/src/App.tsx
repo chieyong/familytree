@@ -8,9 +8,7 @@ import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { acceptInvite } from './data/invites';
-import { AddRelative } from './ui/AddRelative';
-import { EditPerson } from './ui/EditPerson';
-import { RelationsEditor } from './ui/RelationsEditor';
+import { PersonPanel } from './ui/PersonPanel';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -77,6 +75,7 @@ export default function App() {
 
   const [fullGraph, setFullGraph] = useState<FamilyGraph>();
   const [egoGraph, setEgoGraph] = useState<FamilyGraph>();
+  const [panelOpen, setPanelOpen] = useState(false);
 
   useEffect(() => {
     repository.getFullGraph().then(setFullGraph);
@@ -197,18 +196,22 @@ export default function App() {
             </div>
           )}
           {activeFamily && (
-            <div className="person-actions">
-              <AddRelative
-                familyId={activeFamily.id}
-                anchorId={focusId}
-                anchorName={focusPerson.givenNames[0] ?? 'deze persoon'}
-                candidates={fullGraph?.persons ?? []}
-              />
-              <RelationsEditor person={focusPerson} graph={fullGraph} />
-              <EditPerson person={focusPerson} egoId={activeFamily.ego} />
-            </div>
+            <button className="add-rel-btn edit-toggle" onClick={() => setPanelOpen(true)}>
+              ✎ bewerken
+            </button>
           )}
         </footer>
+      )}
+
+      {activeFamily && panelOpen && focusPerson && (
+        <PersonPanel
+          key={focusPerson.id}
+          person={focusPerson}
+          familyId={activeFamily.id}
+          egoId={activeFamily.ego}
+          graph={fullGraph}
+          onClose={() => setPanelOpen(false)}
+        />
       )}
 
       <FamilyMenu />
