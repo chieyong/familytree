@@ -74,61 +74,56 @@ export function egoLayout(
   const avg = (xs: number[]) => xs.reduce((s, v) => s + v, 0) / xs.length;
   for (const rel of relLevels) {
     const members = rows.get(rel)!;
-    const inRow = new Set(members);
+    const memberSet = new Set(members);
     for (let pass = 0; pass < 2; pass++) {
-      const parentXsOf = (id: PersonID): number[] =>
-        kinship
-          .parentLinksOf(id)
-          .map((l) => x.get(l.parent))
-          .filter((v): v is number => v !== undefined);
-      const partnersInRow = (id: PersonID): PersonID[] =>
-        kinship
-          .unionsOf(id)
-          .map((u) => (u.partners[0] === id ? u.partners[1] : u.partners[0]))
-          .filter((p) => inRow.has(p));
-
-      // Bloed-kinderen van dit niveau (met een geplaatste ouder), op
-      // ouder-positie dan geboortejaar — siblings van hetzelfde paar delen de
-      // ouder-positie, dus die staan zuiver op geboortejaar.
-      const childAnchor = new Map<PersonID, number>();
-      const children = members
-        .filter((id) => parentXsOf(id).length > 0)
-        .sort((a, b) => avg(parentXsOf(a)) - avg(parentXsOf(b)) || birthOf(a) - birthOf(b));
-      for (const c of children) childAnchor.set(c, avg(parentXsOf(c)));
-
-      // Sequentie: elk kind, direct gevolgd door zijn partner(s) — recursief,
-      // zodat een koppel altijd aaneengesloten staat (ook bij hertrouw-ketens).
-      const seq: PersonID[] = [];
-      const seen = new Set<PersonID>();
-      const emit = (id: PersonID) => {
-        if (seen.has(id)) return;
-        seen.add(id);
-        seq.push(id);
-        for (const p of partnersInRow(id)) emit(p);
+      // Koppel-eenheden: personen die binnen deze rij door een verbintenis
+      // verbonden zijn (incl. hertrouw-ketens) horen bij elkaar en blijven
+      // aaneengesloten staan.
+      const root = new Map<PersonID, PersonID>(members.map((m) => [m, m]));
+      const find = (id: PersonID): PersonID => {
+        let r = id;
+        while (root.get(r) !== r) r = root.get(r)!;
+        return r;
       };
-      for (const c of children) emit(c);
-      for (const m of members.filter((m) => !seen.has(m)).sort((a, b) => birthOf(a) - birthOf(b))) {
-        seq.push(m);
+      for (const u of kinship.graph.unions) {
+        if (memberSet.has(u.partners[0]) && memberSet.has(u.partners[1])) {
+          root.set(find(u.partners[0]), find(u.partners[1]));
+        }
+      }
+      const groups = new Map<PersonID, PersonID[]>();
+      for (const m of members) {
+        const r = find(m);
+        (groups.get(r) ?? groups.set(r, []).get(r)!).push(m);
       }
 
-      // Plaatsing: kind onder zijn ouders; partner bij het kind; anders eigen
-      // kinderen of tak. spaceOut houdt de sequentie-volgorde + minimale afstand.
+      const placedParents = (id: PersonID) =>
+        kinship.parentLinksOf(id).map((l) => x.get(l.parent)).filter((v): v is number => v !== undefined);
+      const placedChildren = (id: PersonID) =>
+        kinship.childLinksOf(id).map((l) => x.get(l.child)).filter((v): v is number => v !== undefined);
+
+      // Anker per koppel: bij voorkeur de ouders (siblings staan zo onder hun
+      // ouders, op geboortejaar), anders de kinderen (ouders staan boven hun
+      // kinderen — ook als maar één partner aan de kinderen gekoppeld is), anders tak.
+      const units = [...groups.values()].map((gm) => {
+        gm.sort((a, b) => birthOf(a) - birthOf(b));
+        const parentXs = gm.flatMap(placedParents);
+        const childXs = gm.flatMap(placedChildren);
+        const anchor = parentXs.length
+          ? avg(parentXs)
+          : childXs.length
+            ? avg(childXs)
+            : (branches.get(gm[0]) ?? 0) * COL_WIDTH * 2;
+        return { gm, anchor, birth: birthOf(gm[0]) };
+      });
+      units.sort((a, b) => a.anchor - b.anchor || a.birth - b.birth);
+
+      const seq: PersonID[] = [];
       const desired = new Map<PersonID, number>();
-      for (const id of seq) {
-        if (childAnchor.has(id)) {
-          desired.set(id, childAnchor.get(id)!);
-          continue;
+      for (const u of units) {
+        for (const m of u.gm) {
+          seq.push(m);
+          desired.set(m, u.anchor);
         }
-        const spouse = partnersInRow(id).find((p) => childAnchor.has(p));
-        if (spouse !== undefined) {
-          desired.set(id, childAnchor.get(spouse)!);
-          continue;
-        }
-        const childXs = kinship
-          .childLinksOf(id)
-          .map((l) => x.get(l.child))
-          .filter((v): v is number => v !== undefined);
-        desired.set(id, childXs.length ? avg(childXs) : (branches.get(id) ?? 0) * COL_WIDTH * 2);
       }
       spaceOut(seq, desired, gapFor(seq.length)).forEach((finalX, i) => x.set(seq[i], finalX));
     }
