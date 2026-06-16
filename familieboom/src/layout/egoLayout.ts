@@ -74,45 +74,63 @@ export function egoLayout(
   const avg = (xs: number[]) => xs.reduce((s, v) => s + v, 0) / xs.length;
   for (const rel of relLevels) {
     const members = rows.get(rel)!;
+    const inRow = new Set(members);
     for (let pass = 0; pass < 2; pass++) {
-      const orderKey = new Map<PersonID, number>(); // bepaalt de volgorde
-      const desired = new Map<PersonID, number>(); // bepaalt de fijne x-plaatsing
-      for (const id of members) {
-        const parentXs: number[] = [];
-        for (const link of kinship.parentLinksOf(id)) {
-          const ax = x.get(link.parent);
-          if (ax !== undefined) parentXs.push(ax);
-        }
-        const childXs: number[] = [];
-        for (const link of kinship.childLinksOf(id)) {
-          const ax = x.get(link.child);
-          if (ax !== undefined) childXs.push(ax);
-        }
-        const partnerXs: number[] = [];
-        for (const union of kinship.unionsOf(id)) {
-          const partner = union.partners[0] === id ? union.partners[1] : union.partners[0];
-          const ax = x.get(partner);
-          if (ax !== undefined) partnerXs.push(ax + 12);
-        }
-        const branchFallback = (branches.get(id) ?? 0) * COL_WIDTH * 2;
-        // Volgorde primair op ouder-positie: siblings van hetzelfde paar delen
-        // die exact, zodat partner/eigen kinderen de geboortejaar-volgorde niet
-        // verstoren. Pas dan kind-/partner-anker, dan tak.
-        orderKey.set(
-          id,
-          parentXs.length ? avg(parentXs)
-            : childXs.length ? avg(childXs)
-              : partnerXs.length ? avg(partnerXs)
-                : branchFallback,
-        );
-        // Plaatsing weegt álle ankers mee (partner-pull houdt koppels dichtbij).
-        const all = [...parentXs, ...childXs, ...partnerXs];
-        desired.set(id, all.length ? avg(all) : branchFallback);
+      const parentXsOf = (id: PersonID): number[] =>
+        kinship
+          .parentLinksOf(id)
+          .map((l) => x.get(l.parent))
+          .filter((v): v is number => v !== undefined);
+      const partnersInRow = (id: PersonID): PersonID[] =>
+        kinship
+          .unionsOf(id)
+          .map((u) => (u.partners[0] === id ? u.partners[1] : u.partners[0]))
+          .filter((p) => inRow.has(p));
+
+      // Bloed-kinderen van dit niveau (met een geplaatste ouder), op
+      // ouder-positie dan geboortejaar — siblings van hetzelfde paar delen de
+      // ouder-positie, dus die staan zuiver op geboortejaar.
+      const childAnchor = new Map<PersonID, number>();
+      const children = members
+        .filter((id) => parentXsOf(id).length > 0)
+        .sort((a, b) => avg(parentXsOf(a)) - avg(parentXsOf(b)) || birthOf(a) - birthOf(b));
+      for (const c of children) childAnchor.set(c, avg(parentXsOf(c)));
+
+      // Sequentie: elk kind, direct gevolgd door zijn partner(s) — recursief,
+      // zodat een koppel altijd aaneengesloten staat (ook bij hertrouw-ketens).
+      const seq: PersonID[] = [];
+      const seen = new Set<PersonID>();
+      const emit = (id: PersonID) => {
+        if (seen.has(id)) return;
+        seen.add(id);
+        seq.push(id);
+        for (const p of partnersInRow(id)) emit(p);
+      };
+      for (const c of children) emit(c);
+      for (const m of members.filter((m) => !seen.has(m)).sort((a, b) => birthOf(a) - birthOf(b))) {
+        seq.push(m);
       }
-      members.sort(
-        (a, b) => (orderKey.get(a) ?? 0) - (orderKey.get(b) ?? 0) || compareBirth(kinship, a, b),
-      );
-      spaceOut(members, desired, gapFor(members.length)).forEach((finalX, i) => x.set(members[i], finalX));
+
+      // Plaatsing: kind onder zijn ouders; partner bij het kind; anders eigen
+      // kinderen of tak. spaceOut houdt de sequentie-volgorde + minimale afstand.
+      const desired = new Map<PersonID, number>();
+      for (const id of seq) {
+        if (childAnchor.has(id)) {
+          desired.set(id, childAnchor.get(id)!);
+          continue;
+        }
+        const spouse = partnersInRow(id).find((p) => childAnchor.has(p));
+        if (spouse !== undefined) {
+          desired.set(id, childAnchor.get(spouse)!);
+          continue;
+        }
+        const childXs = kinship
+          .childLinksOf(id)
+          .map((l) => x.get(l.child))
+          .filter((v): v is number => v !== undefined);
+        desired.set(id, childXs.length ? avg(childXs) : (branches.get(id) ?? 0) * COL_WIDTH * 2);
+      }
+      spaceOut(seq, desired, gapFor(seq.length)).forEach((finalX, i) => x.set(seq[i], finalX));
     }
   }
 
@@ -193,12 +211,6 @@ export function egoLayout(
     links,
     bounds: [-spanX, minY, spanX * 2, maxY - minY],
   };
-}
-
-function compareBirth(kinship: KinshipService, a: PersonID, b: PersonID): number {
-  const yearA = kinship.personById.get(a)?.birth?.date?.year ?? 0;
-  const yearB = kinship.personById.get(b)?.birth?.date?.year ?? 0;
-  return yearA - yearB;
 }
 
 /** Houd gewenste posities aan maar dwing een minimale onderlinge afstand af, gecentreerd. */
