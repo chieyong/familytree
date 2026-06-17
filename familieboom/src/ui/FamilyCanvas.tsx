@@ -18,6 +18,10 @@ interface Props {
   focusId: PersonID;
   branches?: Map<PersonID, number>;
   theme: ThemeName;
+  /** Profielfoto's tonen in de boom (focus + inzoomen). */
+  photos: boolean;
+  /** Ondertekende foto-URL per persoon-id. */
+  photoUrls: Map<PersonID, string>;
   onFocus: (id: PersonID) => void;
 }
 
@@ -44,7 +48,7 @@ const isDeceasedStyle = (person: Person): boolean => {
  * nodes en lijnen (springs) naar hun nieuwe plek, terwijl view-exclusieve
  * elementen (levenslijnen, tijdas, de rest van de familie) in- of uitfaden.
  */
-export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, onFocus }: Props) {
+export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, onFocus }: Props) {
   const art = useMemo(() => flowLayout(fullGraph), [fullGraph]);
   const [minX, minY, width, height] = art.bounds;
 
@@ -222,6 +226,10 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
+        {/* Ronde uitsnede voor profielfoto's, schaalt mee met elke node. */}
+        <clipPath id="avatar-clip" clipPathUnits="objectBoundingBox">
+          <circle cx="0.5" cy="0.5" r="0.5" />
+        </clipPath>
       </defs>
 
       <g ref={contentRef} transform={view.toString()}>
@@ -345,6 +353,10 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
           const isFocus = id === focusId;
           const navK = nav?.k ?? 1;
           const labelY = active.r + (16 + (navNode?.labelTier ? 26 : 0)) * navK;
+          // Foto alleen in de boom, op de gekozen persoon of zodra een node
+          // groot genoeg op het scherm is (inzoomen). Houdt de periferie rustig.
+          const photoUrl = photoUrls.get(id);
+          const showPhoto = isNav && photos && !!photoUrl && (isFocus || active.r * screenScale * view.k >= 30);
           return (
             <motion.g
               key={id}
@@ -384,6 +396,21 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
                   opacity={0.95}
                   filter="url(#glow)"
                 />
+                {showPhoto && (
+                  <g>
+                    <image
+                      href={photoUrl}
+                      x={-active.r}
+                      y={-active.r}
+                      width={active.r * 2}
+                      height={active.r * 2}
+                      clipPath="url(#avatar-clip)"
+                      preserveAspectRatio="xMidYMid slice"
+                    />
+                    {/* Tak-kleur blijft als ring om de foto. */}
+                    <circle r={active.r} fill="none" stroke={color} strokeWidth={thin(2.5)} opacity={0.9} />
+                  </g>
+                )}
                 {/* Navigatie-labels */}
                 <motion.g
                   animate={{ opacity: isNav && navNode ? 1 : 0 }}
@@ -396,6 +423,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
                     className="nav-initial"
                     style={{ fontSize: 16 * navK }}
                     fill={deceased ? color : palette.nodeText}
+                    opacity={showPhoto ? 0 : 1}
                   >
                     {artNode.person.givenNames[0]?.[0]}
                   </text>

@@ -52,6 +52,8 @@ interface AppState {
   /** De "ik": vanuit wiens perspectief relaties benoemd worden. Default: de gebruiker van de dataset. */
   ikId: PersonID;
   theme: ThemeName;
+  /** Profielfoto's in de boom tonen (focus + inzoomen). De detailkaart toont altijd. */
+  photos: boolean;
   user: SessionUser | null;
   activeFamily: ActiveFamily | null;
   /** Login-modal open (gedeeld, zodat o.a. een uitnodiging 'm kan openen). */
@@ -63,6 +65,7 @@ interface AppState {
   setFocus: (id: PersonID) => void;
   setIk: (id: PersonID) => void;
   toggleTheme: () => void;
+  togglePhotos: () => void;
   setUser: (user: SessionUser | null) => void;
   setActiveFamily: (family: ActiveFamily | null) => void;
   setAuthOpen: (open: boolean) => void;
@@ -73,6 +76,7 @@ const initialMode: ViewMode = params.get('view') === 'navigation' ? 'navigation'
 const initialDataset: DatasetId = params.get('data') === 'habsburg' ? 'habsburg' : 'demo';
 
 const THEME_KEY = 'familieboom-theme';
+const PHOTOS_KEY = 'familieboom-photos';
 export const LAST_FAMILY_KEY = 'familieboom-last-family';
 
 /** Volgorde: URL-param → opgeslagen voorkeur → systeemvoorkeur → donker. */
@@ -97,6 +101,7 @@ export const useAppStore = create<AppState>((set) => ({
   focusId: params.get('focus') ?? DATASET_EGO[initialDataset],
   ikId: params.get('ik') ?? DATASET_EGO[initialDataset],
   theme: startTheme,
+  photos: localStorage.getItem(PHOTOS_KEY) !== 'off',
   user: null,
   activeFamily: null,
   authOpen: false,
@@ -112,6 +117,12 @@ export const useAppStore = create<AppState>((set) => ({
       localStorage.setItem(THEME_KEY, theme);
       applyTheme(theme);
       return { theme };
+    }),
+  togglePhotos: () =>
+    set((state) => {
+      const photos = !state.photos;
+      localStorage.setItem(PHOTOS_KEY, photos ? 'on' : 'off');
+      return { photos };
     }),
   setUser: (user) => set({ user }),
   setActiveFamily: (family) => {

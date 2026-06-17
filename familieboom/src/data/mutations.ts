@@ -121,6 +121,43 @@ export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
   if (error) throw error;
 }
 
+const AVATAR_BUCKET = 'avatars';
+
+/** Opslag-pad voor de profielfoto van een persoon (zonder extensie). */
+const avatarPath = (familyId: string, personId: string) => `${familyId}/${personId}`;
+
+/** Upload/vervang een profielfoto en zet photo_path op de persoon. */
+export async function uploadPersonPhoto(familyId: string, personId: string, file: File): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const path = avatarPath(familyId, personId);
+  const up = await supabase.storage
+    .from(AVATAR_BUCKET)
+    .upload(path, file, { upsert: true, contentType: file.type });
+  if (up.error) throw up.error;
+  const { error } = await supabase.from('persons').update({ photo_path: path }).eq('id', personId);
+  if (error) throw error;
+}
+
+/** Verwijdert de profielfoto (storage + photo_path). */
+export async function removePersonPhoto(familyId: string, personId: string): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  await supabase.storage.from(AVATAR_BUCKET).remove([avatarPath(familyId, personId)]);
+  const { error } = await supabase.from('persons').update({ photo_path: null }).eq('id', personId);
+  if (error) throw error;
+}
+
+/** Ondertekende (tijdelijke) URL's voor een lijst foto-paden → map pad→url. */
+export async function signedAvatarUrls(paths: string[]): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  if (!supabase || paths.length === 0) return map;
+  const { data, error } = await supabase.storage.from(AVATAR_BUCKET).createSignedUrls(paths, 3600);
+  if (error || !data) return map;
+  for (const item of data) {
+    if (item.signedUrl && item.path) map.set(item.path, item.signedUrl);
+  }
+  return map;
+}
+
 /** Verwijdert een persoon; relaties vervallen via FK-cascade (RLS: beheerder/owner). */
 export async function deletePerson(id: string): Promise<void> {
   if (!supabase) throw new Error('Geen Supabase-client.');

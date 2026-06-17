@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Person, Visibility } from '../data/types';
-import { deletePerson, updatePerson } from '../data/mutations';
+import { deletePerson, removePersonPhoto, signedAvatarUrls, updatePerson, uploadPersonPhoto } from '../data/mutations';
 import { useAppStore } from './store';
 
 interface Props {
@@ -28,6 +28,52 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const [visibility, setVisibility] = useState<Visibility>(person.visibility);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+
+  // Profielfoto: huidige (ondertekende) preview + upload/verwijder.
+  const [photoUrl, setPhotoUrl] = useState<string>();
+  const [photoBusy, setPhotoBusy] = useState(false);
+  useEffect(() => {
+    let active = true;
+    if (person.photoPath) {
+      signedAvatarUrls([person.photoPath]).then((m) => {
+        if (active) setPhotoUrl(m.get(person.photoPath!));
+      });
+    } else {
+      setPhotoUrl(undefined);
+    }
+    return () => { active = false; };
+  }, [person.photoPath]);
+
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeFamily) return;
+    setPhotoBusy(true);
+    setError(undefined);
+    try {
+      await uploadPersonPhoto(activeFamily.id, person.id, file);
+      setPhotoUrl(URL.createObjectURL(file)); // directe preview
+      bumpData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Foto uploaden mislukt');
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
+  const onRemovePhoto = async () => {
+    if (!activeFamily) return;
+    setPhotoBusy(true);
+    setError(undefined);
+    try {
+      await removePersonPhoto(activeFamily.id, person.id);
+      setPhotoUrl(undefined);
+      bumpData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Foto verwijderen mislukt');
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,6 +125,24 @@ export function EditPerson({ person, egoId, embedded }: Props) {
 
   return (
     <form className="add-relative-form" onSubmit={save}>
+      <div className="edit-photo">
+        {photoUrl ? (
+          <img className="edit-photo-preview" src={photoUrl} alt="" />
+        ) : (
+          <div className="edit-photo-empty" aria-hidden="true">+</div>
+        )}
+        <div className="edit-photo-actions">
+          <label className="link-btn file-label">
+            {photoBusy ? 'Bezig…' : photoUrl ? 'Foto vervangen' : 'Foto toevoegen'}
+            <input type="file" accept="image/*" onChange={onPhoto} disabled={photoBusy} hidden />
+          </label>
+          {photoUrl && (
+            <button type="button" className="link-btn link-danger" onClick={onRemovePhoto} disabled={photoBusy}>
+              verwijderen
+            </button>
+          )}
+        </div>
+      </div>
       <input placeholder="Voornaam" value={given} required autoFocus
         onChange={(e) => setGiven(e.target.value)} />
       <input placeholder="Achternaam" value={familyName}

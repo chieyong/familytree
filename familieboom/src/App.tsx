@@ -8,6 +8,7 @@ import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { acceptInvite } from './data/invites';
+import { signedAvatarUrls } from './data/mutations';
 import { supabase } from './data/supabaseClient';
 import { PersonPanel } from './ui/PersonPanel';
 import { PrivacyInfo } from './ui/PrivacyInfo';
@@ -38,8 +39,18 @@ function MoonIcon() {
   );
 }
 
+function PhotoIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+      <circle cx="8.5" cy="10" r="1.6" />
+      <path d="M21 16.5 16 12l-9 6.5" />
+    </svg>
+  );
+}
+
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, activeFamily, dataVersion, user, setMode, setFocus, setIk, toggleTheme, setAuthOpen } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, dataVersion, user, setMode, setFocus, setIk, toggleTheme, togglePhotos, setAuthOpen } =
     useAppStore();
 
   // Uitnodiging accepteren: ?invite=<token> → pending lid zodra ingelogd.
@@ -78,6 +89,28 @@ export default function App() {
   const [fullGraph, setFullGraph] = useState<FamilyGraph>();
   const [egoGraph, setEgoGraph] = useState<FamilyGraph>();
   const [panelOpen, setPanelOpen] = useState(false);
+  const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
+
+  // Ondertekende URL's voor de profielfoto's (privé-bucket). Eén keer per
+  // graaf-versie; ze verlopen na een uur en worden bij de volgende load ververst.
+  useEffect(() => {
+    const paths = fullGraph?.persons.map((p) => p.photoPath).filter((p): p is string => !!p) ?? [];
+    if (paths.length === 0) {
+      setPhotoUrls(new Map());
+      return;
+    }
+    signedAvatarUrls(paths).then(setPhotoUrls);
+  }, [fullGraph]);
+
+  // Foto's per persoon-id (voor canvas + kaart).
+  const photoByPerson = useMemo(() => {
+    const map = new Map<string, string>();
+    fullGraph?.persons.forEach((p) => {
+      const url = p.photoPath && photoUrls.get(p.photoPath);
+      if (url) map.set(p.id, url);
+    });
+    return map;
+  }, [fullGraph, photoUrls]);
 
   useEffect(() => {
     repository.getFullGraph().then(setFullGraph);
@@ -138,6 +171,16 @@ export default function App() {
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
+          {photoByPerson.size > 0 && (
+            <button
+              className={`theme-toggle photo-toggle${photos ? ' active' : ''}`}
+              onClick={togglePhotos}
+              aria-label={photos ? 'Foto’s verbergen' : 'Foto’s tonen'}
+              title={photos ? 'Foto’s verbergen' : 'Foto’s tonen'}
+            >
+              <PhotoIcon />
+            </button>
+          )}
           <PrivacyInfo />
           <AuthBar />
           <ShareFamily />
@@ -169,6 +212,8 @@ export default function App() {
             focusId={focusId}
             branches={branches}
             theme={theme}
+            photos={photos}
+            photoUrls={photoByPerson}
             onFocus={setFocus}
           />
         )}
@@ -176,6 +221,9 @@ export default function App() {
 
       {focusPerson && (
         <footer className="person-card">
+          {photoByPerson.get(focusPerson.id) && (
+            <img className="person-card-avatar" src={photoByPerson.get(focusPerson.id)} alt="" />
+          )}
           <div className="person-card-main">
             <strong>{shortName(focusPerson)}</strong>
             {focusPerson.nameNative && <span className="name-native">{focusPerson.nameNative}</span>}

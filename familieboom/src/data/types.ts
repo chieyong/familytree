@@ -34,6 +34,8 @@ export interface Person {
   nameNative?: string;
   /** Bijnaam / roepnaam / alias. */
   nickname?: string;
+  /** Opslag-pad van de profielfoto (<family_id>/<person_id>); via signed URL geladen. */
+  photoPath?: string;
   sex?: 'm' | 'f' | 'x';
   birth?: { date?: FuzzyDate; place?: Place };
   death?: { date?: FuzzyDate; place?: Place };
