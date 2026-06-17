@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { approveMember, createInvite, listMembers, removeMember, type Member } from '../data/invites';
+import { approveMember, createInvite, listMembers, removeMember, updateMemberRole, type Member } from '../data/invites';
 import { useAppStore } from './store';
 
 /** Owner/editor: deel de actieve familie (uitnodigingslink) en keur leden goed. */
@@ -63,6 +63,16 @@ export function ShareFamily() {
     }
   };
 
+  const changeRole = async (profileId: string, role: 'viewer' | 'editor') => {
+    setError(undefined);
+    try {
+      await updateMemberRole(activeFamily.id, profileId, role);
+      await refetch();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Rol wijzigen mislukt');
+    }
+  };
+
   const remove = async (m: Member) => {
     if (!confirm(`${m.name} uit deze familie verwijderen? Zijn personen blijven bestaan.`)) return;
     setError(undefined);
@@ -105,12 +115,21 @@ export function ShareFamily() {
           <div className="family-group">Leden</div>
           {members.map((m) => (
             <div key={m.profileId} className="share-member">
-              <span>
+              <span className="share-member-name">
                 {m.name}
-                <span className="family-role">
-                  {m.role}
-                  {m.status === 'pending' ? ' · wacht' : ''}
-                </span>
+                {isOwner && m.profileId !== user.id && m.role !== 'owner' ? (
+                  <select
+                    className="share-role-select"
+                    value={m.role}
+                    onChange={(e) => changeRole(m.profileId, e.target.value as 'viewer' | 'editor')}
+                  >
+                    <option value="viewer">lezer</option>
+                    <option value="editor">bewerker</option>
+                  </select>
+                ) : (
+                  <span className="family-role">{m.role}</span>
+                )}
+                {m.status === 'pending' && <span className="family-role"> · wacht</span>}
               </span>
               <span className="share-member-actions">
                 {isOwner && m.status === 'pending' && (

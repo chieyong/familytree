@@ -415,6 +415,22 @@ body {
   cursor: pointer;
 }
 
+.share-member-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.share-role-select {
+  font-size: 0.72rem;
+  padding: 2px 5px;
+  border-radius: 6px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg);
+  color: var(--ink-dim);
+}
+
 .share-member-actions {
   display: flex;
   align-items: center;

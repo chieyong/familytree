@@ -55,6 +55,21 @@ export async function approveMember(familyId: string, profileId: string): Promis
   if (error) throw error;
 }
 
+/** Owner wijzigt de rol van een lid (lezer ↔ bewerker). RLS: owner. */
+export async function updateMemberRole(
+  familyId: string,
+  profileId: string,
+  role: 'viewer' | 'editor',
+): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase
+    .from('family_members')
+    .update({ role })
+    .eq('family_id', familyId)
+    .eq('profile_id', profileId);
+  if (error) throw error;
+}
+
 /** Owner verwijdert een lid (of een afgewezen/pending verzoek). RLS: owner. */
 export async function removeMember(familyId: string, profileId: string): Promise<void> {
   if (!supabase) throw new Error('Geen Supabase-client.');
