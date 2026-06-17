@@ -14,15 +14,22 @@ const toUser = (session: Session | null): SessionUser | null =>
 export function useAuth() {
   const user = useAppStore((s) => s.user);
   const setUser = useAppStore((s) => s.setUser);
+  const setActiveFamily = useAppStore((s) => s.setActiveFamily);
+  const setNotice = useAppStore((s) => s.setNotice);
 
   useEffect(() => {
     if (!supabase) return;
     supabase.auth.getSession().then(({ data }) => setUser(toUser(data.session)));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) =>
-      setUser(toUser(session)),
-    );
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(toUser(session));
+      // Bij uitloggen terug naar de publieke demo + een bevestiging.
+      if (event === 'SIGNED_OUT') {
+        setActiveFamily(null);
+        setNotice('Je bent uitgelogd — je ziet weer de demo.');
+      }
+    });
     return () => sub.subscription.unsubscribe();
-  }, [setUser]);
+  }, [setUser, setActiveFamily, setNotice]);
 
   // Volledige huidige URL minus hash → behoudt o.a. ?invite=<token> door de
   // login-redirect heen, zodat de uitnodiging na inloggen verwerkt wordt.

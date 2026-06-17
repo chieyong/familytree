@@ -7,7 +7,7 @@ import { demoFamily } from './data/fixtures/demoFamily';
 import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
-import { acceptInvite } from './data/invites';
+import { acceptInvite, claimSelfPerson } from './data/invites';
 import { signedAvatarUrls } from './data/mutations';
 import { supabase } from './data/supabaseClient';
 import { PersonPanel } from './ui/PersonPanel';
@@ -50,7 +50,7 @@ function PhotoIcon() {
 }
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, dataVersion, user, setMode, setFocus, setIk, toggleTheme, togglePhotos, setAuthOpen } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, dataVersion, user, notice, setMode, setFocus, setIk, toggleTheme, togglePhotos, setActiveFamily, setAuthOpen, setNotice } =
     useAppStore();
 
   // Uitnodiging accepteren: ?invite=<token> → pending lid zodra ingelogd.
@@ -150,6 +150,18 @@ export default function App() {
     [kinship, ikId, focusId],
   );
 
+  const claimSelf = async () => {
+    if (!activeFamily || !focusPerson) return;
+    try {
+      await claimSelfPerson(activeFamily.id, focusPerson.id);
+      // ego bijwerken → meteen jouw perspectief, en onthouden voor volgende keer.
+      setActiveFamily({ ...activeFamily, ego: focusPerson.id });
+      setNotice(`Je bent nu gekoppeld aan ${shortName(focusPerson)} — dit is je perspectief.`);
+    } catch (err) {
+      setNotice(err instanceof Error ? err.message : 'Koppelen mislukt');
+    }
+  };
+
   return (
     <div className="app">
       <header className="topbar">
@@ -202,6 +214,12 @@ export default function App() {
         </button>
       )}
 
+      {notice && (
+        <button className="invite-banner" onClick={() => setNotice(undefined)}>
+          {notice} <span className="invite-dismiss">×</span>
+        </button>
+      )}
+
       <main className="stage">
         {fullGraph && (
           <FamilyCanvas
@@ -233,6 +251,11 @@ export default function App() {
             {activeFamily && (
               <button className="edit-pencil" onClick={() => setPanelOpen(true)} title="Bewerken" aria-label="Bewerken">
                 ✎
+              </button>
+            )}
+            {activeFamily && !focusPerson.hidden && focusPerson.id !== activeFamily.ego && (
+              <button className="claim-self" onClick={claimSelf} title="Koppel je account aan deze persoon">
+                dit ben ik
               </button>
             )}
           </div>

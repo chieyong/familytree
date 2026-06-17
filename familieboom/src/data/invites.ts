@@ -55,6 +55,13 @@ export async function approveMember(familyId: string, profileId: string): Promis
   if (error) throw error;
 }
 
+/** Koppel je account aan een persoon-knooppunt ("dit ben ik"). RPC, elk lid. */
+export async function claimSelfPerson(familyId: string, personId: string): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.rpc('claim_self_person', { p_family: familyId, p_person: personId });
+  if (error) throw error;
+}
+
 /** Owner wijzigt de rol van een lid (lezer ↔ bewerker). RLS: owner. */
 export async function updateMemberRole(
   familyId: string,

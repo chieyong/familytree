@@ -58,6 +58,8 @@ interface AppState {
   activeFamily: ActiveFamily | null;
   /** Login-modal open (gedeeld, zodat o.a. een uitnodiging 'm kan openen). */
   authOpen: boolean;
+  /** Vluchtige melding (bv. 'uitgelogd'); App toont 'm als banner. */
+  notice?: string;
   /** Verhoogt na een mutatie zodat de graaf opnieuw geladen wordt. */
   dataVersion: number;
   setMode: (mode: ViewMode) => void;
@@ -69,6 +71,7 @@ interface AppState {
   setUser: (user: SessionUser | null) => void;
   setActiveFamily: (family: ActiveFamily | null) => void;
   setAuthOpen: (open: boolean) => void;
+  setNotice: (notice?: string) => void;
   bumpData: () => void;
 }
 
@@ -130,5 +133,6 @@ export const useAppStore = create<AppState>((set) => ({
     set(family ? { activeFamily: family, focusId: family.ego, ikId: family.ego } : { activeFamily: null });
   },
   setAuthOpen: (authOpen) => set({ authOpen }),
+  setNotice: (notice) => set({ notice }),
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 }));
