@@ -171,9 +171,14 @@ export class KinshipService {
           const b = branch.get(p);
           if (b !== undefined && (inherited === undefined || b < inherited)) inherited = b;
         }
-        inherited ??= this.unionsOf(person.id)
-          .map((u) => branch.get(u.partners[0] === person.id ? u.partners[1] : u.partners[0]))
-          .find((b) => b !== undefined);
+        // Partner-terugval alleen voor wie géén ouders in de boom heeft (echt
+        // ingetrouwd). Wie wel ouders heeft, wacht op de bloed-tak — anders pikt
+        // een kind door de verwerkingsvolgorde de kleur van zijn partner op.
+        if (inherited === undefined && parents.length === 0) {
+          inherited = this.unionsOf(person.id)
+            .map((u) => branch.get(u.partners[0] === person.id ? u.partners[1] : u.partners[0]))
+            .find((b) => b !== undefined);
+        }
         if (inherited !== undefined) {
           branch.set(person.id, inherited);
           changed = true;
