@@ -698,6 +698,24 @@ body {
 
 .link-danger { color: #d9756a; }
 
+/* Brug naar andere familie (gekoppelde bomen) */
+.bridge-hint,
+.bridge-linked {
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  margin: 0 0 8px;
+}
+
+.bridge-linked strong { color: var(--ink); }
+
+.bridge-accept {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.bridge-accept input { flex: 1; min-width: 0; }
+
 /* Foto-editor (bijsnijden + camera) */
 .photo-editor { width: min(94vw, 340px); }
 

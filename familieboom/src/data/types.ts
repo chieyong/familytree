@@ -36,6 +36,8 @@ export interface Person {
   nickname?: string;
   /** Opslag-pad van de profielfoto (<family_id>/<person_id>); via signed URL geladen. */
   photoPath?: string;
+  /** Brug naar dezelfde persoon in een andere familie-boom (gekoppelde bomen). */
+  bridge?: { familyId: string; familyName: string; personId: string };
   sex?: 'm' | 'f' | 'x';
   birth?: { date?: FuzzyDate; place?: Place };
   death?: { date?: FuzzyDate; place?: Place };

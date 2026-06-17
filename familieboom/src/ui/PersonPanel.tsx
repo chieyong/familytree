@@ -1,6 +1,7 @@
 import type { FamilyGraph, Person } from '../data/types';
 import { claimSelfPerson } from '../data/invites';
 import { AddRelative } from './AddRelative';
+import { BridgeSection } from './BridgeSection';
 import { EditPerson } from './EditPerson';
 import { RelationsEditor } from './RelationsEditor';
 import { useAppStore } from './store';
@@ -68,6 +69,8 @@ export function PersonPanel({ person, familyId, egoId, graph, onClose }: Props) 
             candidates={graph?.persons ?? []}
           />
         </section>
+
+        <BridgeSection person={person} familyId={familyId} />
       </div>
     </div>
   );
