@@ -1,10 +1,11 @@
--- Migratie 6 — Chinese naam: gesplitst (achternaam + voornaam) naast de
--- geromaniseerde naam. Plus _build_graph die de velden meegeeft.
+-- Migratie 6 — Extra naamvelden, cultuur-neutraal: naam in eigen schrift
+-- (Chinees, Cyrillisch, Arabisch…) en bijnaam/roepnaam. Plus _build_graph
+-- die de velden meegeeft.
 
-alter table persons add column if not exists family_name_zh text;
-alter table persons add column if not exists given_name_zh text;
+alter table persons add column if not exists name_native text;
+alter table persons add column if not exists nickname text;
 
--- _build_graph opnieuw, nu met familyNameZh / givenNameZh in de persoon-JSON.
+-- _build_graph opnieuw, nu met nameNative / nickname in de persoon-JSON.
 create or replace function public._build_graph(p_ids uuid[])
 returns jsonb language sql security definer stable set search_path = public as $$
 with
@@ -32,8 +33,8 @@ with
         'givenNames', to_jsonb(i.given_names),
         'familyName', i.family_name,
         'displayName', i.display_name,
-        'familyNameZh', i.family_name_zh,
-        'givenNameZh', i.given_name_zh,
+        'nameNative', i.name_native,
+        'nickname', i.nickname,
         'sex', i.sex,
         'residences', '[]'::jsonb,
         'birth', case when i.birth_year is not null or i.birth_place_id is not null

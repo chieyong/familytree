@@ -65,8 +65,8 @@ export async function linkRelative(
 export interface PersonEdit {
   given: string;
   familyName?: string;
-  familyNameZh?: string;
-  givenNameZh?: string;
+  nameNative?: string;
+  nickname?: string;
   sex?: 'm' | 'f' | 'x';
   birthYear?: number;
   deathYear?: number;
@@ -81,8 +81,8 @@ export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
     .update({
       given_names: [e.given],
       family_name: e.familyName || null,
-      family_name_zh: e.familyNameZh || null,
-      given_name_zh: e.givenNameZh || null,
+      name_native: e.nameNative || null,
+      nickname: e.nickname || null,
       sex: e.sex ?? null,
       birth_year: e.birthYear ?? null,
       death_year: e.deathYear ?? null,

@@ -83,11 +83,6 @@ export function linkStyle(link: LayoutLink, color: string, palette: Palette): Li
   }
 }
 
-/** Chinese naam, achternaam-eerst zonder spatie (賴智勇). Leeg indien niet ingevuld. */
-export function chineseName(person: Person): string {
-  return `${person.familyNameZh ?? ''}${person.givenNameZh ?? ''}`;
-}
-
 export function shortName(person: Person): string {
   const name = person.displayName ?? `${person.givenNames[0]} ${person.familyName ?? ''}`.trim();
   // Wikidata-items zonder label leveren een ruwe QID op — toon die niet.
