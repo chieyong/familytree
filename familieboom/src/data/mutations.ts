@@ -1,5 +1,23 @@
 import { supabase } from './supabaseClient';
+import type { ImportData } from './importTemplate';
 import type { ParentRole, UnionEndReason, UnionType } from './types';
+
+export interface ImportResult {
+  persons: number;
+  parentLinks: number;
+  unions: number;
+}
+
+/** Bulk-import van een platte template (RPC import_family, owner-only). */
+export async function importFamily(familyId: string, data: ImportData): Promise<ImportResult> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { data: res, error } = await supabase.rpc('import_family', {
+    p_family: familyId,
+    p_data: data,
+  });
+  if (error) throw error;
+  return res as ImportResult;
+}
 
 export type RelationKind = 'parent' | 'partner' | 'child';
 

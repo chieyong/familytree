@@ -210,6 +210,93 @@ body {
   font-style: italic;
 }
 
+/* ── Import-modal ──────────────────────────────────────────────────────── */
+.import-card {
+  width: min(94vw, 560px);
+}
+
+.import-intro code {
+  font-size: 0.8em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--surface-hover);
+}
+
+.import-actions-top {
+  display: flex;
+  gap: 14px;
+  margin: 8px 0 10px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.link-btn:hover { text-decoration: underline; }
+.file-label { display: inline-flex; align-items: center; }
+
+.import-textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  padding: 10px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+}
+
+.import-preview { margin-top: 12px; }
+
+.import-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.import-counts span {
+  font-size: 0.8rem;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.import-errors,
+.import-warnings {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 2px;
+}
+
+.import-errors li { font-size: 0.8rem; color: #d9756a; }
+.import-warnings li { font-size: 0.8rem; color: var(--ink-dim); }
+
+.import-error-msg { color: #d9756a; font-size: 0.84rem; margin-top: 8px; }
+
+.import-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.import-done ul {
+  margin: 8px 0 16px;
+  padding-left: 18px;
+  display: grid;
+  gap: 3px;
+}
+
 .auth-btn {
   border: 1px solid var(--surface-border);
   background: var(--surface);

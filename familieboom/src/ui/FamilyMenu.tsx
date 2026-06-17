@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../data/supabaseClient';
 import { LAST_FAMILY_KEY, useAppStore, type DatasetId } from './store';
 import { useFamilies } from './useFamilies';
+import { ImportFamily } from './ImportFamily';
 
 const PRESETS: { id: DatasetId; label: string }[] = [
   { id: 'demo', label: 'Demo-familie' },
@@ -30,6 +31,7 @@ export function FamilyMenu() {
   }, [families, user, activeFamily, setActiveFamily]);
 
   const [open, setOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [creating, setCreating] = useState(false);
   const [famName, setFamName] = useState('');
   const [given, setGiven] = useState('');
@@ -39,6 +41,10 @@ export function FamilyMenu() {
   const label = activeFamily
     ? activeFamily.label
     : PRESETS.find((p) => p.id === dataset)?.label ?? 'Demo-familie';
+
+  // Bulk-import alleen voor de eigenaar van de actieve familie (RPC dwingt dit
+  // ook af, maar zo tonen we de knop alleen waar 'ie zin heeft).
+  const canImport = !!activeFamily && families.find((f) => f.id === activeFamily.id)?.role === 'owner';
 
   const choosePreset = (id: DatasetId) => {
     setDataset(id);
@@ -109,11 +115,24 @@ export function FamilyMenu() {
                   + Nieuwe familieboom
                 </button>
               )}
+
+              {canImport && (
+                <button
+                  className="family-item family-import"
+                  onClick={() => { setImporting(true); setOpen(false); }}
+                >
+                  ⬆ Personen importeren
+                </button>
+              )}
             </>
           )}
 
           {supabase && !user && <div className="family-empty">log in voor je eigen boom</div>}
         </div>
+      )}
+
+      {importing && activeFamily && (
+        <ImportFamily familyId={activeFamily.id} onClose={() => setImporting(false)} />
       )}
     </div>
   );
