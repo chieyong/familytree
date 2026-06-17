@@ -6,6 +6,8 @@ export type RelationKind = 'parent' | 'partner' | 'child';
 export interface NewRelative {
   given: string;
   familyName?: string;
+  nameNative?: string;
+  nickname?: string;
   sex?: 'm' | 'f' | 'x';
   birthYear?: number;
 }
@@ -26,6 +28,8 @@ export async function addRelative(
     p_family_name: rel.familyName || null,
     p_sex: rel.sex ?? null,
     p_birth_year: rel.birthYear ?? null,
+    p_name_native: rel.nameNative || null,
+    p_nickname: rel.nickname || null,
   });
   if (error) throw error;
   return (data as { personId: string }).personId;

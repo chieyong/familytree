@@ -22,6 +22,8 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
   const [mode, setMode] = useState<'new' | 'existing'>('new');
   const [given, setGiven] = useState('');
   const [familyName, setFamilyName] = useState('');
+  const [nameNative, setNameNative] = useState('');
+  const [nickname, setNickname] = useState('');
   const [sex, setSex] = useState<'m' | 'f' | 'x' | ''>('');
   const [birthYear, setBirthYear] = useState('');
   const [query, setQuery] = useState('');
@@ -33,6 +35,8 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
     setMode('new');
     setGiven('');
     setFamilyName('');
+    setNameNative('');
+    setNickname('');
     setSex('');
     setBirthYear('');
     setQuery('');
@@ -48,6 +52,8 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
       const id = await addRelative(familyId, relation, anchorId, {
         given: given.trim(),
         familyName: familyName.trim() || undefined,
+        nameNative: nameNative.trim() || undefined,
+        nickname: nickname.trim() || undefined,
         sex: sex || undefined,
         birthYear: birthYear ? Number(birthYear) : undefined,
       });
@@ -113,6 +119,10 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
             onChange={(e) => setGiven(e.target.value)} />
           <input placeholder="Achternaam" value={familyName}
             onChange={(e) => setFamilyName(e.target.value)} />
+          <input placeholder="Naam in eigen schrift (林麗莎, Иван…)" value={nameNative}
+            onChange={(e) => setNameNative(e.target.value)} />
+          <input placeholder="Bijnaam / roepnaam" value={nickname}
+            onChange={(e) => setNickname(e.target.value)} />
           <div className="add-rel-row">
             <select value={sex} onChange={(e) => setSex(e.target.value as typeof sex)}>
               <option value="">geslacht</option>
