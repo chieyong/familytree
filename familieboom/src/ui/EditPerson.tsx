@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Person, Visibility } from '../data/types';
 import { deletePerson, removePersonPhoto, signedAvatarUrls, updatePerson, uploadPersonPhoto } from '../data/mutations';
+import { PhotoEditor } from './PhotoEditor';
 import { useAppStore } from './store';
 
 interface Props {
@@ -32,6 +33,8 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   // Profielfoto: huidige (ondertekende) preview + upload/verwijder.
   const [photoUrl, setPhotoUrl] = useState<string>();
   const [photoBusy, setPhotoBusy] = useState(false);
+  // Foto-editor: bron is een gekozen bestand of de live camera.
+  const [editor, setEditor] = useState<{ file?: File; camera?: boolean }>();
   useEffect(() => {
     let active = true;
     if (person.photoPath) {
@@ -44,9 +47,16 @@ export function EditPerson({ person, egoId, embedded }: Props) {
     return () => { active = false; };
   }, [person.photoPath]);
 
-  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !activeFamily) return;
+    e.target.value = ''; // zelfde bestand opnieuw kunnen kiezen
+    if (file) setEditor({ file });
+  };
+
+  // Bijgesneden vierkante foto uit de editor → uploaden.
+  const onCropped = async (file: File) => {
+    setEditor(undefined);
+    if (!activeFamily) return;
     setPhotoBusy(true);
     setError(undefined);
     try {
@@ -133,9 +143,12 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         )}
         <div className="edit-photo-actions">
           <label className="link-btn file-label">
-            {photoBusy ? 'Bezig…' : photoUrl ? 'Foto vervangen' : 'Foto toevoegen'}
-            <input type="file" accept="image/*" onChange={onPhoto} disabled={photoBusy} hidden />
+            {photoBusy ? 'Bezig…' : photoUrl ? 'Foto vervangen' : 'Foto kiezen'}
+            <input type="file" accept="image/*" onChange={onPickFile} disabled={photoBusy} hidden />
           </label>
+          <button type="button" className="link-btn" onClick={() => setEditor({ camera: true })} disabled={photoBusy}>
+            Camera
+          </button>
           {photoUrl && (
             <button type="button" className="link-btn link-danger" onClick={onRemovePhoto} disabled={photoBusy}>
               verwijderen
@@ -143,6 +156,14 @@ export function EditPerson({ person, egoId, embedded }: Props) {
           )}
         </div>
       </div>
+      {editor && (
+        <PhotoEditor
+          initialFile={editor.file}
+          startCamera={editor.camera}
+          onCancel={() => setEditor(undefined)}
+          onSave={onCropped}
+        />
+      )}
       <input placeholder="Voornaam" value={given} required autoFocus
         onChange={(e) => setGiven(e.target.value)} />
       <input placeholder="Achternaam" value={familyName}

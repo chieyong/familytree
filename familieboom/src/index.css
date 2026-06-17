@@ -698,6 +698,73 @@ body {
 
 .link-danger { color: #d9756a; }
 
+/* Foto-editor (bijsnijden + camera) */
+.photo-editor { width: min(94vw, 340px); }
+
+.photo-crop {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+  margin: 4px auto 0;
+  touch-action: none;
+  cursor: grab;
+}
+
+.photo-crop:active { cursor: grabbing; }
+
+.photo-crop-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.photo-crop-mask {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 9999px rgba(20, 16, 10, 0.5);
+  outline: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.photo-zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  margin-top: 14px;
+}
+
+.photo-zoom input { flex: 1; }
+
+.photo-hint {
+  font-size: 0.74rem;
+  color: var(--ink-dim);
+  text-align: center;
+  margin: 6px 0 0;
+}
+
+.photo-camera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.photo-video {
+  width: 260px;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #000;
+  transform: scaleX(-1); /* spiegel, zoals een selfie-weergave */
+}
+
 .nav-node .label-name {
   font-size: 14.5px;
 }
