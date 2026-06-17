@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { approveMember, createInvite, listMembers, type Member } from '../data/invites';
+import { approveMember, createInvite, listMembers, removeMember, type Member } from '../data/invites';
 import { useAppStore } from './store';
 
 /** Owner/editor: deel de actieve familie (uitnodigingslink) en keur leden goed. */
@@ -63,6 +63,17 @@ export function ShareFamily() {
     }
   };
 
+  const remove = async (m: Member) => {
+    if (!confirm(`${m.name} uit deze familie verwijderen? Zijn personen blijven bestaan.`)) return;
+    setError(undefined);
+    try {
+      await removeMember(activeFamily.id, m.profileId);
+      await refetch();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Verwijderen mislukt');
+    }
+  };
+
   return (
     <div className="share-menu">
       <button className="auth-btn" onClick={() => setOpen((o) => !o)}>
@@ -101,11 +112,23 @@ export function ShareFamily() {
                   {m.status === 'pending' ? ' · wacht' : ''}
                 </span>
               </span>
-              {isOwner && m.status === 'pending' && (
-                <button className="share-approve" onClick={() => approve(m.profileId)}>
-                  goedkeuren
-                </button>
-              )}
+              <span className="share-member-actions">
+                {isOwner && m.status === 'pending' && (
+                  <button className="share-approve" onClick={() => approve(m.profileId)}>
+                    goedkeuren
+                  </button>
+                )}
+                {isOwner && m.profileId !== user.id && (
+                  <button
+                    className="share-remove"
+                    onClick={() => remove(m)}
+                    title="Verwijder uit familie"
+                    aria-label={`${m.name} verwijderen`}
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
             </div>
           ))}
           {error && <p className="family-error">{error}</p>}

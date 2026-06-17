@@ -415,6 +415,30 @@ body {
   cursor: pointer;
 }
 
+.share-member-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.share-remove {
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 1rem;
+  line-height: 1;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.share-remove:hover {
+  color: #d9756a;
+  border-color: #d9756a;
+}
+
 .invite-banner {
   position: absolute;
   top: 56px;
