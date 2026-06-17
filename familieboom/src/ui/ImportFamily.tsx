@@ -1,11 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { parseTemplate, TEMPLATE_CSV } from '../data/importTemplate';
 import { importFamily, type ImportResult } from '../data/mutations';
+import { supabase } from '../data/supabaseClient';
 import { useAppStore } from './store';
 
 interface Props {
   familyId: string;
   onClose: () => void;
+}
+
+interface ExistingPerson {
+  id: string;
+  label: string;
 }
 
 /** Bulk-import: plak/upload een platte template, bekijk een preview, bevestig. */
@@ -15,9 +21,33 @@ export function ImportFamily({ familyId, onClose }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [done, setDone] = useState<ImportResult>();
+  const [existing, setExisting] = useState<ExistingPerson[]>([]);
+  // Koppeling van externe sleutel → bestaand persoon-uuid.
+  const [resolved, setResolved] = useState<Record<string, string>>({});
+
+  // Bestaande personen ophalen, zodat verwijzingen naar de huidige boom
+  // gekoppeld kunnen worden (RLS laat leden hun familie lezen).
+  useEffect(() => {
+    if (!supabase) return;
+    supabase
+      .from('persons')
+      .select('id, given_names, family_name, birth_year')
+      .eq('family_id', familyId)
+      .then(({ data }) => {
+        const rows = (data ?? []).map((p) => {
+          const name = `${p.given_names?.[0] ?? '?'} ${p.family_name ?? ''}`.trim();
+          return { id: p.id as string, label: p.birth_year ? `${name} (${p.birth_year})` : name };
+        });
+        rows.sort((a, b) => a.label.localeCompare(b.label));
+        setExisting(rows);
+      });
+  }, [familyId]);
 
   const parsed = useMemo(() => (text.trim() ? parseTemplate(text) : undefined), [text]);
-  const canImport = parsed && parsed.errors.length === 0 && parsed.data.persons.length > 0;
+  const externalKeys = parsed?.externalKeys ?? [];
+  const allResolved = externalKeys.every((k) => resolved[k]);
+  const canImport =
+    parsed && parsed.errors.length === 0 && parsed.data.persons.length > 0 && allResolved;
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -38,7 +68,7 @@ export function ImportFamily({ familyId, onClose }: Props) {
     setBusy(true);
     setError(undefined);
     try {
-      const res = await importFamily(familyId, parsed.data);
+      const res = await importFamily(familyId, parsed.data, resolved);
       bumpData();
       setDone(res);
     } catch (err) {
@@ -71,7 +101,9 @@ export function ImportFamily({ familyId, onClose }: Props) {
             <p className="info-intro import-intro">
               Eén regel per persoon. Geef elke persoon een eigen <code>id</code> (sleutel) en
               verwijs daarnaar met <code>vader_id</code>, <code>moeder_id</code> en{' '}
-              <code>partner_id</code>. Nuances als scheiding of adoptie zet je daarna met de hand bij.
+              <code>partner_id</code>. Verwijs je naar een sleutel zonder eigen regel, dan koppel je
+              die hieronder aan iemand die al in je boom staat. Nuances als scheiding of adoptie zet
+              je daarna met de hand bij.
             </p>
             <div className="import-actions-top">
               <button className="link-btn" onClick={downloadTemplate}>↓ voorbeeld-template (.csv)</button>
@@ -107,6 +139,31 @@ export function ImportFamily({ familyId, onClose }: Props) {
                     {parsed.warnings.slice(0, 8).map((m, i) => <li key={i}>{m}</li>)}
                     {parsed.warnings.length > 8 && <li>…en nog {parsed.warnings.length - 8}.</li>}
                   </ul>
+                )}
+
+                {externalKeys.length > 0 && (
+                  <div className="import-resolve">
+                    <p className="import-resolve-head">
+                      Deze verwijzingen horen niet bij een eigen regel — koppel ze aan iemand die al
+                      in je boom staat:
+                    </p>
+                    {externalKeys.map((k) => (
+                      <label key={k} className="import-resolve-row">
+                        <code>{k}</code>
+                        <select
+                          value={resolved[k] ?? ''}
+                          onChange={(e) =>
+                            setResolved((r) => ({ ...r, [k]: e.target.value }))
+                          }
+                        >
+                          <option value="">— kies bestaand persoon —</option>
+                          {existing.map((p) => (
+                            <option key={p.id} value={p.id}>{p.label}</option>
+                          ))}
+                        </select>
+                      </label>
+                    ))}
+                  </div>
                 )}
               </div>
             )}

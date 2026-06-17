@@ -8,12 +8,19 @@ export interface ImportResult {
   unions: number;
 }
 
-/** Bulk-import van een platte template (RPC import_family, owner-only). */
-export async function importFamily(familyId: string, data: ImportData): Promise<ImportResult> {
+/**
+ * Bulk-import van een platte template (RPC import_family, owner-only).
+ * `existing` koppelt sleutels uit de template aan reeds bestaande persoon-uuid's.
+ */
+export async function importFamily(
+  familyId: string,
+  data: ImportData,
+  existing: Record<string, string> = {},
+): Promise<ImportResult> {
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { data: res, error } = await supabase.rpc('import_family', {
     p_family: familyId,
-    p_data: data,
+    p_data: { ...data, existing },
   });
   if (error) throw error;
   return res as ImportResult;

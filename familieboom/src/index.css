@@ -284,6 +284,34 @@ body {
 
 .import-error-msg { color: #d9756a; font-size: 0.84rem; margin-top: 8px; }
 
+.import-resolve {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: var(--surface-hover);
+}
+
+.import-resolve-head { font-size: 0.8rem; color: var(--ink-dim); margin: 0 0 8px; }
+
+.import-resolve-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.import-resolve-row code {
+  flex: 0 0 auto;
+  min-width: 90px;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg);
+}
+
+.import-resolve-row select { flex: 1; min-width: 0; }
+
 .import-actions {
   display: flex;
   gap: 10px;
@@ -329,6 +357,24 @@ body {
   border: 1px solid var(--surface-border);
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.share-role {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.74rem;
+  color: var(--ink-dim);
+  margin-bottom: 8px;
+}
+
+.share-role select {
+  font-size: 0.76rem;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg);
+  color: var(--ink);
 }
 
 .share-link-btn {

@@ -10,6 +10,7 @@ export function ShareFamily() {
   const [members, setMembers] = useState<Member[]>([]);
   const [link, setLink] = useState<string>();
   const [copied, setCopied] = useState(false);
+  const [inviteRole, setInviteRole] = useState<'viewer' | 'editor'>('viewer');
   const [error, setError] = useState<string>();
 
   const refetch = async () => {
@@ -34,7 +35,10 @@ export function ShareFamily() {
   const makeLink = async () => {
     setError(undefined);
     try {
-      const token = await createInvite(activeFamily.id, 'viewer', user.id);
+      // Alleen de owner mag een rol kiezen; een editor nodigt altijd lezers uit
+      // (geen rechten-escalatie via de link).
+      const role = isOwner ? inviteRole : 'viewer';
+      const token = await createInvite(activeFamily.id, role, user.id);
       const url = `${window.location.origin}/?invite=${token}`;
       setLink(url);
       setCopied(false);
@@ -69,6 +73,15 @@ export function ShareFamily() {
           <div className="family-group">{activeFamily.label} delen</div>
           {canInvite ? (
             <>
+              {isOwner && (
+                <label className="share-role">
+                  Nodig uit als
+                  <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as 'viewer' | 'editor')}>
+                    <option value="viewer">lezer (bekijkt alleen)</option>
+                    <option value="editor">bewerker (voegt toe & beheert eigen toevoegingen)</option>
+                  </select>
+                </label>
+              )}
               <button className="share-link-btn" onClick={makeLink}>
                 {copied ? 'Link gekopieerd ✓' : 'Maak uitnodigingslink'}
               </button>
