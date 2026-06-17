@@ -716,6 +716,21 @@ body {
 
 .bridge-accept input { flex: 1; min-width: 0; }
 
+.bridge-cross {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font: 600 0.74rem var(--font-ui);
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.bridge-cross:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 /* Foto-editor (bijsnijden + camera) */
 .photo-editor { width: min(94vw, 340px); }
 

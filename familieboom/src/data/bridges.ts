@@ -37,3 +37,11 @@ export async function acceptBridgeInvite(
   if (error) throw error;
   return data as BridgeAccepted;
 }
+
+/** Vraag toegang tot een via een brug verbonden familie (→ pending lidmaatschap). */
+export async function requestFamilyAccess(familyId: string): Promise<string> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { data, error } = await supabase.rpc('request_family_access', { p_family: familyId });
+  if (error) throw error;
+  return data as string;
+}

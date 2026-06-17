@@ -8,7 +8,9 @@ import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
 import { acceptInvite } from './data/invites';
+import { requestFamilyAccess } from './data/bridges';
 import { signedAvatarUrls } from './data/mutations';
+import { useFamilies } from './ui/useFamilies';
 import { supabase } from './data/supabaseClient';
 import { PersonPanel } from './ui/PersonPanel';
 import { PrivacyInfo } from './ui/PrivacyInfo';
@@ -50,8 +52,9 @@ function PhotoIcon() {
 }
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, dataVersion, user, notice, setMode, setFocus, setIk, toggleTheme, togglePhotos, setAuthOpen, setNotice } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, setMode, setFocus, setIk, toggleTheme, togglePhotos, crossTo, crossBack, setAuthOpen, setNotice } =
     useAppStore();
+  const { families } = useFamilies();
 
   // Uitnodiging accepteren: ?invite=<token> → pending lid zodra ingelogd.
   const [inviteToken, setInviteToken] = useState(() =>
@@ -150,6 +153,27 @@ export default function App() {
     [kinship, ikId, focusId],
   );
 
+  // Oversteken naar de gekoppelde familie: lid → meteen wisselen; geen lid →
+  // toegang vragen (de owner van die boom keurt goed).
+  const crossBridge = async () => {
+    const b = focusPerson?.bridge;
+    if (!b) return;
+    if (families.some((f) => f.id === b.familyId)) {
+      crossTo({ id: b.familyId, ego: b.personId, label: b.familyName });
+    } else {
+      try {
+        const status = await requestFamilyAccess(b.familyId);
+        setNotice(
+          status === 'active'
+            ? `Je hebt al toegang tot familie ${b.familyName}.`
+            : `Toegang gevraagd aan familie ${b.familyName} — wacht op goedkeuring.`,
+        );
+      } catch (err) {
+        setNotice(err instanceof Error ? err.message : 'Toegang vragen mislukt');
+      }
+    }
+  };
+
   return (
     <div className="app">
       <header className="topbar">
@@ -242,6 +266,20 @@ export default function App() {
               </button>
             )}
           </div>
+          {bridgeReturn && (
+            <div className="person-card-relation">
+              <button className="perspective-btn" onClick={crossBack}>
+                ← terug naar familie {bridgeReturn.label}
+              </button>
+            </div>
+          )}
+          {focusPerson.bridge && (
+            <div className="person-card-relation">
+              <button className="bridge-cross" onClick={crossBridge}>
+                ↗ ook in familie {focusPerson.bridge.familyName}
+              </button>
+            </div>
+          )}
           {relation && ikPerson && (
             <div className="person-card-relation">
               {relation.label} van {shortName(ikPerson)}

@@ -56,6 +56,8 @@ interface AppState {
   photos: boolean;
   user: SessionUser | null;
   activeFamily: ActiveFamily | null;
+  /** Familie waar je vandaan kwam bij het oversteken van een brug (kruimelpad). */
+  bridgeReturn: ActiveFamily | null;
   /** Login-modal open (gedeeld, zodat o.a. een uitnodiging 'm kan openen). */
   authOpen: boolean;
   /** Vluchtige melding (bv. 'uitgelogd'); App toont 'm als banner. */
@@ -70,6 +72,10 @@ interface AppState {
   togglePhotos: () => void;
   setUser: (user: SessionUser | null) => void;
   setActiveFamily: (family: ActiveFamily | null) => void;
+  /** Steek over naar een gekoppelde familie en onthoud waar je vandaan kwam. */
+  crossTo: (family: ActiveFamily) => void;
+  /** Keer terug naar de familie van vóór het oversteken. */
+  crossBack: () => void;
   setAuthOpen: (open: boolean) => void;
   setNotice: (notice?: string) => void;
   bumpData: () => void;
@@ -107,6 +113,7 @@ export const useAppStore = create<AppState>((set) => ({
   photos: localStorage.getItem(PHOTOS_KEY) !== 'off',
   user: null,
   activeFamily: null,
+  bridgeReturn: null,
   authOpen: false,
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
@@ -130,8 +137,30 @@ export const useAppStore = create<AppState>((set) => ({
   setUser: (user) => set({ user }),
   setActiveFamily: (family) => {
     if (family) localStorage.setItem(LAST_FAMILY_KEY, family.id);
-    set(family ? { activeFamily: family, focusId: family.ego, ikId: family.ego } : { activeFamily: null });
+    set(
+      family
+        ? { activeFamily: family, focusId: family.ego, ikId: family.ego, bridgeReturn: null }
+        : { activeFamily: null, bridgeReturn: null },
+    );
   },
+  crossTo: (family) =>
+    set((state) => {
+      localStorage.setItem(LAST_FAMILY_KEY, family.id);
+      // Onthoud waar je vandaan kwam (alleen het eerste vertrekpunt bij meerdere sprongen).
+      return {
+        activeFamily: family,
+        focusId: family.ego,
+        ikId: family.ego,
+        bridgeReturn: state.bridgeReturn ?? state.activeFamily,
+      };
+    }),
+  crossBack: () =>
+    set((state) => {
+      const back = state.bridgeReturn;
+      if (!back) return {};
+      localStorage.setItem(LAST_FAMILY_KEY, back.id);
+      return { activeFamily: back, focusId: back.ego, ikId: back.ego, bridgeReturn: null };
+    }),
   setAuthOpen: (authOpen) => set({ authOpen }),
   setNotice: (notice) => set({ notice }),
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),

@@ -411,6 +411,20 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
                     <circle r={active.r} fill="none" stroke={color} strokeWidth={thin(2.5)} opacity={0.9} />
                   </g>
                 )}
+                {/* Brug-markering: deze persoon staat ook in een andere boom. */}
+                {isNav && artNode.person.bridge && (
+                  <g transform={`translate(${active.r * 0.72}, ${-active.r * 0.72})`}>
+                    <circle r={6 * navK} fill={palette.axis} opacity={0.92} />
+                    <text
+                      textAnchor="middle"
+                      y={2.6 * navK}
+                      style={{ fontSize: 8.5 * navK }}
+                      fill={palette.deceasedFill}
+                    >
+                      ↗
+                    </text>
+                  </g>
+                )}
                 {/* Navigatie-labels */}
                 <motion.g
                   animate={{ opacity: isNav && navNode ? 1 : 0 }}
