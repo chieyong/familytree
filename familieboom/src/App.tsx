@@ -13,6 +13,8 @@ import { signedAvatarUrls } from './data/mutations';
 import { useFamilies } from './ui/useFamilies';
 import { supabase } from './data/supabaseClient';
 import { PersonPanel } from './ui/PersonPanel';
+import { HelpGuide } from './ui/HelpGuide';
+import { WelcomeCard } from './ui/WelcomeCard';
 import { PrivacyInfo } from './ui/PrivacyInfo';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
@@ -205,6 +207,7 @@ export default function App() {
               <PhotoIcon />
             </button>
           )}
+          <HelpGuide />
           <PrivacyInfo />
           <AuthBar />
           <ShareFamily />
@@ -322,6 +325,7 @@ export default function App() {
       )}
 
       <FamilyMenu />
+      <WelcomeCard />
 
       <details className="legend">
         <summary>Legenda</summary>

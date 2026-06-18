@@ -210,6 +210,127 @@ body {
   font-style: italic;
 }
 
+/* ── Uitleg-gids: samenvouwbare secties ────────────────────────────────── */
+.guide-section {
+  border-top: 1px solid var(--surface-border);
+}
+
+.guide-section > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+
+.guide-section > summary::-webkit-details-marker { display: none; }
+
+.guide-section > summary::after {
+  content: '+';
+  color: var(--ink-dim);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.guide-section[open] > summary::after { content: '–'; }
+
+.guide-section > summary + * { margin-top: 0; }
+.guide-section > *:not(summary):last-child { margin-bottom: 12px; }
+
+/* ── Welkomstkaart (eerste login) ──────────────────────────────────────── */
+.welcome-card {
+  width: min(92vw, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px;
+  background: var(--bg-raised);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+}
+
+.welcome-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.3rem;
+}
+
+.welcome-intro {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
+.welcome-steps {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.welcome-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.welcome-step-num {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 0.8rem var(--font-ui);
+}
+
+.welcome-step strong {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 1px;
+}
+
+.welcome-step span {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-dim);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.welcome-actions button {
+  flex: 1;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 0.82rem var(--font-ui);
+  cursor: pointer;
+}
+
+.welcome-more {
+  flex: 0 0 auto !important;
+  background: transparent !important;
+  border: 1px solid var(--surface-border) !important;
+  color: var(--ink-dim) !important;
+}
+
 /* ── Import-modal ──────────────────────────────────────────────────────── */
 .import-card {
   width: min(94vw, 560px);

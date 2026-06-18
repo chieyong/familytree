@@ -60,6 +60,8 @@ interface AppState {
   bridgeReturn: ActiveFamily | null;
   /** Login-modal open (gedeeld, zodat o.a. een uitnodiging 'm kan openen). */
   authOpen: boolean;
+  /** Uitleg-gids open (gedeeld, zodat de welkomstkaart 'm kan openen). */
+  guideOpen: boolean;
   /** Vluchtige melding (bv. 'uitgelogd'); App toont 'm als banner. */
   notice?: string;
   /** Verhoogt na een mutatie zodat de graaf opnieuw geladen wordt. */
@@ -77,6 +79,7 @@ interface AppState {
   /** Keer terug naar de familie van vóór het oversteken. */
   crossBack: () => void;
   setAuthOpen: (open: boolean) => void;
+  setGuideOpen: (open: boolean) => void;
   setNotice: (notice?: string) => void;
   bumpData: () => void;
 }
@@ -115,6 +118,7 @@ export const useAppStore = create<AppState>((set) => ({
   activeFamily: null,
   bridgeReturn: null,
   authOpen: false,
+  guideOpen: false,
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
   setDataset: (dataset) =>
@@ -162,6 +166,7 @@ export const useAppStore = create<AppState>((set) => ({
       return { activeFamily: back, focusId: back.ego, ikId: back.ego, bridgeReturn: null };
     }),
   setAuthOpen: (authOpen) => set({ authOpen }),
+  setGuideOpen: (guideOpen) => set({ guideOpen }),
   setNotice: (notice) => set({ notice }),
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 }));
