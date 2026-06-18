@@ -1,5 +1,19 @@
-import { guideContent } from './guideContent';
+import { guideContent, type GuideItem } from './guideContent';
 import { useAppStore } from './store';
+
+function ItemList({ items }: { items?: GuideItem[] }) {
+  if (!items?.length) return null;
+  return (
+    <ul>
+      {items.map((it, i) => (
+        <li key={i}>
+          {it.label && <strong>{it.label}</strong>}
+          {it.label ? ` — ${it.text}` : it.text}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function GuideIcon() {
   return (
@@ -42,17 +56,16 @@ export function HelpGuide() {
               <details className="guide-section" key={s.q}>
                 <summary>{s.q}</summary>
                 {s.p?.map((para, i) => <p key={i}>{para}</p>)}
-                {s.items && (
-                  <ul>
-                    {s.items.map((it, i) => (
-                      <li key={i}>
-                        {it.label && <strong>{it.label}</strong>}
-                        {it.label ? ` — ${it.text}` : it.text}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ItemList items={s.items} />
                 {s.note && <p className="info-ex">{s.note}</p>}
+                {s.blocks?.map((b, i) => (
+                  <div className="guide-block" key={i}>
+                    {b.h && <h4>{b.h}</h4>}
+                    {b.p?.map((para, j) => <p key={j}>{para}</p>)}
+                    <ItemList items={b.items} />
+                    {b.note && <p className="info-ex">{b.note}</p>}
+                  </div>
+                ))}
               </details>
             ))}
           </div>

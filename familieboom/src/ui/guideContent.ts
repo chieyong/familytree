@@ -14,6 +14,15 @@ export interface GuideItem {
   text: string;
 }
 
+/** Een rijk sub-onderdeel binnen een sectie, met een eigen kopje. */
+export interface GuideBlock {
+  /** Subkopje. */
+  h?: string;
+  p?: string[];
+  items?: GuideItem[];
+  note?: string;
+}
+
 export interface GuideSection {
   /** Titel in de samenvouwbare kop. */
   q: string;
@@ -23,6 +32,8 @@ export interface GuideSection {
   items?: GuideItem[];
   /** Terzijde, met accentrand (bv. een voorbeeld of een let-op). */
   note?: string;
+  /** Meerdelige inhoud met subkopjes (bv. privacy). */
+  blocks?: GuideBlock[];
 }
 
 export interface GuideContent {
@@ -77,6 +88,53 @@ const nl: GuideContent = {
         ],
       },
       {
+        q: 'Privacy & zichtbaarheid',
+        p: ['Een familieboom is privé. Jij beslist wie wat ziet — per persoon én per relatie.'],
+        blocks: [
+          {
+            h: 'Besloten, op uitnodiging',
+            p: [
+              'Niemand kan je boom vinden of openen zonder uitnodiging. Een uitgelogde bezoeker ziet alleen de demo. Je deelt via een link; wie zich aanmeldt staat eerst in afwachting en wordt pas lid als de beheerder goedkeurt.',
+            ],
+          },
+          {
+            h: 'Drie niveaus van zichtbaarheid',
+            p: ['Elke persoon — en elke relatie — heeft een zichtbaarheid:'],
+            items: [
+              { label: 'Openbaar', text: 'voor iedereen, ook zonder login (voor wat je bewust deelt).' },
+              { label: 'Familie', text: 'voor alle leden van deze boom (standaard).' },
+              { label: 'Privé', text: 'alleen voor de beheerder.' },
+            ],
+            note: 'Geldt er meer dan één instelling, dan wint de strengste. Voorbeeld: je oma wil haar geboortejaar niet met de hele familie delen → zet haar op privé; alleen de beheerder ziet haar dan.',
+          },
+          {
+            h: 'Je gaat over jezelf',
+            p: [
+              'Je mag je eigen gegevens altijd strenger zetten dan een beheerder deed — ook al beheert iemand anders jouw knooppunt.',
+            ],
+          },
+          {
+            h: 'Verborgen, maar de boom blijft kloppen',
+            p: [
+              'Een afgeschermde persoon verdwijnt niet helemaal: anderen zien "verborgen persoon" op die plek, zodat verbindingen — en wie familie van wie is — blijven kloppen binnen je eigen boom.',
+            ],
+          },
+          {
+            h: 'Gedeelde feiten',
+            p: [
+              'Een huwelijk of ouder–kindband is van twee mensen samen — een gedeeld feit. Zo’n band blijft standaard zichtbaar voor de familie, zodat de stamboom klopt en je kunt zien wie familie van wie is.',
+            ],
+            note: 'Het apart, fijnmazig afschermen van losse relaties — en een band alleen met instemming van beide kanten verbergen — is ontworpen maar zit nog niet in deze versie.',
+          },
+          {
+            h: 'Wat "verborgen" wél en niet betekent',
+            p: [
+              'Verbergen beschermt tegen toevallig meekijken en tegen buitenstaanders. Het is géén garantie tegen een familielid dat goed nadenkt: uit wie wél zichtbaar is, valt soms af te leiden wie verborgen is (een zichtbare halfbroer verraadt een gedeelde ouder). Voor een écht geheim kun je iemand beter helemaal niet invoeren.',
+            ],
+          },
+        ],
+      },
+      {
         q: '"Dit ben ik" en perspectief',
         p: ['Relaties krijgen pas betekenis vanuit iemand: "moeder van Anna", "neef van Tom". Daarom kies je een ik.'],
         items: [
@@ -90,16 +148,6 @@ const nl: GuideContent = {
           'Klik op een persoon en kies + ouder, + partner of + kind. Je maakt een nieuw persoon aan, of koppelt iemand die al in de familie staat.',
           'In Gegevens vul je naam, jaren en een foto in. Onder "meer details" zitten bijnaam, naam in eigen schrift en zichtbaarheid.',
         ],
-      },
-      {
-        q: 'Wie ziet wat?',
-        p: ['Per persoon stel je in wie de gegevens ziet:'],
-        items: [
-          { label: 'Zichtbaar voor familie', text: 'iedereen met toegang tot deze familie (de veilige standaard).' },
-          { label: 'Privé', text: 'alleen de beheerder.' },
-          { label: 'Openbaar', text: 'voor iedereen, ook buiten de app.' },
-        ],
-        note: 'Meer over privacy, verbergen en gedeelde feiten lees je via de ?-knop ernaast.',
       },
       {
         q: 'Samen bouwen',

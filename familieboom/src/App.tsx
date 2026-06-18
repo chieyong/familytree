@@ -15,7 +15,6 @@ import { supabase } from './data/supabaseClient';
 import { PersonPanel } from './ui/PersonPanel';
 import { HelpGuide } from './ui/HelpGuide';
 import { WelcomeCard } from './ui/WelcomeCard';
-import { PrivacyInfo } from './ui/PrivacyInfo';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -54,7 +53,7 @@ function PhotoIcon() {
 }
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, setMode, setFocus, setIk, toggleTheme, togglePhotos, crossTo, crossBack, setAuthOpen, setNotice } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, toggleTheme, togglePhotos, crossTo, crossBack, setAuthOpen, setNotice } =
     useAppStore();
   const { families } = useFamilies();
 
@@ -208,7 +207,6 @@ export default function App() {
             </button>
           )}
           <HelpGuide />
-          <PrivacyInfo />
           <AuthBar />
           <ShareFamily />
         </div>
@@ -252,7 +250,7 @@ export default function App() {
         )}
       </main>
 
-      {focusPerson && (
+      {focusPerson && !guideOpen && !authOpen && (
         <footer className="person-card">
           {photoByPerson.get(focusPerson.id) && (
             <img className="person-card-avatar" src={photoByPerson.get(focusPerson.id)} alt="" />
