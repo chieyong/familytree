@@ -1079,6 +1079,7 @@ body {
   flex-direction: column;
   gap: 14px;
   padding: 18px;
+  padding-top: max(18px, env(safe-area-inset-top) + 10px);
   background: var(--bg-raised);
   border-left: 1px solid var(--surface-border);
 }
