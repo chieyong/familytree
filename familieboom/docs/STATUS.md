@@ -37,6 +37,7 @@ opnieuw draaien, dat kan geen kwaad.
 | 11 | `20260618130000_claim_self.sql` | claim_self_person ("dit ben ik") | ⚠️ onbevestigd |
 | 12 | `20260618140000_tree_links.sql` | tree_links + bridge_invites + RPC's, _build_graph (bridge) | ✅ (brug werkte) |
 | 13 | `20260618150000_request_access.sql` | request_family_access | ✅ (brug + oversteken geverifieerd 2026-06-18) |
+| 14 | `20260618160000_editor_can_manage.sql` | can_manage_person erkent editor-rol (fix "Toevoegen mislukt" voor bewerkers) | ⚠️ nog draaien |
 
 **Actie voor een verse sessie:** alle migraties t/m 13 zijn gedraaid; 9 en 11
 blijven onbevestigd maar idempotent (bij twijfel opnieuw draaien). De gebruiker
