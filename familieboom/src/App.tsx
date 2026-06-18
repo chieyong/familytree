@@ -316,6 +316,7 @@ export default function App() {
           familyId={activeFamily.id}
           egoId={activeFamily.ego}
           graph={fullGraph}
+          photoUrl={photoByPerson.get(focusPerson.id)}
           onClose={() => setPanelOpen(false)}
         />
       )}

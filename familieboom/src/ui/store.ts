@@ -81,7 +81,7 @@ interface AppState {
   bumpData: () => void;
 }
 
-const initialMode: ViewMode = params.get('view') === 'navigation' ? 'navigation' : 'artwork';
+const initialMode: ViewMode = params.get('view') === 'artwork' ? 'artwork' : 'navigation';
 const initialDataset: DatasetId = params.get('data') === 'habsburg' ? 'habsburg' : 'demo';
 
 const THEME_KEY = 'familieboom-theme';

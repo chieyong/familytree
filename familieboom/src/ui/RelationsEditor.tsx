@@ -118,9 +118,14 @@ export function RelationsEditor({
   const total = partners.length + parents.length + children.length;
 
   if (!open) {
+    const parts = [
+      partners.length && `${partners.length} ${partners.length === 1 ? 'partner' : 'partners'}`,
+      parents.length && `${parents.length} ${parents.length === 1 ? 'ouder' : 'ouders'}`,
+      children.length && `${children.length} ${children.length === 1 ? 'kind' : 'kinderen'}`,
+    ].filter(Boolean);
     return (
       <button className="add-rel-btn" onClick={() => setOpen(true)}>
-        relaties{total ? ` (${total})` : ''}
+        {parts.length ? parts.join(' · ') : 'geen relaties'} ✎
       </button>
     );
   }

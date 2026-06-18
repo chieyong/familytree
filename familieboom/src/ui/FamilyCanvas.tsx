@@ -353,10 +353,8 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
           const isFocus = id === focusId;
           const navK = nav?.k ?? 1;
           const labelY = active.r + (16 + (navNode?.labelTier ? 26 : 0)) * navK;
-          // Foto alleen in de boom, op de gekozen persoon of zodra een node
-          // groot genoeg op het scherm is (inzoomen). Houdt de periferie rustig.
           const photoUrl = photoUrls.get(id);
-          const showPhoto = isNav && photos && !!photoUrl && (isFocus || active.r * screenScale * view.k >= 30);
+          const showPhoto = isNav && photos && !!photoUrl;
           return (
             <motion.g
               key={id}

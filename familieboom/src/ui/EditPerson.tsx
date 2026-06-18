@@ -29,6 +29,10 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const [visibility, setVisibility] = useState<Visibility>(person.visibility);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  // Zelden gebruikte velden ingeklapt — maar open als ze al gevuld zijn.
+  const [showMore, setShowMore] = useState(
+    !!(person.nameNative || person.nickname || person.visibility !== 'family'),
+  );
 
   // Profielfoto: huidige (ondertekende) preview + upload/verwijder.
   const [photoUrl, setPhotoUrl] = useState<string>();
@@ -168,10 +172,6 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         onChange={(e) => setGiven(e.target.value)} />
       <input placeholder="Achternaam" value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
-      <input placeholder="Naam in eigen schrift (林麗莎, Иван…)" value={nameNative}
-        onChange={(e) => setNameNative(e.target.value)} />
-      <input placeholder="Bijnaam / roepnaam" value={nickname}
-        onChange={(e) => setNickname(e.target.value)} />
       <div className="add-rel-row">
         <select value={sex} onChange={(e) => setSex(e.target.value as typeof sex)}>
           <option value="">geslacht</option>
@@ -184,11 +184,23 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         <input className="add-rel-year" placeholder="overl." inputMode="numeric"
           value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
       </div>
-      <select value={visibility} onChange={(e) => setVisibility(e.target.value as Visibility)}>
-        <option value="family">zichtbaar voor familie</option>
-        <option value="private">privé (alleen beheerder)</option>
-        <option value="public">openbaar</option>
-      </select>
+      {showMore ? (
+        <>
+          <input placeholder="Naam in eigen schrift (林麗莎, Иван…)" value={nameNative}
+            onChange={(e) => setNameNative(e.target.value)} />
+          <input placeholder="Bijnaam / roepnaam" value={nickname}
+            onChange={(e) => setNickname(e.target.value)} />
+          <select value={visibility} onChange={(e) => setVisibility(e.target.value as Visibility)}>
+            <option value="family">zichtbaar voor familie</option>
+            <option value="private">privé (alleen beheerder)</option>
+            <option value="public">openbaar</option>
+          </select>
+        </>
+      ) : (
+        <button type="button" className="more-toggle" onClick={() => setShowMore(true)}>
+          meer details ▾
+        </button>
+      )}
       {error && <p className="add-rel-error">{error}</p>}
       <div className="add-rel-row">
         <button type="submit" disabled={busy}>{busy ? '…' : 'Opslaan'}</button>
