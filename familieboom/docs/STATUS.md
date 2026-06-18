@@ -36,10 +36,11 @@ opnieuw draaien, dat kan geen kwaad.
 | 10 | `20260618120000_photos.sql` | photo_path, privé-bucket avatars + storage-RLS, _build_graph | ✅ |
 | 11 | `20260618130000_claim_self.sql` | claim_self_person ("dit ben ik") | ⚠️ onbevestigd |
 | 12 | `20260618140000_tree_links.sql` | tree_links + bridge_invites + RPC's, _build_graph (bridge) | ✅ (brug werkte) |
-| 13 | `20260618150000_request_access.sql` | request_family_access | ❌ nog draaien |
+| 13 | `20260618150000_request_access.sql` | request_family_access | ✅ (brug + oversteken geverifieerd 2026-06-18) |
 
-**Actie voor een verse sessie:** draai in elk geval 13. Bij twijfel over 9/11:
-gewoon opnieuw draaien (idempotent). De gebruiker draait ze zelf in de SQL-editor.
+**Actie voor een verse sessie:** alle migraties t/m 13 zijn gedraaid; 9 en 11
+blijven onbevestigd maar idempotent (bij twijfel opnieuw draaien). De gebruiker
+draait ze zelf in de SQL-editor.
 
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere
@@ -66,9 +67,9 @@ gewoon opnieuw draaien (idempotent). De gebruiker draait ze zelf in de SQL-edito
   headless** — die test de gebruiker zelf op bloom.vizcraft.nl.
 
 ## Volgende stappen
-- Bruggen testen met twee owners (gebruiker + vrouw): Lai ↔ Man via Weiyie.
-- Bruggen fase 2 (later, zie design-doc §8): begrensd alleen-lezen oversteken,
-  één doorlopend gestikt beeld, brug intrekken in de UI, profielsync tussen de
+- ✅ Bruggen Lai ↔ Man via Weiyie getest met twee owners — werkte (2026-06-18).
+- Bruggen v2 (later, zie design-doc): begrensd alleen-lezen oversteken, één
+  doorlopend gestikt beeld, brug intrekken in de UI, profielsync tussen de
   spiegel-knopen.
 
 ## Conventies
