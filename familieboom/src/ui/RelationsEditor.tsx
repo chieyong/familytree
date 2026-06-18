@@ -9,24 +9,11 @@ import {
 } from '../data/mutations';
 import { shortName } from './theme';
 import { useAppStore } from './store';
+import { useT } from './useT';
 
-const UNION_TYPES: { v: UnionType; l: string }[] = [
-  { v: 'marriage', l: 'huwelijk' },
-  { v: 'registered', l: 'geregistreerd' },
-  { v: 'cohabitation', l: 'samenwonend' },
-  { v: 'relationship', l: 'relatie' },
-];
-const END_REASONS: { v: UnionEndReason; l: string }[] = [
-  { v: 'divorce', l: 'gescheiden' },
-  { v: 'separation', l: 'uit elkaar' },
-  { v: 'death', l: 'overlijden' },
-];
-const ROLES: { v: ParentRole; l: string }[] = [
-  { v: 'biological', l: 'biologisch' },
-  { v: 'adoptive', l: 'adoptie' },
-  { v: 'step', l: 'stief' },
-  { v: 'foster', l: 'pleeg' },
-];
+const UNION_TYPES: UnionType[] = ['marriage', 'registered', 'cohabitation', 'relationship'];
+const END_REASONS: UnionEndReason[] = ['divorce', 'separation', 'death'];
+const ROLES: ParentRole[] = ['biological', 'adoptive', 'step', 'foster'];
 
 function useAfter() {
   const bumpData = useAppStore((s) => s.bumpData);
@@ -38,13 +25,14 @@ function useAfter() {
 
 function UnionRow({ union, otherName }: { union: Union; otherName: string }) {
   const after = useAfter();
+  const t = useT();
   const reason = union.end?.reason ?? '';
   return (
     <div className="rel-row">
       <span className="rel-name">{otherName}</span>
       <select value={union.type} onChange={(e) => after(setUnionType(union.id, e.target.value as UnionType))}>
-        {UNION_TYPES.map((t) => (
-          <option key={t.v} value={t.v}>{t.l}</option>
+        {UNION_TYPES.map((v) => (
+          <option key={v} value={v}>{t.relations[v]}</option>
         ))}
       </select>
       <select
@@ -53,15 +41,15 @@ function UnionRow({ union, otherName }: { union: Union; otherName: string }) {
           after(setUnionEnd(union.id, (e.target.value || null) as UnionEndReason | null, union.end?.date?.year))
         }
       >
-        <option value="">lopend</option>
-        {END_REASONS.map((r) => (
-          <option key={r.v} value={r.v}>{r.l}</option>
+        <option value="">{t.relations.ongoing}</option>
+        {END_REASONS.map((v) => (
+          <option key={v} value={v}>{t.relations[v]}</option>
         ))}
       </select>
       {reason && (
         <input
           className="rel-year"
-          placeholder="jaar"
+          placeholder={t.relations.year}
           defaultValue={union.end?.date?.year ?? ''}
           onBlur={(e) => {
             const y = e.target.value.replace(/\D/g, '');
@@ -69,7 +57,7 @@ function UnionRow({ union, otherName }: { union: Union; otherName: string }) {
           }}
         />
       )}
-      <button className="rel-unlink" title="ontkoppel" onClick={() => after(deleteUnion(union.id))}>
+      <button className="rel-unlink" title={t.relations.unlink} onClick={() => after(deleteUnion(union.id))}>
         ✕
       </button>
     </div>
@@ -78,17 +66,18 @@ function UnionRow({ union, otherName }: { union: Union; otherName: string }) {
 
 function LinkRow({ link, otherName, word }: { link: ParentChildLink; otherName: string; word: string }) {
   const after = useAfter();
+  const t = useT();
   return (
     <div className="rel-row">
       <span className="rel-name">
         {otherName} <em>{word}</em>
       </span>
       <select value={link.role} onChange={(e) => after(setParentRole(link.id, e.target.value as ParentRole))}>
-        {ROLES.map((r) => (
-          <option key={r.v} value={r.v}>{r.l}</option>
+        {ROLES.map((v) => (
+          <option key={v} value={v}>{t.relations[v]}</option>
         ))}
       </select>
-      <button className="rel-unlink" title="ontkoppel" onClick={() => after(deleteParentLink(link.id))}>
+      <button className="rel-unlink" title={t.relations.unlink} onClick={() => after(deleteParentLink(link.id))}>
         ✕
       </button>
     </div>
@@ -106,6 +95,7 @@ export function RelationsEditor({
   embedded?: boolean;
 }) {
   const [open, setOpen] = useState(embedded ?? false);
+  const t = useT();
   if (!graph) return null;
 
   const name = (id: string) => {
@@ -118,14 +108,9 @@ export function RelationsEditor({
   const total = partners.length + parents.length + children.length;
 
   if (!open) {
-    const parts = [
-      partners.length && `${partners.length} ${partners.length === 1 ? 'partner' : 'partners'}`,
-      parents.length && `${parents.length} ${parents.length === 1 ? 'ouder' : 'ouders'}`,
-      children.length && `${children.length} ${children.length === 1 ? 'kind' : 'kinderen'}`,
-    ].filter(Boolean);
     return (
       <button className="add-rel-btn" onClick={() => setOpen(true)}>
-        {parts.length ? parts.join(' · ') : 'geen relaties'} ✎
+        {t.relations.summary(partners.length, parents.length, children.length)} ✎
       </button>
     );
   }
@@ -140,14 +125,14 @@ export function RelationsEditor({
         />
       ))}
       {parents.map((l) => (
-        <LinkRow key={l.id} link={l} otherName={name(l.parent)} word="ouder" />
+        <LinkRow key={l.id} link={l} otherName={name(l.parent)} word={t.relations.wordParent} />
       ))}
       {children.map((l) => (
-        <LinkRow key={l.id} link={l} otherName={name(l.child)} word="kind" />
+        <LinkRow key={l.id} link={l} otherName={name(l.child)} word={t.relations.wordChild} />
       ))}
-      {total === 0 && <div className="family-empty">geen relaties</div>}
+      {total === 0 && <div className="family-empty">{t.relations.none}</div>}
       {!embedded && (
-        <button className="add-rel-cancel" onClick={() => setOpen(false)}>sluiten</button>
+        <button className="add-rel-cancel" onClick={() => setOpen(false)}>{t.relations.close}</button>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { guideContent } from './guideContent';
 import { useAppStore } from './store';
+import { useGuide } from './useT';
 
 const WELCOME_KEY = 'familieboom-welcome-seen';
 
@@ -9,7 +9,7 @@ export function WelcomeCard() {
   const user = useAppStore((s) => s.user);
   const setGuideOpen = useAppStore((s) => s.setGuideOpen);
   const [dismissed, setDismissed] = useState(() => localStorage.getItem(WELCOME_KEY) === '1');
-  const { title, intro, leadIn, steps, start, more } = guideContent.welcome;
+  const { title, intro, leadIn, steps, start, more } = useGuide().welcome;
 
   if (!user || dismissed) return null;
 

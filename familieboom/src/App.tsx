@@ -19,7 +19,9 @@ import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
 import { ShareFamily } from './ui/ShareFamily';
+import { LangSwitcher } from './ui/LangSwitcher';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
+import { useT } from './ui/useT';
 import { lifespan, shortName } from './ui/theme';
 
 const habsburg = habsburgJson as unknown as FamilyGraph;
@@ -55,6 +57,7 @@ function PhotoIcon() {
 export default function App() {
   const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, toggleTheme, togglePhotos, crossTo, crossBack, setAuthOpen, setNotice } =
     useAppStore();
+  const t = useT();
   const { families } = useFamilies();
 
   // Uitnodiging accepteren: ?invite=<token> → pending lid zodra ingelogd.
@@ -68,11 +71,11 @@ export default function App() {
       .then((r) => {
         setInviteMsg(
           r.status === 'active'
-            ? `Je bent nu lid van ${r.familyName}. Kies 'm in het menu rechtsonder.`
-            : `Verzoek voor ${r.familyName} verstuurd — wacht op goedkeuring door de beheerder.`,
+            ? t.invite.nowMember(r.familyName)
+            : t.invite.requestSent(r.familyName),
         );
       })
-      .catch((err) => setInviteMsg(err instanceof Error ? err.message : 'Uitnodiging mislukt'))
+      .catch((err) => setInviteMsg(err instanceof Error ? err.message : t.invite.failed))
       .finally(() => {
         const url = new URL(window.location.href);
         url.searchParams.delete('invite');
@@ -166,11 +169,11 @@ export default function App() {
         const status = await requestFamilyAccess(b.familyId);
         setNotice(
           status === 'active'
-            ? `Je hebt al toegang tot familie ${b.familyName}.`
-            : `Toegang gevraagd aan familie ${b.familyName} — wacht op goedkeuring.`,
+            ? t.bridgeCross.alreadyAccess(b.familyName)
+            : t.bridgeCross.requested(b.familyName),
         );
       } catch (err) {
-        setNotice(err instanceof Error ? err.message : 'Toegang vragen mislukt');
+        setNotice(err instanceof Error ? err.message : t.bridgeCross.failed);
       }
     }
   };
@@ -180,19 +183,20 @@ export default function App() {
       <header className="topbar">
         <h1>Bloom</h1>
         <div className="topbar-right">
-          <nav className="mode-toggle" aria-label="Weergave">
+          <nav className="mode-toggle" aria-label={t.topbar.viewLabel}>
             <button className={mode === 'artwork' ? 'active' : ''} onClick={() => setMode('artwork')}>
-              Tableau
+              {t.topbar.tableau}
             </button>
             <button className={mode === 'navigation' ? 'active' : ''} onClick={() => setMode('navigation')}>
-              Tree
+              {t.topbar.tree}
             </button>
           </nav>
+          <LangSwitcher />
           <button
             className="theme-toggle"
             onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Wissel naar lichte modus' : 'Wissel naar donkere modus'}
-            title={theme === 'dark' ? 'Lichte modus' : 'Donkere modus'}
+            aria-label={theme === 'dark' ? t.topbar.lightMode : t.topbar.darkMode}
+            title={theme === 'dark' ? t.topbar.lightMode : t.topbar.darkMode}
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
@@ -200,8 +204,8 @@ export default function App() {
             <button
               className={`theme-toggle photo-toggle${photos ? ' active' : ''}`}
               onClick={togglePhotos}
-              aria-label={photos ? 'Foto’s verbergen' : 'Foto’s tonen'}
-              title={photos ? 'Foto’s verbergen' : 'Foto’s tonen'}
+              aria-label={photos ? t.topbar.hidePhotos : t.topbar.showPhotos}
+              title={photos ? t.topbar.hidePhotos : t.topbar.showPhotos}
             >
               <PhotoIcon />
             </button>
@@ -214,9 +218,9 @@ export default function App() {
 
       {inviteToken && !user && supabase && (
         <div className="invite-banner invite-prompt">
-          Je bent uitgenodigd voor een familieboom.
+          {t.invite.banner}
           <button className="invite-login" onClick={() => setAuthOpen(true)}>
-            Inloggen om deel te nemen
+            {t.invite.loginToJoin}
           </button>
         </div>
       )}
@@ -270,14 +274,14 @@ export default function App() {
           {bridgeReturn && (
             <div className="person-card-relation">
               <button className="perspective-btn" onClick={crossBack}>
-                ← terug naar familie {bridgeReturn.label}
+                {t.card.backToFamily(bridgeReturn.label)}
               </button>
             </div>
           )}
           {focusPerson.bridge && (
             <div className="person-card-relation">
               <button className="bridge-cross" onClick={crossBridge}>
-                ↗ ook in familie {focusPerson.bridge.familyName}
+                {t.card.alsoInFamily(focusPerson.bridge.familyName)}
               </button>
             </div>
           )}
@@ -286,23 +290,23 @@ export default function App() {
               {relation.label} van {shortName(ikPerson)}
               {relation.subtitle && <span> · {relation.subtitle}</span>}
               {relation.also && relation.also.length > 0 && (
-                <span> · ook: {relation.also.join(', ')}</span>
+                <span> · {t.card.also(relation.also.join(', '))}</span>
               )}
               <button
                 className="perspective-btn"
                 onClick={() => setIk(focusId)}
-                title="Benoem relaties voortaan vanuit deze persoon"
+                title={t.card.viewFromTitle}
               >
-                bekijk vanuit {focusPerson.givenNames[0]}
+                {t.card.viewFrom(focusPerson.givenNames[0])}
               </button>
             </div>
           )}
           {focusId === ikId && (
             <div className="person-card-relation">
-              huidig perspectief
+              {t.card.currentPerspective}
               {ikId !== defaultEgo && (
                 <button className="perspective-btn" onClick={() => setIk(defaultEgo)}>
-                  terug naar standaard
+                  {t.card.backToDefault}
                 </button>
               )}
             </div>
@@ -326,34 +330,25 @@ export default function App() {
       <WelcomeCard />
 
       <details className="legend">
-        <summary>Legenda</summary>
-        {mode === 'artwork' && (
-          <p className="legend-read">
-            <strong>Zo lees je het:</strong> tijd stroomt van boven naar
-            beneden. Elke verticale lijn is één leven, van geboortepunt tot
-            overlijden — de lengte ís de levensduur. Een takje dat een lijn
-            verlaat is de geboorte van een kind; een lichte boog tussen twee
-            lijnen is een huwelijk, op de hoogte van het trouwjaar. Zoom in
-            voor namen.
-          </p>
-        )}
+        <summary>{t.legend.title}</summary>
+        {mode === 'artwork' && <p className="legend-read">{t.legend.artworkRead}</p>}
         <ul>
           {mode === 'artwork' ? (
             <>
-              <li><span className="swatch line solid" /> kind ontspringt aan ouderlijn</li>
-              <li><span className="swatch line union" /> huwelijk (boog in trouwjaar)</li>
+              <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
+              <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
             </>
           ) : (
             <>
-              <li><span className="swatch line solid" /> ouder–kind (biologisch)</li>
-              <li><span className="swatch line union" /> partnerschap</li>
+              <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
+              <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
             </>
           )}
-          <li><span className="swatch line ex" /> beëindigd (scheiding)</li>
-          <li><span className="swatch line dotted" /> adoptie</li>
-          <li><span className="swatch line dashed" /> stief</li>
-          <li><span className="swatch dot" /> kleur = stamtak · grootte = nakomelingen</li>
-          <li><span className="swatch dot hollow" /> open = overleden</li>
+          <li><span className="swatch line ex" /> {t.legend.ended}</li>
+          <li><span className="swatch line dotted" /> {t.legend.adoption}</li>
+          <li><span className="swatch line dashed" /> {t.legend.step}</li>
+          <li><span className="swatch dot" /> {t.legend.branchSize}</li>
+          <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>
         </ul>
       </details>
     </div>

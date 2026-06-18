@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { approveMember, createInvite, listMembers, removeMember, updateMemberRole, type Member } from '../data/invites';
 import { useAppStore } from './store';
+import { useT } from './useT';
 
 /** Owner/editor: deel de actieve familie (uitnodigingslink) en keur leden goed. */
 export function ShareFamily() {
   const activeFamily = useAppStore((s) => s.activeFamily);
   const user = useAppStore((s) => s.user);
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
   const [link, setLink] = useState<string>();
@@ -18,7 +20,7 @@ export function ShareFamily() {
     try {
       setMembers(await listMembers(activeFamily.id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Laden mislukt');
+      setError(err instanceof Error ? err.message : t.share.loadFailed);
     }
   };
 
@@ -49,7 +51,7 @@ export function ShareFamily() {
         /* clipboard kan geweigerd worden; link staat zichtbaar om te kopiëren */
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Link maken mislukt');
+      setError(err instanceof Error ? err.message : t.share.linkFailed);
     }
   };
 
@@ -59,7 +61,7 @@ export function ShareFamily() {
       await approveMember(activeFamily.id, profileId);
       await refetch();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Goedkeuren mislukt');
+      setError(err instanceof Error ? err.message : t.share.approveFailed);
     }
   };
 
@@ -69,50 +71,50 @@ export function ShareFamily() {
       await updateMemberRole(activeFamily.id, profileId, role);
       await refetch();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Rol wijzigen mislukt');
+      setError(err instanceof Error ? err.message : t.share.roleFailed);
     }
   };
 
   const remove = async (m: Member) => {
-    if (!confirm(`${m.name} uit deze familie verwijderen? Zijn personen blijven bestaan.`)) return;
+    if (!confirm(t.share.confirmRemove(m.name))) return;
     setError(undefined);
     try {
       await removeMember(activeFamily.id, m.profileId);
       await refetch();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Verwijderen mislukt');
+      setError(err instanceof Error ? err.message : t.share.removeFailed);
     }
   };
 
   return (
     <div className="share-menu">
       <button className="auth-btn" onClick={() => setOpen((o) => !o)}>
-        Delen
+        {t.share.share}
       </button>
       {open && (
         <div className="share-pop">
-          <div className="family-group">{activeFamily.label} delen</div>
+          <div className="family-group">{t.share.shareTitle(activeFamily.label)}</div>
           {canInvite ? (
             <>
               {isOwner && (
                 <label className="share-role">
-                  Nodig uit als
+                  {t.share.inviteAs}
                   <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as 'viewer' | 'editor')}>
-                    <option value="viewer">lezer (bekijkt alleen)</option>
-                    <option value="editor">bewerker (voegt toe & beheert eigen toevoegingen)</option>
+                    <option value="viewer">{t.share.roleViewerLong}</option>
+                    <option value="editor">{t.share.roleEditorLong}</option>
                   </select>
                 </label>
               )}
               <button className="share-link-btn" onClick={makeLink}>
-                {copied ? 'Link gekopieerd ✓' : 'Maak uitnodigingslink'}
+                {copied ? t.share.linkCopied : t.share.makeLink}
               </button>
               {link && <input className="share-link" readOnly value={link} onFocus={(e) => e.target.select()} />}
             </>
           ) : (
-            <div className="family-empty">je mag geen leden uitnodigen</div>
+            <div className="family-empty">{t.share.cannotInvite}</div>
           )}
 
-          <div className="family-group">Leden</div>
+          <div className="family-group">{t.share.members}</div>
           {members.map((m) => (
             <div key={m.profileId} className="share-member">
               <span className="share-member-name">
@@ -123,26 +125,26 @@ export function ShareFamily() {
                     value={m.role}
                     onChange={(e) => changeRole(m.profileId, e.target.value as 'viewer' | 'editor')}
                   >
-                    <option value="viewer">lezer</option>
-                    <option value="editor">bewerker</option>
+                    <option value="viewer">{t.share.roleViewer}</option>
+                    <option value="editor">{t.share.roleEditor}</option>
                   </select>
                 ) : (
                   <span className="family-role">{m.role}</span>
                 )}
-                {m.status === 'pending' && <span className="family-role"> · wacht</span>}
+                {m.status === 'pending' && <span className="family-role">{t.share.pending}</span>}
               </span>
               <span className="share-member-actions">
                 {isOwner && m.status === 'pending' && (
                   <button className="share-approve" onClick={() => approve(m.profileId)}>
-                    goedkeuren
+                    {t.share.approve}
                   </button>
                 )}
                 {isOwner && m.profileId !== user.id && (
                   <button
                     className="share-remove"
                     onClick={() => remove(m)}
-                    title="Verwijder uit familie"
-                    aria-label={`${m.name} verwijderen`}
+                    title={t.share.removeTitle}
+                    aria-label={t.share.removeAria(m.name)}
                   >
                     ×
                   </button>

@@ -1,5 +1,6 @@
-import { guideContent, type GuideItem } from './guideContent';
+import { type GuideItem } from './guideContent';
 import { useAppStore } from './store';
+import { useGuide } from './useT';
 
 function ItemList({ items }: { items?: GuideItem[] }) {
   if (!items?.length) return null;
@@ -28,7 +29,7 @@ function GuideIcon() {
 export function HelpGuide() {
   const open = useAppStore((s) => s.guideOpen);
   const setOpen = useAppStore((s) => s.setGuideOpen);
-  const { title, intro, sections } = guideContent.guide;
+  const { title, intro, sections } = useGuide().guide;
 
   return (
     <>

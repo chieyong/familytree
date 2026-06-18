@@ -150,6 +150,24 @@ body {
   border-color: var(--ink-dim);
 }
 
+.lang-switcher {
+  height: 34px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  color: var(--ink-dim);
+  font: 500 0.78rem var(--font-ui);
+  padding: 0 8px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  max-width: 9rem;
+}
+
+.lang-switcher:hover {
+  color: var(--ink);
+  border-color: var(--ink-dim);
+}
+
 .info-card {
   width: min(94vw, 460px);
   max-height: min(86dvh, 720px);

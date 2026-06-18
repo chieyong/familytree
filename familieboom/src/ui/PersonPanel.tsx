@@ -5,6 +5,7 @@ import { BridgeSection } from './BridgeSection';
 import { EditPerson } from './EditPerson';
 import { RelationsEditor } from './RelationsEditor';
 import { useAppStore } from './store';
+import { useT } from './useT';
 import { lifespan, shortName } from './theme';
 
 interface Props {
@@ -22,6 +23,7 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
   const activeFamily = useAppStore((s) => s.activeFamily);
   const setActiveFamily = useAppStore((s) => s.setActiveFamily);
   const setNotice = useAppStore((s) => s.setNotice);
+  const t = useT();
   const isSelf = person.id === egoId;
 
   const claimSelf = async () => {
@@ -29,10 +31,10 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
     try {
       await claimSelfPerson(activeFamily.id, person.id);
       setActiveFamily({ ...activeFamily, ego: person.id }); // meteen jouw perspectief
-      setNotice(`Je bent nu gekoppeld aan ${shortName(person)} — dit is je perspectief.`);
+      setNotice(t.panel.claimed(shortName(person)));
       onClose();
     } catch (err) {
-      setNotice(err instanceof Error ? err.message : 'Koppelen mislukt');
+      setNotice(err instanceof Error ? err.message : t.panel.claimFailed);
     }
   };
 
@@ -53,23 +55,23 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
         </div>
 
         {!isSelf && !person.hidden && (
-          <button className="claim-self" onClick={claimSelf} title="Koppel je account aan deze persoon">
-            dit ben ik
+          <button className="claim-self" onClick={claimSelf} title={t.panel.thisIsMeTitle}>
+            {t.panel.thisIsMe}
           </button>
         )}
 
         <section className="panel-section">
-          <div className="panel-label">Gegevens</div>
+          <div className="panel-label">{t.panel.sectionData}</div>
           <EditPerson person={person} egoId={egoId} />
         </section>
 
         <section className="panel-section">
-          <div className="panel-label">Relaties</div>
+          <div className="panel-label">{t.panel.sectionRelations}</div>
           <RelationsEditor person={person} graph={graph} />
         </section>
 
         <section className="panel-section">
-          <div className="panel-label">Toevoegen</div>
+          <div className="panel-label">{t.panel.sectionAdd}</div>
           <AddRelative
             familyId={familyId}
             anchorId={person.id}

@@ -3,6 +3,7 @@ import { parseTemplate, TEMPLATE_CSV } from '../data/importTemplate';
 import { importFamily, type ImportResult } from '../data/mutations';
 import { supabase } from '../data/supabaseClient';
 import { useAppStore } from './store';
+import { useT } from './useT';
 
 interface Props {
   familyId: string;
@@ -17,6 +18,7 @@ interface ExistingPerson {
 /** Bulk-import: plak/upload een platte template, bekijk een preview, bevestig. */
 export function ImportFamily({ familyId, onClose }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
+  const t = useT();
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
@@ -72,7 +74,7 @@ export function ImportFamily({ familyId, onClose }: Props) {
       bumpData();
       setDone(res);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Import mislukt');
+      setError(err instanceof Error ? err.message : t.import.failed);
     } finally {
       setBusy(false);
     }
@@ -82,40 +84,34 @@ export function ImportFamily({ familyId, onClose }: Props) {
     <div className="auth-overlay" onClick={onClose}>
       <div className="info-card import-card" onClick={(e) => e.stopPropagation()}>
         <div className="info-head">
-          <h2>Personen importeren</h2>
-          <button className="panel-close" onClick={onClose} aria-label="Sluiten">×</button>
+          <h2>{t.import.title}</h2>
+          <button className="panel-close" onClick={onClose} aria-label={t.import.close}>×</button>
         </div>
 
         {done ? (
           <div className="import-done">
-            <p>Klaar — toegevoegd:</p>
+            <p>{t.import.doneHead}</p>
             <ul>
-              <li>{done.persons} personen</li>
-              <li>{done.parentLinks} ouder-kind-relaties</li>
-              <li>{done.unions} partnerschappen</li>
+              <li>{t.import.persons(done.persons)}</li>
+              <li>{t.import.parentLinks(done.parentLinks)}</li>
+              <li>{t.import.unions(done.unions)}</li>
             </ul>
-            <button onClick={onClose}>Sluiten</button>
+            <button onClick={onClose}>{t.import.close}</button>
           </div>
         ) : (
           <>
-            <p className="info-intro import-intro">
-              Eén regel per persoon. Geef elke persoon een eigen <code>id</code> (sleutel) en
-              verwijs daarnaar met <code>vader_id</code>, <code>moeder_id</code> en{' '}
-              <code>partner_id</code>. Verwijs je naar een sleutel zonder eigen regel, dan koppel je
-              die hieronder aan iemand die al in je boom staat. Nuances als scheiding of adoptie zet
-              je daarna met de hand bij.
-            </p>
+            <p className="info-intro import-intro">{t.import.intro}</p>
             <div className="import-actions-top">
-              <button className="link-btn" onClick={downloadTemplate}>↓ voorbeeld-template (.csv)</button>
+              <button className="link-btn" onClick={downloadTemplate}>{t.import.downloadTemplate}</button>
               <label className="link-btn file-label">
-                ⬆ bestand kiezen
+                {t.import.chooseFile}
                 <input type="file" accept=".csv,.tsv,.txt" onChange={onFile} hidden />
               </label>
             </div>
 
             <textarea
               className="import-textarea"
-              placeholder="Plak hier je tabel (vanuit Excel/Google Sheets) of upload een CSV…"
+              placeholder={t.import.textarea}
               value={text}
               onChange={(e) => setText(e.target.value)}
               spellCheck={false}
@@ -124,29 +120,26 @@ export function ImportFamily({ familyId, onClose }: Props) {
             {parsed && (
               <div className="import-preview">
                 <div className="import-counts">
-                  <span>{parsed.data.persons.length} personen</span>
-                  <span>{parsed.data.parentLinks.length} ouder-kind</span>
-                  <span>{parsed.data.unions.length} partnerschappen</span>
+                  <span>{t.import.persons(parsed.data.persons.length)}</span>
+                  <span>{t.import.countParent(parsed.data.parentLinks.length)}</span>
+                  <span>{t.import.unions(parsed.data.unions.length)}</span>
                 </div>
                 {parsed.errors.length > 0 && (
                   <ul className="import-errors">
                     {parsed.errors.slice(0, 12).map((m, i) => <li key={i}>{m}</li>)}
-                    {parsed.errors.length > 12 && <li>…en nog {parsed.errors.length - 12}.</li>}
+                    {parsed.errors.length > 12 && <li>{t.import.andMore(parsed.errors.length - 12)}</li>}
                   </ul>
                 )}
                 {parsed.warnings.length > 0 && (
                   <ul className="import-warnings">
                     {parsed.warnings.slice(0, 8).map((m, i) => <li key={i}>{m}</li>)}
-                    {parsed.warnings.length > 8 && <li>…en nog {parsed.warnings.length - 8}.</li>}
+                    {parsed.warnings.length > 8 && <li>{t.import.andMore(parsed.warnings.length - 8)}</li>}
                   </ul>
                 )}
 
                 {externalKeys.length > 0 && (
                   <div className="import-resolve">
-                    <p className="import-resolve-head">
-                      Deze verwijzingen horen niet bij een eigen regel — koppel ze aan iemand die al
-                      in je boom staat:
-                    </p>
+                    <p className="import-resolve-head">{t.import.resolveHead}</p>
                     {externalKeys.map((k) => (
                       <label key={k} className="import-resolve-row">
                         <code>{k}</code>
@@ -156,7 +149,7 @@ export function ImportFamily({ familyId, onClose }: Props) {
                             setResolved((r) => ({ ...r, [k]: e.target.value }))
                           }
                         >
-                          <option value="">— kies bestaand persoon —</option>
+                          <option value="">{t.import.choosePerson}</option>
                           {existing.map((p) => (
                             <option key={p.id} value={p.id}>{p.label}</option>
                           ))}
@@ -172,9 +165,9 @@ export function ImportFamily({ familyId, onClose }: Props) {
 
             <div className="import-actions">
               <button disabled={!canImport || busy} onClick={runImport}>
-                {busy ? 'Bezig…' : parsed ? `Importeer ${parsed.data.persons.length} personen` : 'Importeer'}
+                {busy ? t.import.importing : parsed ? t.import.importN(parsed.data.persons.length) : t.import.importBtn}
               </button>
-              <button className="add-rel-cancel" onClick={onClose}>annuleer</button>
+              <button className="add-rel-cancel" onClick={onClose}>{t.import.cancel}</button>
             </div>
           </>
         )}

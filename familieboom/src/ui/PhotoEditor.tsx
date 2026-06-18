@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useT } from './useT';
 
 interface Props {
   /** Startbron: een gekozen bestand. Leeg + startCamera → live camera. */
@@ -17,6 +18,7 @@ const OUTPUT = 512; // uitvoerresolutie van de bijgesneden vierkante foto
  * = wat in de boom en de kaart verschijnt.
  */
 export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Props) {
+  const t = useT();
   const [img, setImg] = useState<HTMLImageElement>();
   const [base, setBase] = useState(1); // cover-schaal bij zoom = 1
   const [zoom, setZoom] = useState(1);
@@ -56,7 +58,7 @@ export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Prop
             void videoRef.current.play();
           }
         })
-        .catch(() => setCameraError('Geen toegang tot de camera. Kies anders een bestand.'));
+        .catch(() => setCameraError(t.photo.cameraError));
     }
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -140,8 +142,8 @@ export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Prop
     <div className="auth-overlay" onClick={onCancel}>
       <div className="info-card photo-editor" onClick={(e) => e.stopPropagation()}>
         <div className="info-head">
-          <h2>Foto bijsnijden</h2>
-          <button className="panel-close" onClick={onCancel} aria-label="Sluiten">×</button>
+          <h2>{t.photo.title}</h2>
+          <button className="panel-close" onClick={onCancel} aria-label={t.photo.cancel}>×</button>
         </div>
 
         {cameraError && <p className="import-error-msg">{cameraError}</p>}
@@ -149,7 +151,7 @@ export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Prop
         {!img && cameraOn && (
           <div className="photo-camera">
             <video ref={videoRef} playsInline muted className="photo-video" />
-            <button className="share-link-btn" onClick={capture}>Foto maken</button>
+            <button className="share-link-btn" onClick={capture}>{t.photo.take}</button>
           </div>
         )}
 
@@ -177,7 +179,7 @@ export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Prop
               <div className="photo-crop-mask" />
             </div>
             <label className="photo-zoom">
-              Zoom
+              {t.photo.zoom}
               <input
                 type="range"
                 min={1}
@@ -187,10 +189,10 @@ export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Prop
                 onChange={(e) => onZoom(Number(e.target.value))}
               />
             </label>
-            <p className="photo-hint">Sleep om te verschuiven · schuif om te zoomen</p>
+            <p className="photo-hint">{t.photo.hint}</p>
             <div className="import-actions">
-              <button onClick={save}>Opslaan</button>
-              <button className="add-rel-cancel" onClick={onCancel}>annuleer</button>
+              <button onClick={save}>{t.photo.save}</button>
+              <button className="add-rel-cancel" onClick={onCancel}>{t.photo.cancel}</button>
             </div>
           </>
         )}

@@ -3,6 +3,7 @@ import type { Person, Visibility } from '../data/types';
 import { deletePerson, removePersonPhoto, signedAvatarUrls, updatePerson, uploadPersonPhoto } from '../data/mutations';
 import { PhotoEditor } from './PhotoEditor';
 import { useAppStore } from './store';
+import { useT } from './useT';
 
 interface Props {
   person: Person;
@@ -17,6 +18,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
   const setFocus = useAppStore((s) => s.setFocus);
   const activeFamily = useAppStore((s) => s.activeFamily);
+  const t = useT();
 
   const [open, setOpen] = useState(embedded ?? false);
   const [given, setGiven] = useState(person.givenNames[0] ?? '');
@@ -68,7 +70,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
       setPhotoUrl(URL.createObjectURL(file)); // directe preview
       bumpData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Foto uploaden mislukt');
+      setError(err instanceof Error ? err.message : t.edit.photoUploadFailed);
     } finally {
       setPhotoBusy(false);
     }
@@ -83,7 +85,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
       setPhotoUrl(undefined);
       bumpData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Foto verwijderen mislukt');
+      setError(err instanceof Error ? err.message : t.edit.photoRemoveFailed);
     } finally {
       setPhotoBusy(false);
     }
@@ -107,14 +109,14 @@ export function EditPerson({ person, egoId, embedded }: Props) {
       bumpData();
       if (!embedded) setOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Opslaan mislukt');
+      setError(err instanceof Error ? err.message : t.edit.saveFailed);
     } finally {
       setBusy(false);
     }
   };
 
   const remove = async () => {
-    if (!confirm(`${person.givenNames[0] ?? 'Deze persoon'} verwijderen? Relaties vervallen.`)) return;
+    if (!confirm(t.edit.confirmDelete(person.givenNames[0] ?? '?'))) return;
     setBusy(true);
     setError(undefined);
     try {
@@ -123,7 +125,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
       if (!embedded) setOpen(false);
       if (activeFamily) setFocus(activeFamily.ego); // terug naar jezelf
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Verwijderen mislukt');
+      setError(err instanceof Error ? err.message : t.edit.deleteFailed);
     } finally {
       setBusy(false);
     }
@@ -132,7 +134,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   if (!open) {
     return (
       <button className="add-rel-btn edit-toggle" onClick={() => setOpen(true)}>
-        ✎ bewerken
+        ✎ {t.edit.edit}
       </button>
     );
   }
@@ -147,15 +149,15 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         )}
         <div className="edit-photo-actions">
           <label className="link-btn file-label">
-            {photoBusy ? 'Bezig…' : photoUrl ? 'Foto vervangen' : 'Foto kiezen'}
+            {photoBusy ? t.edit.busy : photoUrl ? t.edit.photoReplace : t.edit.photoChoose}
             <input type="file" accept="image/*" onChange={onPickFile} disabled={photoBusy} hidden />
           </label>
           <button type="button" className="link-btn" onClick={() => setEditor({ camera: true })} disabled={photoBusy}>
-            Camera
+            {t.edit.camera}
           </button>
           {photoUrl && (
             <button type="button" className="link-btn link-danger" onClick={onRemovePhoto} disabled={photoBusy}>
-              verwijderen
+              {t.edit.removePhoto}
             </button>
           )}
         </div>
@@ -168,49 +170,49 @@ export function EditPerson({ person, egoId, embedded }: Props) {
           onSave={onCropped}
         />
       )}
-      <input placeholder="Voornaam" value={given} required
+      <input placeholder={t.edit.firstName} value={given} required
         onChange={(e) => setGiven(e.target.value)} />
-      <input placeholder="Achternaam" value={familyName}
+      <input placeholder={t.edit.lastName} value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
       <div className="add-rel-row">
         <select value={sex} onChange={(e) => setSex(e.target.value as typeof sex)}>
-          <option value="">geslacht</option>
-          <option value="f">v</option>
-          <option value="m">m</option>
-          <option value="x">x</option>
+          <option value="">{t.edit.sex}</option>
+          <option value="f">{t.edit.sexF}</option>
+          <option value="m">{t.edit.sexM}</option>
+          <option value="x">{t.edit.sexX}</option>
         </select>
-        <input className="add-rel-year" placeholder="geb." inputMode="numeric"
+        <input className="add-rel-year" placeholder={t.edit.birthAbbr} inputMode="numeric"
           value={birthYear} onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, ''))} />
-        <input className="add-rel-year" placeholder="overl." inputMode="numeric"
+        <input className="add-rel-year" placeholder={t.edit.deathAbbr} inputMode="numeric"
           value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
       </div>
       {showMore ? (
         <>
-          <input placeholder="Naam in eigen schrift (林麗莎, Иван…)" value={nameNative}
+          <input placeholder={t.edit.nativeName} value={nameNative}
             onChange={(e) => setNameNative(e.target.value)} />
-          <input placeholder="Bijnaam / roepnaam" value={nickname}
+          <input placeholder={t.edit.nickname} value={nickname}
             onChange={(e) => setNickname(e.target.value)} />
           <select value={visibility} onChange={(e) => setVisibility(e.target.value as Visibility)}>
-            <option value="family">zichtbaar voor familie</option>
-            <option value="private">privé (alleen beheerder)</option>
-            <option value="public">openbaar</option>
+            <option value="family">{t.edit.visFamily}</option>
+            <option value="private">{t.edit.visPrivate}</option>
+            <option value="public">{t.edit.visPublic}</option>
           </select>
         </>
       ) : (
         <button type="button" className="more-toggle" onClick={() => setShowMore(true)}>
-          meer details ▾
+          {t.edit.moreDetails}
         </button>
       )}
       {error && <p className="add-rel-error">{error}</p>}
       <div className="add-rel-row">
-        <button type="submit" disabled={busy}>{busy ? '…' : 'Opslaan'}</button>
+        <button type="submit" disabled={busy}>{busy ? '…' : t.edit.save}</button>
         {!embedded && (
-          <button type="button" className="add-rel-cancel" onClick={() => setOpen(false)}>annuleer</button>
+          <button type="button" className="add-rel-cancel" onClick={() => setOpen(false)}>{t.edit.cancel}</button>
         )}
       </div>
       {person.id !== egoId && (
         <button type="button" className="delete-btn" onClick={remove} disabled={busy}>
-          verwijderen
+          {t.edit.delete}
         </button>
       )}
     </form>

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { PersonID } from '../data/types';
 import type { ThemeName } from './theme';
+import type { Lang } from './i18n';
 
 export type ViewMode = 'artwork' | 'navigation';
 export type DatasetId = 'demo' | 'habsburg';
@@ -52,6 +53,8 @@ interface AppState {
   /** De "ik": vanuit wiens perspectief relaties benoemd worden. Default: de gebruiker van de dataset. */
   ikId: PersonID;
   theme: ThemeName;
+  /** Interfacetaal. */
+  lang: Lang;
   /** Profielfoto's in de boom tonen (focus + inzoomen). De detailkaart toont altijd. */
   photos: boolean;
   user: SessionUser | null;
@@ -67,6 +70,7 @@ interface AppState {
   /** Verhoogt na een mutatie zodat de graaf opnieuw geladen wordt. */
   dataVersion: number;
   setMode: (mode: ViewMode) => void;
+  setLang: (lang: Lang) => void;
   setDataset: (dataset: DatasetId) => void;
   setFocus: (id: PersonID) => void;
   setIk: (id: PersonID) => void;
@@ -89,7 +93,19 @@ const initialDataset: DatasetId = params.get('data') === 'habsburg' ? 'habsburg'
 
 const THEME_KEY = 'familieboom-theme';
 const PHOTOS_KEY = 'familieboom-photos';
+const LANG_KEY = 'familieboom-lang';
 export const LAST_FAMILY_KEY = 'familieboom-last-family';
+
+/** Volgorde: URL-param → opgeslagen voorkeur → browsertaal → Nederlands. */
+function initialLang(): Lang {
+  const supported: Lang[] = ['nl', 'en', 'zh', 'id'];
+  const param = params.get('lang');
+  if (param && supported.includes(param as Lang)) return param as Lang;
+  const saved = localStorage.getItem(LANG_KEY);
+  if (saved && supported.includes(saved as Lang)) return saved as Lang;
+  const browser = navigator.language?.slice(0, 2).toLowerCase();
+  return supported.includes(browser as Lang) ? (browser as Lang) : 'nl';
+}
 
 /** Volgorde: URL-param → opgeslagen voorkeur → systeemvoorkeur → donker. */
 function initialTheme(): ThemeName {
@@ -113,6 +129,7 @@ export const useAppStore = create<AppState>((set) => ({
   focusId: params.get('focus') ?? DATASET_EGO[initialDataset],
   ikId: params.get('ik') ?? DATASET_EGO[initialDataset],
   theme: startTheme,
+  lang: initialLang(),
   photos: localStorage.getItem(PHOTOS_KEY) !== 'off',
   user: null,
   activeFamily: null,
@@ -121,6 +138,10 @@ export const useAppStore = create<AppState>((set) => ({
   guideOpen: false,
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
+  setLang: (lang) => {
+    localStorage.setItem(LANG_KEY, lang);
+    set({ lang });
+  },
   setDataset: (dataset) =>
     set({ dataset, activeFamily: null, focusId: DATASET_EGO[dataset], ikId: DATASET_EGO[dataset] }),
   setFocus: (focusId) => set({ focusId }),

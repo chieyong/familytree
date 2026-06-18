@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from './useAuth';
 import { useAppStore } from './store';
+import { useT } from './useT';
 
 /**
  * Account-control in de topbar: inloggen (magic link / Google) of uitloggen.
@@ -10,6 +11,7 @@ export function AuthBar() {
   const { user, available, signInWithEmail, signInWithGoogle, signOut } = useAuth();
   const open = useAppStore((s) => s.authOpen);
   const setOpen = useAppStore((s) => s.setAuthOpen);
+  const t = useT();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string>();
@@ -18,8 +20,8 @@ export function AuthBar() {
 
   if (user) {
     return (
-      <button className="auth-btn" onClick={() => signOut()} title="Uitloggen">
-        {user.email?.split('@')[0] ?? 'account'} · uitloggen
+      <button className="auth-btn" onClick={() => signOut()} title={t.auth.logout}>
+        {user.email?.split('@')[0] ?? t.auth.account} · {t.auth.logout}
       </button>
     );
   }
@@ -35,37 +37,35 @@ export function AuthBar() {
   return (
     <>
       <button className="auth-btn" onClick={() => setOpen(true)}>
-        Inloggen
+        {t.auth.login}
       </button>
       {open && (
         <div className="auth-overlay" onClick={() => setOpen(false)}>
           <div className="auth-card" onClick={(e) => e.stopPropagation()}>
-            <h2>Inloggen</h2>
+            <h2>{t.auth.login}</h2>
             {sent ? (
-              <p className="auth-note">
-                Check je e-mail ({email}) voor de inloglink.
-              </p>
+              <p className="auth-note">{t.auth.checkEmail(email)}</p>
             ) : (
               <>
                 <button className="auth-google" onClick={() => signInWithGoogle()}>
-                  Inloggen met Google
+                  {t.auth.withGoogle}
                 </button>
-                <div className="auth-or">of</div>
+                <div className="auth-or">{t.auth.or}</div>
                 <form onSubmit={submit}>
                   <input
                     type="email"
                     required
-                    placeholder="je@email.nl"
+                    placeholder={t.auth.emailPlaceholder}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  <button type="submit">Stuur magische link</button>
+                  <button type="submit">{t.auth.sendMagic}</button>
                 </form>
                 {error && <p className="auth-error">{error}</p>}
               </>
             )}
             <button className="auth-close" onClick={() => setOpen(false)}>
-              sluiten
+              {t.auth.close}
             </button>
           </div>
         </div>

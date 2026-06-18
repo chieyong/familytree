@@ -2,12 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../data/supabaseClient';
 import { LAST_FAMILY_KEY, useAppStore, type DatasetId } from './store';
 import { useFamilies } from './useFamilies';
+import { useT } from './useT';
 import { ImportFamily } from './ImportFamily';
 
-const PRESETS: { id: DatasetId; label: string }[] = [
-  { id: 'demo', label: 'Demo-familie' },
-  { id: 'habsburg', label: 'Habsburg (Wikidata)' },
-];
+const PRESET_IDS: DatasetId[] = ['demo', 'habsburg'];
 
 /** Bron-keuze: demo-presets, je eigen families, of een nieuwe boom aanmaken. */
 export function FamilyMenu() {
@@ -16,7 +14,9 @@ export function FamilyMenu() {
   const user = useAppStore((s) => s.user);
   const setDataset = useAppStore((s) => s.setDataset);
   const setActiveFamily = useAppStore((s) => s.setActiveFamily);
+  const t = useT();
   const { families, createFamily } = useFamilies();
+  const presetLabel = (id: DatasetId) => (id === 'habsburg' ? t.family.presetHabsburg : t.family.presetDemo);
 
   // Open na inloggen de laatst geopende eigen boom i.p.v. de demo (één keer).
   const restored = useRef(false);
@@ -38,9 +38,7 @@ export function FamilyMenu() {
   const [familyName, setFamilyName] = useState('');
   const [error, setError] = useState<string>();
 
-  const label = activeFamily
-    ? activeFamily.label
-    : PRESETS.find((p) => p.id === dataset)?.label ?? 'Demo-familie';
+  const label = activeFamily ? activeFamily.label : presetLabel(dataset);
 
   // Bulk-import alleen voor de eigenaar van de actieve familie (RPC dwingt dit
   // ook af, maar zo tonen we de knop alleen waar 'ie zin heeft).
@@ -70,7 +68,7 @@ export function FamilyMenu() {
       setGiven('');
       setFamilyName('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Aanmaken mislukt');
+      setError(err instanceof Error ? err.message : t.family.createFailed);
     }
   };
 
@@ -81,17 +79,17 @@ export function FamilyMenu() {
       </button>
       {open && (
         <div className="family-pop">
-          <div className="family-group">Demo</div>
-          {PRESETS.map((p) => (
-            <button key={p.id} className="family-item" onClick={() => choosePreset(p.id)}>
-              {p.label}
+          <div className="family-group">{t.family.demo}</div>
+          {PRESET_IDS.map((pid) => (
+            <button key={pid} className="family-item" onClick={() => choosePreset(pid)}>
+              {presetLabel(pid)}
             </button>
           ))}
 
           {supabase && user && (
             <>
-              <div className="family-group">Mijn families</div>
-              {families.length === 0 && <div className="family-empty">nog geen eigen boom</div>}
+              <div className="family-group">{t.family.mine}</div>
+              {families.length === 0 && <div className="family-empty">{t.family.noOwn}</div>}
               {families.map((f) => (
                 <button key={f.id} className="family-item" onClick={() => chooseFamily(f)}>
                   {f.name}
@@ -101,18 +99,18 @@ export function FamilyMenu() {
 
               {creating ? (
                 <form className="family-create" onSubmit={onCreate}>
-                  <input placeholder="Familienaam (bv. Lai)" value={famName} required
+                  <input placeholder={t.family.namePlaceholder} value={famName} required
                     onChange={(e) => setFamName(e.target.value)} />
-                  <input placeholder="Jouw voornaam" value={given} required
+                  <input placeholder={t.family.yourFirstName} value={given} required
                     onChange={(e) => setGiven(e.target.value)} />
-                  <input placeholder="Jouw achternaam" value={familyName}
+                  <input placeholder={t.family.yourLastName} value={familyName}
                     onChange={(e) => setFamilyName(e.target.value)} />
-                  <button type="submit">Aanmaken</button>
+                  <button type="submit">{t.family.create}</button>
                   {error && <p className="family-error">{error}</p>}
                 </form>
               ) : (
                 <button className="family-item family-new" onClick={() => setCreating(true)}>
-                  + Nieuwe familieboom
+                  {t.family.newTree}
                 </button>
               )}
 
@@ -121,13 +119,13 @@ export function FamilyMenu() {
                   className="family-item family-import"
                   onClick={() => { setImporting(true); setOpen(false); }}
                 >
-                  ⬆ Personen importeren
+                  {t.family.importPeople}
                 </button>
               )}
             </>
           )}
 
-          {supabase && !user && <div className="family-empty">log in voor je eigen boom</div>}
+          {supabase && !user && <div className="family-empty">{t.family.loginForOwn}</div>}
         </div>
       )}
 
