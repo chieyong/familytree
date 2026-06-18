@@ -56,6 +56,11 @@ draait ze zelf in de SQL-editor.
 - **Rollen**: bij uitnodigen lezer/bewerker kiezen; rol achteraf wijzigen; lid
   verwijderen — alles onder Delen → Leden (owner).
 - **Uitloggen** reset naar demo + bevestigingsbanner.
+- **PWA** (installeerbaar): `vite-plugin-pwa` (`registerType: autoUpdate`),
+  manifest + service worker, icons in `public/` (pwa-192/512, maskable, apple-
+  touch), theme-color #141d33. SW geregistreerd in `main.tsx`. Google Fonts
+  worden runtime-gecachet; Supabase-calls bewust niet (altijd vers). Dev maakt
+  `dev-dist/` (gitignored).
 - **Gekoppelde bomen (bruggen)** — zie `docs/linked-trees-design.md`. Fase 1
   (brug leggen via koppel-code, owner-only) + fase 2 (oversteken: ↗-markering
   op de node, "↗ ook in familie X" op de kaart, toegang vragen → pending-lid dat

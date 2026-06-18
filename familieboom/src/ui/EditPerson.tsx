@@ -164,7 +164,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
           onSave={onCropped}
         />
       )}
-      <input placeholder="Voornaam" value={given} required autoFocus
+      <input placeholder="Voornaam" value={given} required
         onChange={(e) => setGiven(e.target.value)} />
       <input placeholder="Achternaam" value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
