@@ -33,12 +33,15 @@ const nl = {
     hidePhotos: 'Foto’s verbergen',
     help: 'Hoe werkt Bloom?',
     language: 'Taal',
+    more: 'Meer',
   },
   invite: {
     banner: 'Je bent uitgenodigd voor een familieboom.',
     loginToJoin: 'Inloggen om deel te nemen',
     nowMember: (fam: string) => `Je bent nu lid van ${fam}. Kies 'm in het menu rechtsonder.`,
     requestSent: (fam: string) => `Verzoek voor ${fam} verstuurd — wacht op goedkeuring door de beheerder.`,
+    openTree: 'Open je familieboom',
+    openTreeNamed: (fam: string) => `Open je familieboom: ${fam}`,
     failed: 'Uitnodiging mislukt',
   },
   card: {
@@ -259,12 +262,15 @@ const en: Messages = {
     hidePhotos: 'Hide photos',
     help: 'How does Bloom work?',
     language: 'Language',
+    more: 'More',
   },
   invite: {
     banner: 'You’ve been invited to a family tree.',
     loginToJoin: 'Log in to join',
     nowMember: (fam) => `You’re now a member of ${fam}. Pick it from the menu in the bottom right.`,
     requestSent: (fam) => `Request for ${fam} sent — waiting for the admin to approve.`,
+    openTree: 'Open your family tree',
+    openTreeNamed: (fam) => `Open your family tree: ${fam}`,
     failed: 'Invitation failed',
   },
   card: {
@@ -482,12 +488,15 @@ const zh: Messages = {
     hidePhotos: '隐藏照片',
     help: 'Bloom 怎么用？',
     language: '语言',
+    more: '更多',
   },
   invite: {
     banner: '您被邀请加入一棵家谱树。',
     loginToJoin: '登录以加入',
     nowMember: (fam) => `您现在是 ${fam} 的成员。请在右下角菜单中选择它。`,
     requestSent: (fam) => `已发送加入 ${fam} 的请求 — 等待管理员批准。`,
+    openTree: '打开你的家谱',
+    openTreeNamed: (fam) => `打开你的家谱：${fam}`,
     failed: '邀请失败',
   },
   card: {
@@ -705,12 +714,15 @@ const id: Messages = {
     hidePhotos: 'Sembunyikan foto',
     help: 'Bagaimana cara kerja Bloom?',
     language: 'Bahasa',
+    more: 'Lainnya',
   },
   invite: {
     banner: 'Anda diundang ke sebuah pohon keluarga.',
     loginToJoin: 'Masuk untuk bergabung',
     nowMember: (fam) => `Anda kini anggota ${fam}. Pilih dari menu di kanan bawah.`,
     requestSent: (fam) => `Permintaan untuk ${fam} terkirim — menunggu persetujuan admin.`,
+    openTree: 'Buka pohon keluargamu',
+    openTreeNamed: (fam) => `Buka pohon keluargamu: ${fam}`,
     failed: 'Undangan gagal',
   },
   card: {

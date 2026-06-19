@@ -18,16 +18,16 @@ export function FamilyMenu() {
   const { families, createFamily } = useFamilies();
   const presetLabel = (id: DatasetId) => (id === 'habsburg' ? t.family.presetHabsburg : t.family.presetDemo);
 
-  // Open na inloggen de laatst geopende eigen boom i.p.v. de demo (één keer).
+  // Open na inloggen meteen je eigen boom i.p.v. de demo (één keer): de laatst
+  // geopende, of anders de eerste. Zo hoeft een nieuwe genodigde niet zelf het
+  // menu te zoeken om bij zijn familie te komen.
   const restored = useRef(false);
   useEffect(() => {
     if (restored.current || activeFamily || !user || families.length === 0) return;
+    restored.current = true;
     const lastId = localStorage.getItem(LAST_FAMILY_KEY);
-    const f = lastId && families.find((x) => x.id === lastId);
-    if (f) {
-      restored.current = true;
-      setActiveFamily({ id: f.id, ego: f.selfPersonId ?? '', label: f.name });
-    }
+    const f = families.find((x) => x.id === lastId) ?? families[0];
+    setActiveFamily({ id: f.id, ego: f.selfPersonId ?? '', label: f.name });
   }, [families, user, activeFamily, setActiveFamily]);
 
   const [open, setOpen] = useState(false);

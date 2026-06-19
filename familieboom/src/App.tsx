@@ -19,7 +19,7 @@ import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
 import { ShareFamily } from './ui/ShareFamily';
-import { LangSwitcher } from './ui/LangSwitcher';
+import { OverflowMenu } from './ui/OverflowMenu';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
 import { useT } from './ui/useT';
 import { lifespan, shortName } from './ui/theme';
@@ -27,35 +27,8 @@ import { lifespan, shortName } from './ui/theme';
 const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
 
-function SunIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="4.2" />
-      <path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20 14.5A8 8 0 1 1 9.5 4a6.3 6.3 0 0 0 10.5 10.5z" />
-    </svg>
-  );
-}
-
-function PhotoIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="5" width="18" height="14" rx="2.5" />
-      <circle cx="8.5" cy="10" r="1.6" />
-      <path d="M21 16.5 16 12l-9 6.5" />
-    </svg>
-  );
-}
-
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, toggleTheme, togglePhotos, crossTo, crossBack, setAuthOpen, setNotice } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setNotice } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();
@@ -191,28 +164,10 @@ export default function App() {
               {t.topbar.tableau}
             </button>
           </nav>
-          <LangSwitcher />
-          <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? t.topbar.lightMode : t.topbar.darkMode}
-            title={theme === 'dark' ? t.topbar.lightMode : t.topbar.darkMode}
-          >
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-          </button>
-          {photoByPerson.size > 0 && (
-            <button
-              className={`theme-toggle photo-toggle${photos ? ' active' : ''}`}
-              onClick={togglePhotos}
-              aria-label={photos ? t.topbar.hidePhotos : t.topbar.showPhotos}
-              title={photos ? t.topbar.hidePhotos : t.topbar.showPhotos}
-            >
-              <PhotoIcon />
-            </button>
-          )}
-          <HelpGuide />
+          <OverflowMenu photosAvailable={photoByPerson.size > 0} />
           <AuthBar />
           <ShareFamily />
+          <HelpGuide />
         </div>
       </header>
 
@@ -234,6 +189,18 @@ export default function App() {
       {notice && (
         <button className="invite-banner" onClick={() => setNotice(undefined)}>
           {notice} <span className="invite-dismiss">×</span>
+        </button>
+      )}
+
+      {user && !activeFamily && families.length > 0 && (
+        <button
+          className="invite-banner"
+          onClick={() => {
+            const f = families[0];
+            setActiveFamily({ id: f.id, ego: f.selfPersonId ?? '', label: f.name });
+          }}
+        >
+          {families.length === 1 ? t.invite.openTreeNamed(families[0].name) : t.invite.openTree}
         </button>
       )}
 
