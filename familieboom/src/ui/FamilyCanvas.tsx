@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { select } from 'd3-selection';
+import { pointer, select } from 'd3-selection';
 import 'd3-transition';
 import { zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from 'd3-zoom';
 import type { FamilyGraph, Person, PersonID } from '../data/types';
@@ -115,6 +115,20 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
       .on('zoom', (event) => setView(event.transform));
     behaviorRef.current = behavior;
     select(svg).call(behavior);
+    // Dubbelklik/-tik togglet i.p.v. steeds verder inzoomen. d3-zoom roept bij
+    // een touch-dubbeltik dezelfde 'dblclick.zoom'-handler aan, dus dit werkt
+    // voor muis én mobiel: ingezoomd → terug naar overzicht; anders → inzoomen
+    // op de tikpositie.
+    select(svg).on('dblclick.zoom', (event: MouseEvent | TouchEvent) => {
+      const t = select(svg).transition().duration(400);
+      if (viewRef.current.k > 1.4) {
+        behavior.transform(t, zoomIdentity);
+      } else {
+        // Touch-event heeft clientX op changedTouches, niet op het event zelf.
+        const src = 'changedTouches' in event ? event.changedTouches[0] : event;
+        behavior.scaleTo(t, 2.5, pointer(src, svg));
+      }
+    });
     return () => {
       select(svg).on('.zoom', null);
     };

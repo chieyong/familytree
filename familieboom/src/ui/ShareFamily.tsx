@@ -110,6 +110,7 @@ export function ShareFamily() {
       <button className="auth-btn" onClick={() => setOpen((o) => !o)}>
         {t.share.share}
       </button>
+      {open && <div className="lang-backdrop" onClick={() => setOpen(false)} />}
       {open && (
         <div className="share-pop">
           <div className="family-group">{t.share.shareTitle(activeFamily.label)}</div>

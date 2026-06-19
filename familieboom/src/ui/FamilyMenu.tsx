@@ -77,6 +77,7 @@ export function FamilyMenu() {
       <button className="family-trigger" onClick={() => setOpen((o) => !o)}>
         {label} ▾
       </button>
+      {open && <div className="lang-backdrop" onClick={() => setOpen(false)} />}
       {open && (
         <div className="family-pop">
           <div className="family-group">{t.family.demo}</div>
