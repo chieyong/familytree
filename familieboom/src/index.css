@@ -842,6 +842,34 @@ body {
   cursor: pointer;
 }
 
+/* Opstart-leader (logo bloeit open) */
+.leader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--bg);
+}
+
+.leader-word {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 2.3rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  opacity: 0;
+  animation: leader-word-in 0.6s ease-out 1s forwards;
+}
+
+@keyframes leader-word-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .stage {
   flex: 1;
   min-height: 0;
