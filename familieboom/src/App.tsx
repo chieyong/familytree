@@ -21,6 +21,7 @@ import { FamilyMenu } from './ui/FamilyMenu';
 import { ShareFamily } from './ui/ShareFamily';
 import { OverflowMenu } from './ui/OverflowMenu';
 import { Leader } from './ui/Leader';
+import { Tour } from './ui/Tour';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
 import { useT } from './ui/useT';
 import { lifespan, shortName } from './ui/theme';
@@ -155,6 +156,7 @@ export default function App() {
   return (
     <div className="app">
       <Leader ready={!!fullGraph} />
+      <Tour />
       <header className="topbar">
         <h1>Bloom</h1>
         <div className="topbar-right">

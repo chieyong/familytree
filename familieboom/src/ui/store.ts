@@ -65,6 +65,8 @@ interface AppState {
   authOpen: boolean;
   /** Uitleg-gids open (gedeeld, zodat de welkomstkaart 'm kan openen). */
   guideOpen: boolean;
+  /** Coachmark-rondleiding actief. */
+  tourOpen: boolean;
   /** Vluchtige melding (bv. 'uitgelogd'); App toont 'm als banner. */
   notice?: string;
   /** Verhoogt na een mutatie zodat de graaf opnieuw geladen wordt. */
@@ -84,6 +86,7 @@ interface AppState {
   crossBack: () => void;
   setAuthOpen: (open: boolean) => void;
   setGuideOpen: (open: boolean) => void;
+  setTourOpen: (open: boolean) => void;
   setNotice: (notice?: string) => void;
   bumpData: () => void;
 }
@@ -136,6 +139,7 @@ export const useAppStore = create<AppState>((set) => ({
   bridgeReturn: null,
   authOpen: false,
   guideOpen: false,
+  tourOpen: params.get('tour') === '1',
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
   setLang: (lang) => {
@@ -188,6 +192,7 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   setAuthOpen: (authOpen) => set({ authOpen }),
   setGuideOpen: (guideOpen) => set({ guideOpen }),
+  setTourOpen: (tourOpen) => set({ tourOpen }),
   setNotice: (notice) => set({ notice }),
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 }));

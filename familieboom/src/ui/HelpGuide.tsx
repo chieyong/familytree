@@ -1,6 +1,6 @@
 import { type GuideItem } from './guideContent';
 import { useAppStore } from './store';
-import { useGuide } from './useT';
+import { useGuide, useT } from './useT';
 
 function ItemList({ items }: { items?: GuideItem[] }) {
   if (!items?.length) return null;
@@ -21,6 +21,8 @@ function ItemList({ items }: { items?: GuideItem[] }) {
 export function HelpGuide() {
   const open = useAppStore((s) => s.guideOpen);
   const setOpen = useAppStore((s) => s.setGuideOpen);
+  const setTourOpen = useAppStore((s) => s.setTourOpen);
+  const t = useT();
   const { title, intro, sections } = useGuide().guide;
 
   return (
@@ -34,6 +36,16 @@ export function HelpGuide() {
                 ×
               </button>
             </div>
+
+            <button
+              className="guide-tour-btn"
+              onClick={() => {
+                setOpen(false);
+                setTourOpen(true);
+              }}
+            >
+              ✨ {t.tour.start}
+            </button>
 
             <p className="info-intro">{intro}</p>
 
