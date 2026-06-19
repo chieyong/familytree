@@ -184,11 +184,11 @@ export default function App() {
         <h1>Bloom</h1>
         <div className="topbar-right">
           <nav className="mode-toggle" aria-label={t.topbar.viewLabel}>
-            <button className={mode === 'artwork' ? 'active' : ''} onClick={() => setMode('artwork')}>
-              {t.topbar.tableau}
-            </button>
             <button className={mode === 'navigation' ? 'active' : ''} onClick={() => setMode('navigation')}>
               {t.topbar.tree}
+            </button>
+            <button className={mode === 'artwork' ? 'active' : ''} onClick={() => setMode('artwork')}>
+              {t.topbar.tableau}
             </button>
           </nav>
           <LangSwitcher />

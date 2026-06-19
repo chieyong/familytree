@@ -15,11 +15,11 @@
 
 export type Lang = 'nl' | 'en' | 'zh' | 'id';
 
-export const LANGS: { id: Lang; label: string }[] = [
-  { id: 'nl', label: 'Nederlands' },
-  { id: 'en', label: 'English' },
-  { id: 'zh', label: '中文' },
-  { id: 'id', label: 'Bahasa Indonesia' },
+export const LANGS: { id: Lang; label: string; flag: string }[] = [
+  { id: 'nl', label: 'Nederlands', flag: '🇳🇱' },
+  { id: 'en', label: 'English', flag: '🇬🇧' },
+  { id: 'zh', label: '中文', flag: '🇨🇳' },
+  { id: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
 ];
 
 const nl = {

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
+      "Read(//Applications/Chromium.app/Contents/MacOS/**)",
+      "Read(//Applications/Microsoft Edge.app/Contents/MacOS/**)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(python3 -c \"import cairosvg\")",
+      "Bash(python3 -c \"from PIL import Image; print\\('pillow ok'\\)\")",
+      "Bash(node -e \"require\\('sharp'\\); console.log\\('sharp ok'\\)\")",
+      "Bash(node -e \"const {createCanvas} = require\\('canvas'\\); console.log\\('canvas ok'\\)\")",
+      "Bash(python3 *)",
+      "Bash(git *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)"
+    ]
+  }
+}
