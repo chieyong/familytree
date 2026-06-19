@@ -774,21 +774,44 @@ body {
   font: 0.85rem var(--font-ui);
 }
 
-.auth-card form button,
+/* Google = primaire actie: herkenbare witte knop met logo. */
 .auth-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #dadce0;
+  background: #fff;
+  color: #1f1f1f;
+  font: 600 0.9rem var(--font-ui);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: box-shadow 0.15s ease;
+}
+
+.auth-google:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.26);
+}
+
+.auth-google svg {
+  flex: 0 0 auto;
+}
+
+/* E-mail-link = secundair: rustige outline-knop. */
+.auth-card form button {
   padding: 10px 12px;
   border-radius: 10px;
-  border: 0;
-  background: var(--accent);
-  color: var(--on-accent);
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  color: var(--ink);
   font: 600 0.82rem var(--font-ui);
   cursor: pointer;
 }
 
-.auth-google {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--surface-border);
+.auth-card form button:hover {
+  border-color: var(--ink-dim);
 }
 
 .auth-or {
