@@ -1333,6 +1333,90 @@ body {
   border-color: var(--accent);
 }
 
+/* Klikbare persoonskaart (opent het detailpaneel) */
+.card-clickable {
+  cursor: pointer;
+}
+
+/* Detailpaneel — alleen-lezen weergave */
+.panel-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pd-native {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.pd-nick {
+  font-style: italic;
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+}
+
+.pd-places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.84rem;
+  color: var(--ink-dim);
+}
+
+.pd-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.pd-chip {
+  font-size: 0.74rem;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  color: var(--ink-dim);
+}
+
+.relations-view {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rel-view-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.86rem;
+}
+
+.rel-view-row em {
+  font-style: normal;
+  font-size: 0.76rem;
+  color: var(--ink-dim);
+}
+
+.panel-edit,
+.panel-done {
+  align-self: flex-start;
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  color: var(--ink);
+  font: 600 0.82rem var(--font-ui);
+  padding: 9px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.panel-edit:hover,
+.panel-done:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .delete-btn {
   border: 1px solid rgba(201, 112, 93, 0.5);
   background: transparent;

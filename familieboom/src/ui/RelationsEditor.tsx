@@ -89,10 +89,12 @@ export function RelationsEditor({
   person,
   graph,
   embedded,
+  readOnly,
 }: {
   person: Person;
   graph: FamilyGraph | undefined;
   embedded?: boolean;
+  readOnly?: boolean;
 }) {
   const [open, setOpen] = useState(embedded ?? false);
   const t = useT();
@@ -106,6 +108,38 @@ export function RelationsEditor({
   const parents = graph.parentLinks.filter((l) => l.child === person.id);
   const children = graph.parentLinks.filter((l) => l.parent === person.id);
   const total = partners.length + parents.length + children.length;
+
+  // Read-only: relaties opengeklapt tonen zonder bedieningsknoppen.
+  if (readOnly) {
+    if (total === 0) return <div className="family-empty">{t.relations.none}</div>;
+    return (
+      <div className="relations-view">
+        {partners.map((u) => {
+          const other = name(u.partners[0] === person.id ? u.partners[1] : u.partners[0]);
+          const type = u.type ? t.relations[u.type] : '';
+          const ended = u.end?.reason ? ` · ${t.relations[u.end.reason]}` : '';
+          return (
+            <div className="rel-view-row" key={u.id}>
+              <span className="rel-name">{other}</span>
+              <em>{type}{ended}</em>
+            </div>
+          );
+        })}
+        {parents.map((l) => (
+          <div className="rel-view-row" key={l.id}>
+            <span className="rel-name">{name(l.parent)}</span>
+            <em>{t.relations.wordParent}{l.role !== 'biological' ? ` · ${t.relations[l.role]}` : ''}</em>
+          </div>
+        ))}
+        {children.map((l) => (
+          <div className="rel-view-row" key={l.id}>
+            <span className="rel-name">{name(l.child)}</span>
+            <em>{t.relations.wordChild}{l.role !== 'biological' ? ` · ${t.relations[l.role]}` : ''}</em>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (!open) {
     return (

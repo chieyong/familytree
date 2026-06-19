@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { FamilyGraph, Person } from '../data/types';
 import { claimSelfPerson } from '../data/invites';
 import { AddRelative } from './AddRelative';
@@ -18,12 +19,16 @@ interface Props {
   onClose: () => void;
 }
 
-/** Eén georganiseerd bewerk-paneel: gegevens, relaties en toevoegen. */
+/**
+ * Detailpaneel: toont eerst alle gegevens + relaties (alleen-lezen). Pas op
+ * "bewerken" verschijnen de bewerkbare velden, relaties en toevoeg-acties.
+ */
 export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose }: Props) {
   const activeFamily = useAppStore((s) => s.activeFamily);
   const setActiveFamily = useAppStore((s) => s.setActiveFamily);
   const setNotice = useAppStore((s) => s.setNotice);
   const t = useT();
+  const [editing, setEditing] = useState(false);
   const isSelf = person.id === egoId;
 
   const claimSelf = async () => {
@@ -37,6 +42,13 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
       setNotice(err instanceof Error ? err.message : t.panel.claimFailed);
     }
   };
+
+  const sexLabel =
+    person.sex === 'm' ? t.edit.sexM : person.sex === 'f' ? t.edit.sexF : person.sex === 'x' ? t.edit.sexX : undefined;
+  const visLabel =
+    person.visibility === 'private' ? t.edit.visPrivate : person.visibility === 'public' ? t.edit.visPublic : undefined;
+  const birthPlace = person.birth?.place?.name;
+  const deathPlace = person.death?.place?.name;
 
   return (
     <div className="panel-overlay" onClick={onClose}>
@@ -60,27 +72,67 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
           </button>
         )}
 
-        <section className="panel-section">
-          <div className="panel-label">{t.panel.sectionData}</div>
-          <EditPerson person={person} egoId={egoId} />
-        </section>
+        {editing ? (
+          <>
+            <section className="panel-section">
+              <div className="panel-label">{t.panel.sectionData}</div>
+              <EditPerson person={person} egoId={egoId} embedded />
+            </section>
 
-        <section className="panel-section">
-          <div className="panel-label">{t.panel.sectionRelations}</div>
-          <RelationsEditor person={person} graph={graph} />
-        </section>
+            <section className="panel-section">
+              <div className="panel-label">{t.panel.sectionRelations}</div>
+              <RelationsEditor person={person} graph={graph} embedded />
+            </section>
 
-        <section className="panel-section">
-          <div className="panel-label">{t.panel.sectionAdd}</div>
-          <AddRelative
-            familyId={familyId}
-            anchorId={person.id}
-            anchorName={person.givenNames[0] ?? 'deze persoon'}
-            candidates={graph?.persons ?? []}
-          />
-        </section>
+            <section className="panel-section">
+              <div className="panel-label">{t.panel.sectionAdd}</div>
+              <AddRelative
+                familyId={familyId}
+                anchorId={person.id}
+                anchorName={person.givenNames[0] ?? 'deze persoon'}
+                candidates={graph?.persons ?? []}
+              />
+            </section>
 
-        <BridgeSection person={person} familyId={familyId} />
+            <BridgeSection person={person} familyId={familyId} />
+
+            <button className="panel-done" onClick={() => setEditing(false)}>{t.panel.done}</button>
+          </>
+        ) : (
+          <>
+            {(person.nameNative || person.nickname || birthPlace || deathPlace || sexLabel || visLabel) && (
+              <div className="panel-details">
+                {person.nameNative && <div className="pd-native">{person.nameNative}</div>}
+                {person.nickname && <div className="pd-nick">‘{person.nickname}’</div>}
+                {(birthPlace || deathPlace) && (
+                  <div className="pd-places">
+                    {birthPlace && <span>° {birthPlace}</span>}
+                    {deathPlace && <span>† {deathPlace}</span>}
+                  </div>
+                )}
+                {(sexLabel || visLabel) && (
+                  <div className="pd-chips">
+                    {sexLabel && <span className="pd-chip">{sexLabel}</span>}
+                    {visLabel && <span className="pd-chip">{visLabel}</span>}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <section className="panel-section">
+              <div className="panel-label">{t.panel.sectionRelations}</div>
+              <RelationsEditor person={person} graph={graph} readOnly />
+            </section>
+
+            {person.bridge && (
+              <p className="bridge-linked">{t.bridge.linked(person.bridge.familyName)}</p>
+            )}
+
+            {activeFamily && (
+              <button className="panel-edit" onClick={() => setEditing(true)}>✎ {t.edit.edit}</button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

@@ -224,7 +224,11 @@ export default function App() {
       </main>
 
       {focusPerson && !guideOpen && !authOpen && (
-        <footer className="person-card">
+        <footer
+          className={`person-card${activeFamily ? ' card-clickable' : ''}`}
+          onClick={() => activeFamily && setPanelOpen(true)}
+          title={activeFamily ? t.card.openDetails : undefined}
+        >
           {photoByPerson.get(focusPerson.id) && (
             <img className="person-card-avatar" src={photoByPerson.get(focusPerson.id)} alt="" />
           )}
@@ -234,22 +238,17 @@ export default function App() {
             {focusPerson.nickname && <span className="name-nick">‘{focusPerson.nickname}’</span>}
             <span>{lifespan(focusPerson)}</span>
             {focusPerson.birth?.place && <span>{focusPerson.birth.place.name}</span>}
-            {activeFamily && (
-              <button className="edit-pencil" onClick={() => setPanelOpen(true)} title="Bewerken" aria-label="Bewerken">
-                ✎
-              </button>
-            )}
           </div>
           {bridgeReturn && (
             <div className="person-card-relation">
-              <button className="perspective-btn" onClick={crossBack}>
+              <button className="perspective-btn" onClick={(e) => { e.stopPropagation(); crossBack(); }}>
                 {t.card.backToFamily(bridgeReturn.label)}
               </button>
             </div>
           )}
           {focusPerson.bridge && (
             <div className="person-card-relation">
-              <button className="bridge-cross" onClick={crossBridge}>
+              <button className="bridge-cross" onClick={(e) => { e.stopPropagation(); crossBridge(); }}>
                 {t.card.alsoInFamily(focusPerson.bridge.familyName)}
               </button>
             </div>
@@ -263,7 +262,7 @@ export default function App() {
               )}
               <button
                 className="perspective-btn"
-                onClick={() => setIk(focusId)}
+                onClick={(e) => { e.stopPropagation(); setIk(focusId); }}
                 title={t.card.viewFromTitle}
               >
                 {t.card.viewFrom(focusPerson.givenNames[0])}
@@ -274,7 +273,7 @@ export default function App() {
             <div className="person-card-relation">
               {t.card.currentPerspective}
               {ikId !== defaultEgo && (
-                <button className="perspective-btn" onClick={() => setIk(defaultEgo)}>
+                <button className="perspective-btn" onClick={(e) => { e.stopPropagation(); setIk(defaultEgo); }}>
                   {t.card.backToDefault}
                 </button>
               )}
