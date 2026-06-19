@@ -55,6 +55,25 @@ export function ShareFamily() {
     }
   };
 
+  const copyLink = async () => {
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+    } catch {
+      /* clipboard geweigerd; de gebruiker kan de link in het veld selecteren */
+    }
+  };
+
+  const shareLink = async () => {
+    if (!link) return;
+    try {
+      await navigator.share({ title: activeFamily.label, url: link });
+    } catch {
+      /* gebruiker annuleerde de deel-sheet */
+    }
+  };
+
   const approve = async (profileId: string) => {
     setError(undefined);
     try {
@@ -106,9 +125,21 @@ export function ShareFamily() {
                 </label>
               )}
               <button className="share-link-btn" onClick={makeLink}>
-                {copied ? t.share.linkCopied : t.share.makeLink}
+                {t.share.makeLink}
               </button>
-              {link && <input className="share-link" readOnly value={link} onFocus={(e) => e.target.select()} />}
+              {link && (
+                <>
+                  <input className="share-link" readOnly value={link} onClick={(e) => e.currentTarget.select()} />
+                  <div className="share-link-actions">
+                    <button className="share-copy" onClick={copyLink}>
+                      {copied ? t.share.linkCopied : t.share.copy}
+                    </button>
+                    {typeof navigator !== 'undefined' && 'share' in navigator && (
+                      <button className="share-copy" onClick={shareLink}>{t.share.shareLink}</button>
+                    )}
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <div className="family-empty">{t.share.cannotInvite}</div>
