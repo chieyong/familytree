@@ -93,7 +93,7 @@ const nl: GuideContent = {
             h: 'Drie niveaus van zichtbaarheid',
             p: ['Elke persoon — en elke relatie — heeft een zichtbaarheid:'],
             items: [
-              { label: 'Openbaar', text: 'voor iedereen, ook zonder login (voor wat je bewust deelt).' },
+              { label: 'Openbaar', text: 'op data-niveau voor iedereen leesbaar, ook zonder login — gebruik dit alleen voor wat de hele wereld mag zien. (Een publieke weergave voor uitgelogde bezoekers is ontworpen, maar nog niet ingebouwd.)' },
               { label: 'Familie', text: 'voor alle leden van deze boom (standaard).' },
               { label: 'Privé', text: 'alleen voor de beheerder.' },
             ],
@@ -190,7 +190,7 @@ const en: GuideContent = {
             h: 'Three levels of visibility',
             p: ['Every person — and every relationship — has a visibility:'],
             items: [
-              { label: 'Public', text: 'for everyone, even without login (for what you choose to share).' },
+              { label: 'Public', text: 'readable by anyone at the data level, even without login — only use this for what the whole world may see. (A public view for logged-out visitors is designed but not yet built.)' },
               { label: 'Family', text: 'for all members of this tree (the default).' },
               { label: 'Private', text: 'for the admin only.' },
             ],
@@ -286,7 +286,7 @@ const zh: GuideContent = {
             h: '三种可见性级别',
             p: ['每个人 — 以及每段关系 — 都有可见性：'],
             items: [
-              { label: '公开', text: '所有人可见，无需登录（用于您主动分享的内容）。' },
+              { label: '公开', text: '在数据层面所有人可读，无需登录——仅用于可以公之于众的内容。（面向未登录访客的公开视图已设计，但尚未实现。）' },
               { label: '家庭', text: '本树所有成员可见（默认）。' },
               { label: '私密', text: '仅管理员可见。' },
             ],
@@ -383,7 +383,7 @@ const id: GuideContent = {
             h: 'Tiga tingkat visibilitas',
             p: ['Setiap orang — dan setiap hubungan — memiliki visibilitas:'],
             items: [
-              { label: 'Publik', text: 'untuk semua orang, bahkan tanpa masuk (untuk yang sengaja Anda bagikan).' },
+              { label: 'Publik', text: 'dapat dibaca siapa pun di tingkat data, bahkan tanpa masuk — gunakan hanya untuk yang boleh dilihat seluruh dunia. (Tampilan publik untuk pengunjung yang belum masuk sudah dirancang, tetapi belum dibuat.)' },
               { label: 'Keluarga', text: 'untuk semua anggota pohon ini (bawaan).' },
               { label: 'Pribadi', text: 'hanya untuk admin.' },
             ],
