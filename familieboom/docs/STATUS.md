@@ -79,6 +79,6 @@ draait ze zelf in de SQL-editor.
   spiegel-knopen.
 
 ## Conventies
-- Commits eindigen met `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
+- Commits eindigen met `Co-Authored-By: Claude <noreply@anthropic.com>` (neutraal; voorheen "Claude Fable 5").
 - `service_role`-key nooit committen/tonen; anon/publishable key is public-safe
   (staat in gitignored `.env.local` + de hosting-env).
