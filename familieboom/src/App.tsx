@@ -304,8 +304,8 @@ export default function App() {
       <FamilyMenu />
       <WelcomeCard />
 
+      {legendOpen && <div className="legend-backdrop" onClick={() => setLegendOpen(false)} />}
       <div className="legend">
-        {legendOpen && <div className="legend-backdrop" onClick={() => setLegendOpen(false)} />}
         <button className="legend-summary" onClick={() => setLegendOpen((o) => !o)}>
           {t.legend.title}
         </button>

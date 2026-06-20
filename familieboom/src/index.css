@@ -1878,6 +1878,7 @@ body {
 .legend-backdrop {
   position: fixed;
   inset: 0;
+  z-index: 10; /* onder de legenda (11), boven het doek — vangt klikken buiten */
 }
 
 .legend ul,
