@@ -112,15 +112,21 @@ export class KinshipService {
   }
 
   /**
-   * Generatie-index: wortels (zonder ouders) op 0, kinderen onder hun ouders,
-   * partners gelijkgetrokken. Monotoon ophogen → convergeert ook bij
-   * rommelige (royal) data.
+   * Generatie-index: kinderen strikt onder hun ouders, ouders vlak boven hun
+   * dichtstbijzijnde kind, partners gelijkgetrokken. Drie monotoon-ophogende
+   * stappen → convergeert ook bij rommelige (royal) data.
+   *
+   * Let op: een wortel (iemand zonder ouders in de boom) staat NIET automatisch
+   * op 0. Zou dat wel zo zijn, dan zou de enige ouder van je partner — ook een
+   * wortel — op grootouder-hoogte belanden i.p.v. naast je eigen ouders. Daarom
+   * zakt elke ouder naar één generatie boven z'n laagste kind.
    */
   generations(): Map<PersonID, number> {
     const gen = new Map<PersonID, number>();
     for (const person of this.graph.persons) gen.set(person.id, 0);
     for (let i = 0; i < 25; i++) {
       let changed = false;
+      // 1. Kind strikt onder elke ouder.
       for (const link of this.graph.parentLinks) {
         const minChild = (gen.get(link.parent) ?? 0) + 1;
         if ((gen.get(link.child) ?? 0) < minChild) {
@@ -128,6 +134,22 @@ export class KinshipService {
           changed = true;
         }
       }
+      // 2. Ouder zakt naar z'n dichtstbijzijnde kind: exact één generatie erboven.
+      //    Houdt takken die maar één niveau diep zijn (bv. de enige ouder van je
+      //    partner) uitgelijnd met de andere (schoon)ouders i.p.v. op wortelhoogte.
+      for (const person of this.graph.persons) {
+        let lowestChild = Infinity;
+        for (const link of this.childLinksOf(person.id)) {
+          lowestChild = Math.min(lowestChild, gen.get(link.child) ?? 0);
+        }
+        if (lowestChild === Infinity) continue;
+        const hug = lowestChild - 1;
+        if ((gen.get(person.id) ?? 0) < hug) {
+          gen.set(person.id, hug);
+          changed = true;
+        }
+      }
+      // 3. Partners op gelijke hoogte.
       for (const union of this.graph.unions) {
         const [a, b] = union.partners;
         const top = Math.max(gen.get(a) ?? 0, gen.get(b) ?? 0);
