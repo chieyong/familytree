@@ -26,14 +26,32 @@ export function AuthBar() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string>();
+  const [accountOpen, setAccountOpen] = useState(false);
 
   if (!available) return null; // geen client (fixtures-only deploy)
 
   if (user) {
     return (
-      <button className="auth-btn" onClick={() => signOut()} title={t.auth.logout}>
-        {user.email?.split('@')[0] ?? t.auth.account} · {t.auth.logout}
-      </button>
+      <div className="account-menu">
+        <button className="auth-btn" onClick={() => setAccountOpen((o) => !o)}>
+          {t.auth.loggedIn}
+        </button>
+        {accountOpen && <div className="lang-backdrop" onClick={() => setAccountOpen(false)} />}
+        {accountOpen && (
+          <div className="account-pop">
+            {user.email && <div className="account-email">{user.email}</div>}
+            <button
+              className="account-logout"
+              onClick={() => {
+                setAccountOpen(false);
+                signOut();
+              }}
+            >
+              {t.auth.logout}
+            </button>
+          </div>
+        )}
+      </div>
     );
   }
 

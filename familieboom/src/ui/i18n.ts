@@ -87,6 +87,7 @@ const nl = {
   auth: {
     login: 'Inloggen',
     logout: 'uitloggen',
+    loggedIn: 'Ingelogd',
     account: 'account',
     checkEmail: (email: string) => `Check je e-mail (${email}) voor de inloglink.`,
     withGoogle: 'Inloggen met Google',
@@ -331,6 +332,7 @@ const en: Messages = {
   auth: {
     login: 'Log in',
     logout: 'log out',
+    loggedIn: 'Signed in',
     account: 'account',
     checkEmail: (email) => `Check your email (${email}) for the login link.`,
     withGoogle: 'Log in with Google',
@@ -572,6 +574,7 @@ const zh: Messages = {
   auth: {
     login: '登录',
     logout: '登出',
+    loggedIn: '已登录',
     account: '账号',
     checkEmail: (email) => `请查看您的邮箱（${email}）以获取登录链接。`,
     withGoogle: '使用 Google 登录',
@@ -813,6 +816,7 @@ const id: Messages = {
   auth: {
     login: 'Masuk',
     logout: 'keluar',
+    loggedIn: 'Masuk',
     account: 'akun',
     checkEmail: (email) => `Periksa email Anda (${email}) untuk tautan masuk.`,
     withGoogle: 'Masuk dengan Google',

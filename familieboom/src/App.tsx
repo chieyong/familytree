@@ -71,6 +71,10 @@ export default function App() {
   const [fullGraph, setFullGraph] = useState<FamilyGraph>();
   const [egoGraph, setEgoGraph] = useState<FamilyGraph>();
   const [panelOpen, setPanelOpen] = useState(false);
+  // Persoonskaart alleen tonen als een node is geselecteerd; klik op leeg vlak
+  // deselecteert. Legenda sluit bij een klik buiten (zoals de menu's).
+  const [cardOpen, setCardOpen] = useState(false);
+  const [legendOpen, setLegendOpen] = useState(false);
   const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
 
   // Ondertekende URL's voor de profielfoto's (privé-bucket). Eén keer per
@@ -220,12 +224,13 @@ export default function App() {
             theme={theme}
             photos={photos}
             photoUrls={photoByPerson}
-            onFocus={setFocus}
+            onFocus={(id) => { setFocus(id); setCardOpen(true); }}
+            onDeselect={() => setCardOpen(false)}
           />
         )}
       </main>
 
-      {focusPerson && !guideOpen && !authOpen && (
+      {focusPerson && cardOpen && !guideOpen && !authOpen && (
         <footer
           className={`person-card${activeFamily ? ' card-clickable' : ''}`}
           onClick={() => activeFamily && setPanelOpen(true)}
@@ -299,28 +304,35 @@ export default function App() {
       <FamilyMenu />
       <WelcomeCard />
 
-      <details className="legend">
-        <summary>{t.legend.title}</summary>
-        {mode === 'artwork' && <p className="legend-read">{t.legend.artworkRead}</p>}
-        <ul>
-          {mode === 'artwork' ? (
-            <>
-              <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
-              <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
-            </>
-          ) : (
-            <>
-              <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
-              <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
-            </>
-          )}
-          <li><span className="swatch line ex" /> {t.legend.ended}</li>
-          <li><span className="swatch line dotted" /> {t.legend.adoption}</li>
-          <li><span className="swatch line dashed" /> {t.legend.step}</li>
-          <li><span className="swatch dot" /> {t.legend.branchSize}</li>
-          <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>
-        </ul>
-      </details>
+      <div className="legend">
+        {legendOpen && <div className="legend-backdrop" onClick={() => setLegendOpen(false)} />}
+        <button className="legend-summary" onClick={() => setLegendOpen((o) => !o)}>
+          {t.legend.title}
+        </button>
+        {legendOpen && (
+          <>
+            {mode === 'artwork' && <p className="legend-read">{t.legend.artworkRead}</p>}
+            <ul>
+              {mode === 'artwork' ? (
+                <>
+                  <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
+                  <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
+                </>
+              ) : (
+                <>
+                  <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
+                  <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
+                </>
+              )}
+              <li><span className="swatch line ex" /> {t.legend.ended}</li>
+              <li><span className="swatch line dotted" /> {t.legend.adoption}</li>
+              <li><span className="swatch line dashed" /> {t.legend.step}</li>
+              <li><span className="swatch dot" /> {t.legend.branchSize}</li>
+              <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>
+            </ul>
+          </>
+        )}
+      </div>
     </div>
   );
 }

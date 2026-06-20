@@ -23,6 +23,8 @@ interface Props {
   /** Ondertekende foto-URL per persoon-id. */
   photoUrls: Map<PersonID, string>;
   onFocus: (id: PersonID) => void;
+  /** Klik op leeg vlak (geen node) → selectie opheffen. */
+  onDeselect?: () => void;
 }
 
 const LABEL_ZOOM = 1.5;
@@ -48,7 +50,7 @@ const isDeceasedStyle = (person: Person): boolean => {
  * nodes en lijnen (springs) naar hun nieuwe plek, terwijl view-exclusieve
  * elementen (levenslijnen, tijdas, de rest van de familie) in- of uitfaden.
  */
-export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, onFocus }: Props) {
+export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, onFocus, onDeselect }: Props) {
   const art = useMemo(() => flowLayout(fullGraph), [fullGraph]);
   const [minX, minY, width, height] = art.bounds;
 
@@ -219,10 +221,14 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
         bestR = isNav && navNode ? navNode.r : node.r;
       }
     }
-    if (bestId === null) return;
+    if (bestId === null) {
+      onDeselect?.();
+      return;
+    }
     // Afstand naar schermpixels; ruim, maar genoeg om lege klikken te negeren.
     const pxPerUnit = screenScale * view.k;
     if (bestDist * pxPerUnit <= Math.max(30, bestR * pxPerUnit + 12)) onFocus(bestId);
+    else onDeselect?.();
   };
 
   return (

@@ -157,6 +157,49 @@ body {
   z-index: 55;
 }
 
+/* Account-menu (ingelogd → uitloggen) */
+.account-menu {
+  position: relative;
+  display: flex;
+}
+
+.account-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 60;
+  min-width: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.account-email {
+  font-size: 0.74rem;
+  color: var(--ink-dim);
+  word-break: break-all;
+}
+
+.account-logout {
+  border: 1px solid var(--surface-border);
+  background: transparent;
+  color: var(--ink);
+  font: 600 0.8rem var(--font-ui);
+  padding: 8px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.account-logout:hover {
+  border-color: #d9756a;
+  color: #d9756a;
+}
+
 /* ── Overflow-menu (secundaire bediening) ──────────────────────────────── */
 .more-menu {
   position: relative;
@@ -1822,10 +1865,24 @@ body {
   backdrop-filter: blur(8px);
 }
 
-.legend summary {
+.legend-summary {
+  position: relative;
+  border: 0;
+  background: transparent;
+  padding: 0;
   cursor: pointer;
-  font-weight: 600;
+  font: 600 0.72rem var(--font-ui);
   color: var(--ink);
+}
+
+.legend-backdrop {
+  position: fixed;
+  inset: 0;
+}
+
+.legend ul,
+.legend-read {
+  position: relative;
 }
 
 .legend-read {

@@ -9,11 +9,15 @@ interface Props {
 }
 
 function MoreIcon() {
+  // Schuifregelaars: leest als "instellingen / aanpassen".
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <circle cx="5" cy="12" r="1.8" />
-      <circle cx="12" cy="12" r="1.8" />
-      <circle cx="19" cy="12" r="1.8" />
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <line x1="21" y1="6" x2="14" y2="6" /><line x1="10" y1="6" x2="3" y2="6" />
+      <line x1="21" y1="12" x2="12" y2="12" /><line x1="8" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="18" x2="16" y2="18" /><line x1="12" y1="18" x2="3" y2="18" />
+      <line x1="12" y1="4" x2="12" y2="8" />
+      <line x1="6" y1="10" x2="6" y2="14" />
+      <line x1="14" y1="16" x2="14" y2="20" />
     </svg>
   );
 }
