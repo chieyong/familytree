@@ -125,6 +125,27 @@ volledige naam, ook al kies je in het bewerkscherm een andere.
   `sinceYear` in NL/EN/ZH/ID. Tableau-view gebruikte `union.start.year` al voor de
   huwelijkslijn.
 
+## Fixes & features (sessie 2026-06-20, deel 3)
+- **Camera-foto fix**: de foto-editor toonde een zwart scherm. Oorzaak: `srcObject`
+  werd in de `getUserMedia`-callback gezet terwijl `<video>` pas ná `setCameraOn(true)`
+  gemount wordt — `videoRef.current` was nog `null`. Koppeling nu in een effect op
+  `cameraOn` (`PhotoEditor.tsx`).
+- **Voorkeursnaam** (migratie 15, `preferred_name`): per persoon kiezen welke naam
+  als hoofd-label in de boom staat — volledige naam (standaard), eigen schrift of
+  bijnaam. UI in `EditPerson` ("toon in boom"); `_build_graph` geeft `preferredName` mee.
+- **Sterfjaar bij nieuw lid**: `AddRelative` heeft nu ook een sterfjaar-veld (de RPC
+  kent het niet, dus gericht na-update zoals bij bewerken).
+- **Import-knop tijdelijk verborgen** (front-end) tot de flow af is.
+- **Bewerken toont alle naamvelden direct**: de "more details"-stap is weg; eigen
+  schrift, bijnaam en "toon in boom" staan meteen open bij bewerken (`EditPerson`).
+- **'Openbaar' uitgefaseerd**: de zichtbaarheidskeuze biedt alleen nog familie/privé.
+  'openbaar' stelt data zonder login bloot via de `anon`-grant op
+  `get_full_graph`/`get_ego_graph`, terwijl een publieke weergave nog niet bestaat.
+  Een persoon die er al op staat ziet 'openbaar (uitgefaseerd)' zodat het terug te
+  zetten is. **Nog open**: bestaande `public`-personen blijven via de API leesbaar
+  tot ze terugzet zijn; een migratie (`public`→`family` en/of `anon`-grant intrekken)
+  is nog niet gemaakt.
+
 ## Verifiëren
 - Niet-ingelogde / demo-flows: headless Chrome screenshot, bv.
   `--headless=new --screenshot=out.png "http://localhost:5199/?backend=fixtures&view=navigation&focus=lisa"`.
