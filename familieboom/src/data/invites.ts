@@ -62,11 +62,11 @@ export async function claimSelfPerson(familyId: string, personId: string): Promi
   if (error) throw error;
 }
 
-/** Owner wijzigt de rol van een lid (lezer ↔ bewerker). RLS: owner. */
+/** Owner wijzigt de rol van een lid (lezer/bewerker, of promoveren tot owner). RLS: owner. */
 export async function updateMemberRole(
   familyId: string,
   profileId: string,
-  role: 'viewer' | 'editor',
+  role: 'viewer' | 'editor' | 'owner',
 ): Promise<void> {
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase

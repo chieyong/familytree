@@ -164,6 +164,12 @@ de SQL-editor.
   uitnodigen. Géén ledenbeheer, familie-instellingen of bruggen; ziet geen privé.
 - **Viewer (lezer)**: alleen-lezen op familie-zichtbare data; geen privé; mag wel het
   eigen "dit ben ik"-knooppunt aanpassen (`is_self`).
+- **Mede-owner maken** (frontend-only, geen migratie): in Delen → Leden kan een owner
+  een ander lid op **beheerder** zetten (rol-keuze heeft nu ook 'owner', met
+  bevestiging). De keuze toont voor álle andere leden (ook owners) zodat promoveren
+  omkeerbaar is; je eigen rol kun je niet wijzigen → er blijft altijd ≥1 owner. RLS
+  stond dit al toe (`members_update` = owner; enum bevat 'owner'). `updateMemberRole`
+  accepteert nu `owner`.
 
 ## Verifiëren
 - Niet-ingelogde / demo-flows: headless Chrome screenshot, bv.

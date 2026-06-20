@@ -84,7 +84,10 @@ export function ShareFamily() {
     }
   };
 
-  const changeRole = async (profileId: string, role: 'viewer' | 'editor') => {
+  const changeRole = async (profileId: string, role: 'viewer' | 'editor' | 'owner') => {
+    // Promoveren tot owner is ingrijpend: een mede-owner mag alles, ook jou
+    // verwijderen of de familie verwijderen. Daarom een bevestiging.
+    if (role === 'owner' && !confirm(t.share.confirmMakeOwner)) return;
     setError(undefined);
     try {
       await updateMemberRole(activeFamily.id, profileId, role);
@@ -151,14 +154,15 @@ export function ShareFamily() {
             <div key={m.profileId} className="share-member">
               <span className="share-member-name">
                 {m.name}
-                {isOwner && m.profileId !== user.id && m.role !== 'owner' ? (
+                {isOwner && m.profileId !== user.id ? (
                   <select
                     className="share-role-select"
                     value={m.role}
-                    onChange={(e) => changeRole(m.profileId, e.target.value as 'viewer' | 'editor')}
+                    onChange={(e) => changeRole(m.profileId, e.target.value as 'viewer' | 'editor' | 'owner')}
                   >
                     <option value="viewer">{t.share.roleViewer}</option>
                     <option value="editor">{t.share.roleEditor}</option>
+                    <option value="owner">{t.share.roleOwner}</option>
                   </select>
                 ) : (
                   <span className="family-role">{m.role}</span>
