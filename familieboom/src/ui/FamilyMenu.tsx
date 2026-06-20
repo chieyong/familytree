@@ -42,7 +42,13 @@ export function FamilyMenu() {
 
   // Bulk-import alleen voor de eigenaar van de actieve familie (RPC dwingt dit
   // ook af, maar zo tonen we de knop alleen waar 'ie zin heeft).
-  const canImport = !!activeFamily && families.find((f) => f.id === activeFamily.id)?.role === 'owner';
+  // Tijdelijk uitgeschakeld (front-end): zet IMPORT_ENABLED weer op true om de
+  // knop terug te brengen. Back-end/RPC blijven ongemoeid.
+  const IMPORT_ENABLED = false;
+  const canImport =
+    IMPORT_ENABLED &&
+    !!activeFamily &&
+    families.find((f) => f.id === activeFamily.id)?.role === 'owner';
 
   const choosePreset = (id: DatasetId) => {
     setDataset(id);
