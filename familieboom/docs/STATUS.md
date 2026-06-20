@@ -56,7 +56,8 @@ zijn er **geen nieuwe migraties** bijgekomen; al het werk daarna is frontend.
   bestaande personen (resolver in de modal). Knop in familie-menu (owner).
 - **Profielfoto's**: privé storage-bucket, foto's via signed URLs, weergave
   "focus + inzoomen" in de Tree met tak-kleur als ring, altijd in de kaart,
-  topbar-toggle. Foto-editor met **camera-opname** + slepen/zoomen (crop).
+  toggle in het instellingen-menu (**standaard uit**, zie fixes 2026-06-20).
+  Foto-editor met **camera-opname** + slepen/zoomen (crop).
 - **"Dit ben ik"** (`self_person_id`) in het detailpaneel → zet je perspectief.
 - **Rollen**: bij uitnodigen lezer/bewerker kiezen; rol achteraf wijzigen; lid
   verwijderen — alles onder Delen → Leden (owner).
@@ -97,6 +98,28 @@ zijn er **geen nieuwe migraties** bijgekomen; al het werk daarna is frontend.
   bewerkbaar wordt. Geen potlood meer.
 - **Interactie**: pop-ups (familie-menu, delen, account, legenda) sluiten bij klik
   buiten; **dubbelklik/-tik togglet zoom** (in → overzicht).
+
+## Fixes & polish (sessie 2026-06-20, deel 2)
+- **Generatie-layout**: `KinshipService.generations()` verankerde elke wortel
+  (zonder ouders) op 0 → de enige ouder van een partner kwam op grootouder-hoogte.
+  Nu zakt elke ouder naar één generatie boven z'n laagste kind, dus (schoon)ouders
+  lijnen uit. Regressietest in `src/domain/kinship.test.ts` (was er nog niet).
+- **Foto's standaard UIT**: `photos`-default omgezet (`=== 'on'` i.p.v. `!== 'off'`)
+  in `store.ts`. Aan te zetten via instellingen-menu. **Let op**: alleen nieuwe
+  gebruikers krijgen de nieuwe default; wie de toggle eerder op `'on'` zette houdt
+  foto's. De foto in de **persoonskaart** blijft altijd zichtbaar bij selectie
+  (`photoByPerson` gaat los van de flag naar `PersonPanel`).
+- **Legenda sluit bij klik buiten**: `backdrop-filter` op `.legend` maakte het blok
+  tot containing block voor de `fixed` backdrop (dekte alleen het doosje). Backdrop
+  naar root-niveau, `z-index: 10` (onder legenda 11, boven doek).
+- **Relaties open bij "bewerken"**: `RelationsEditor` zette `open` alleen bij mount
+  via `useState(embedded)`; React hergebruikt de instantie bij lezen→bewerken, dus
+  het paneel bleef dicht. Nu `isOpen = embedded || open`.
+- **Huwelijksjaar** in te voeren: nieuw startjaar-veld in `UnionRow` +
+  `setUnionStart`-mutatie (DB-kolommen `start_year/month/day` + read-RPC bestonden
+  al, **geen migratie**). Ook getoond in de alleen-lezen kaart; i18n-sleutel
+  `sinceYear` in NL/EN/ZH/ID. Tableau-view gebruikte `union.start.year` al voor de
+  huwelijkslijn.
 
 ## Verifiëren
 - Niet-ingelogde / demo-flows: headless Chrome screenshot, bv.
