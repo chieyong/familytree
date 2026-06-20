@@ -133,7 +133,7 @@ export const useAppStore = create<AppState>((set) => ({
   ikId: params.get('ik') ?? DATASET_EGO[initialDataset],
   theme: startTheme,
   lang: initialLang(),
-  photos: localStorage.getItem(PHOTOS_KEY) !== 'off',
+  photos: localStorage.getItem(PHOTOS_KEY) === 'on',
   user: null,
   activeFamily: null,
   bridgeReturn: null,
