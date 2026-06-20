@@ -126,19 +126,38 @@ const nl: GuideContent = {
       },
       {
         q: 'Rollen: wie mag wat',
-        p: ['Een familieboom wordt mooier met meer mensen. Nodig familie uit via Delen — je kiest per persoon een rol (lezer of bewerker), en de beheerder kan die later wijzigen.'],
+        p: ['Nodig familie uit via Delen. Je kiest per persoon een rol; een beheerder kan rollen later wijzigen — en een ander lid ook tot beheerder maken.'],
         blocks: [
           {
             h: 'Beheerder (eigenaar)',
-            p: ['Volledige zeggenschap. Mag alles wat een bewerker mag, én: leden uitnodigen, rollen wijzigen en leden verwijderen, de familie hernoemen of verwijderen, en bruggen naar andere families leggen. De beheerder is ook de enige die privé-personen ziet.'],
+            p: ['Volledige zeggenschap — alles wat een bewerker mag, plus:'],
+            items: [
+              { text: 'leden uitnodigen, goedkeuren en verwijderen' },
+              { text: 'rollen wijzigen, en een ander lid tot beheerder maken' },
+              { text: 'de familie hernoemen of verwijderen' },
+              { text: 'bruggen naar andere families leggen' },
+              { text: 'ziet als enige de privé-personen' },
+            ],
           },
           {
             h: 'Bewerker',
-            p: ['Bouwt mee aan de inhoud: personen en relaties toevoegen, bewerken en verwijderen, foto’s beheren en familie uitnodigen. Raakt niet aan ledenbeheer, familie-instellingen of bruggen, en ziet géén privé-personen.'],
+            p: ['Bouwt mee aan de inhoud:'],
+            items: [
+              { text: 'personen toevoegen, bewerken en verwijderen' },
+              { text: 'relaties (huwelijk, ouder–kind) beheren, met jaartallen' },
+              { text: 'foto’s toevoegen en verwijderen' },
+              { text: 'familie uitnodigen (als lezer)' },
+              { text: 'géén ledenbeheer, familie-instellingen of bruggen; ziet geen privé-personen' },
+            ],
           },
           {
             h: 'Lezer',
-            p: ['Kijkt alleen mee in de familie-zichtbare boom. Ziet geen privé-personen. Je eigen "dit ben ik"-knooppunt mag je wel zelf aanpassen.'],
+            p: ['Kijkt mee, maar verandert niets:'],
+            items: [
+              { text: 'bekijkt de familie-zichtbare boom' },
+              { text: 'mag het eigen "dit ben ik"-knooppunt aanpassen' },
+              { text: 'kan niets toevoegen, bewerken of verwijderen; ziet geen privé-personen' },
+            ],
           },
         ],
         note: 'Privé zet je per persoon onder Bewerken. Een privé-persoon is alleen voor de beheerder; bewerkers en lezers zien op die plek een "verborgen persoon", zodat de boom blijft kloppen.',
@@ -233,19 +252,38 @@ const en: GuideContent = {
       },
       {
         q: 'Roles: who can do what',
-        p: ['A family tree gets richer with more people. Invite family via Share — you pick a role per person (reader or editor), and the admin can change it later.'],
+        p: ['Invite family via Share. You pick a role per person; an admin can change roles later — and also make another member an admin.'],
         blocks: [
           {
             h: 'Admin (owner)',
-            p: ['Full control. Can do everything an editor can, plus: invite members, change roles and remove members, rename or delete the family, and build bridges to other families. The admin is also the only one who sees private people.'],
+            p: ['Full control — everything an editor can do, plus:'],
+            items: [
+              { text: 'invite, approve and remove members' },
+              { text: 'change roles, and make another member an admin' },
+              { text: 'rename or delete the family' },
+              { text: 'build bridges to other families' },
+              { text: 'the only one who sees private people' },
+            ],
           },
           {
             h: 'Editor',
-            p: ['Builds the content: add, edit and delete people and relationships, manage photos, and invite family. Does not touch member management, family settings or bridges, and does not see private people.'],
+            p: ['Builds the content:'],
+            items: [
+              { text: 'add, edit and delete people' },
+              { text: 'manage relationships (marriage, parent–child), with years' },
+              { text: 'add and remove photos' },
+              { text: 'invite family (as readers)' },
+              { text: 'no member management, family settings or bridges; does not see private people' },
+            ],
           },
           {
             h: 'Reader',
-            p: ['Views only, within the family-visible tree. Does not see private people. You may still edit your own "this is me" node.'],
+            p: ['Looks on, but changes nothing:'],
+            items: [
+              { text: 'views the family-visible tree' },
+              { text: 'may edit their own "this is me" node' },
+              { text: 'cannot add, edit or delete anything; does not see private people' },
+            ],
           },
         ],
         note: 'You set private per person under Edit. A private person is for the admin only; editors and readers see a "hidden person" in that spot, so the tree still holds.',
@@ -339,19 +377,38 @@ const zh: GuideContent = {
       },
       {
         q: '角色：谁能做什么',
-        p: ['人越多，家谱树越丰富。通过"分享"邀请家人——可为每个人选择角色（读者或编辑者），管理员之后可更改。'],
+        p: ['通过"分享"邀请家人。可为每个人选择角色；管理员之后可更改角色——也可把另一位成员设为管理员。'],
         blocks: [
           {
             h: '管理员（所有者）',
-            p: ['拥有完全控制权。可执行编辑者的所有操作，另外还可：邀请成员、更改角色并移除成员、重命名或删除家庭，以及与其他家庭建立桥接。管理员也是唯一能看到私密人物的人。'],
+            p: ['拥有完全控制权——编辑者能做的一切，另外还可：'],
+            items: [
+              { text: '邀请、批准和移除成员' },
+              { text: '更改角色，并把另一位成员设为管理员' },
+              { text: '重命名或删除家庭' },
+              { text: '与其他家庭建立桥接' },
+              { text: '唯一能看到私密人物的人' },
+            ],
           },
           {
             h: '编辑者',
-            p: ['共建内容：添加、编辑和删除人物与关系，管理照片，并邀请家人。不涉及成员管理、家庭设置或桥接，也看不到私密人物。'],
+            p: ['共建内容：'],
+            items: [
+              { text: '添加、编辑和删除人物' },
+              { text: '管理关系（婚姻、亲子），含年份' },
+              { text: '添加和删除照片' },
+              { text: '邀请家人（作为读者）' },
+              { text: '不涉及成员管理、家庭设置或桥接；看不到私密人物' },
+            ],
           },
           {
             h: '读者',
-            p: ['仅在家庭可见的树中查看。看不到私密人物。但您可以编辑自己的"这是我"节点。'],
+            p: ['只看，不做任何更改：'],
+            items: [
+              { text: '查看家庭可见的树' },
+              { text: '可编辑自己的"这是我"节点' },
+              { text: '不能添加、编辑或删除任何内容；看不到私密人物' },
+            ],
           },
         ],
         note: '在"编辑"中为每个人设置私密。私密人物仅管理员可见；编辑者和读者在该位置看到"隐藏人物"，以便家谱依然成立。',
@@ -446,19 +503,38 @@ const id: GuideContent = {
       },
       {
         q: 'Peran: siapa boleh apa',
-        p: ['Pohon keluarga makin kaya dengan lebih banyak orang. Undang keluarga lewat Bagikan — Anda memilih peran per orang (pembaca atau editor), dan admin dapat mengubahnya nanti.'],
+        p: ['Undang keluarga lewat Bagikan. Anda memilih peran per orang; admin dapat mengubah peran nanti — dan juga menjadikan anggota lain admin.'],
         blocks: [
           {
             h: 'Admin (pemilik)',
-            p: ['Kendali penuh. Boleh melakukan semua yang bisa editor lakukan, ditambah: mengundang anggota, mengubah peran dan menghapus anggota, mengganti nama atau menghapus keluarga, dan membangun jembatan ke keluarga lain. Admin juga satu-satunya yang melihat orang pribadi.'],
+            p: ['Kendali penuh — semua yang bisa editor lakukan, ditambah:'],
+            items: [
+              { text: 'mengundang, menyetujui, dan menghapus anggota' },
+              { text: 'mengubah peran, dan menjadikan anggota lain admin' },
+              { text: 'mengganti nama atau menghapus keluarga' },
+              { text: 'membangun jembatan ke keluarga lain' },
+              { text: 'satu-satunya yang melihat orang pribadi' },
+            ],
           },
           {
             h: 'Editor',
-            p: ['Membangun isi: menambah, mengubah, dan menghapus orang dan hubungan, mengelola foto, dan mengundang keluarga. Tidak menyentuh pengelolaan anggota, pengaturan keluarga, atau jembatan, dan tidak melihat orang pribadi.'],
+            p: ['Membangun isi:'],
+            items: [
+              { text: 'menambah, mengubah, dan menghapus orang' },
+              { text: 'mengelola hubungan (pernikahan, orang tua–anak), dengan tahun' },
+              { text: 'menambah dan menghapus foto' },
+              { text: 'mengundang keluarga (sebagai pembaca)' },
+              { text: 'tanpa pengelolaan anggota, pengaturan keluarga, atau jembatan; tidak melihat orang pribadi' },
+            ],
           },
           {
             h: 'Pembaca',
-            p: ['Hanya melihat, dalam pohon yang terlihat untuk keluarga. Tidak melihat orang pribadi. Anda tetap boleh menyunting simpul "ini saya" Anda sendiri.'],
+            p: ['Menyaksikan, tetapi tidak mengubah apa pun:'],
+            items: [
+              { text: 'melihat pohon yang terlihat untuk keluarga' },
+              { text: 'boleh menyunting simpul "ini saya" sendiri' },
+              { text: 'tidak bisa menambah, mengubah, atau menghapus apa pun; tidak melihat orang pribadi' },
+            ],
           },
         ],
         note: 'Pribadi diatur per orang di bawah Ubah. Orang pribadi hanya untuk admin; editor dan pembaca melihat "orang tersembunyi" di tempat itu, agar pohon tetap utuh.',
