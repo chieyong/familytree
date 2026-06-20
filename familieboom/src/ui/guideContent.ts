@@ -93,9 +93,9 @@ const nl: GuideContent = {
             h: 'Drie niveaus van zichtbaarheid',
             p: ['Elke persoon — en elke relatie — heeft een zichtbaarheid:'],
             items: [
-              { label: 'Openbaar', text: 'op data-niveau voor iedereen leesbaar, ook zonder login — gebruik dit alleen voor wat de hele wereld mag zien. (Een publieke weergave voor uitgelogde bezoekers is ontworpen, maar nog niet ingebouwd.)' },
+              { label: 'Openbaar', text: 'op data-niveau voor iedereen leesbaar, ook zonder login. Wordt momenteel niet meer aangeboden (er is nog geen publieke weergave); bestaande openbare personen kun je terugzetten naar familie of privé.' },
               { label: 'Familie', text: 'voor alle leden van deze boom (standaard).' },
-              { label: 'Privé', text: 'alleen voor de beheerder.' },
+              { label: 'Privé', text: 'alleen voor de beheerder (de eigenaar).' },
             ],
             note: 'Geldt er meer dan één instelling, dan wint de strengste. Voorbeeld: je oma wil haar geboortejaar niet met de hele familie delen → zet haar op privé; alleen de beheerder ziet haar dan.',
           },
@@ -121,17 +121,27 @@ const nl: GuideContent = {
         q: 'Personen en relaties toevoegen',
         p: [
           'Klik op een persoon en kies + ouder, + partner of + kind. Je maakt een nieuw persoon aan, of koppelt iemand die al in de familie staat.',
-          'In Gegevens vul je naam, jaren en een foto in. Onder "meer details" zitten bijnaam, naam in eigen schrift en zichtbaarheid.',
+          'In Gegevens vul je naam, jaren en een foto in — en ook bijnaam, naam in eigen schrift, welke naam in de boom komt, en de zichtbaarheid (familie of privé).',
         ],
       },
       {
-        q: 'Samen bouwen',
-        p: ['Een familieboom wordt mooier met meer mensen. Nodig familie uit via Delen.'],
-        items: [
-          { label: 'Beheerder', text: 'mag alles, inclusief uitnodigen en koppelen.' },
-          { label: 'Bewerker', text: 'mag personen en relaties aanvullen.' },
-          { label: 'Lezer', text: 'bekijkt alleen.' },
+        q: 'Rollen: wie mag wat',
+        p: ['Een familieboom wordt mooier met meer mensen. Nodig familie uit via Delen — je kiest per persoon een rol (lezer of bewerker), en de beheerder kan die later wijzigen.'],
+        blocks: [
+          {
+            h: 'Beheerder (eigenaar)',
+            p: ['Volledige zeggenschap. Mag alles wat een bewerker mag, én: leden uitnodigen, rollen wijzigen en leden verwijderen, de familie hernoemen of verwijderen, en bruggen naar andere families leggen. De beheerder is ook de enige die privé-personen ziet.'],
+          },
+          {
+            h: 'Bewerker',
+            p: ['Bouwt mee aan de inhoud: personen en relaties toevoegen, bewerken en verwijderen, foto’s beheren en familie uitnodigen. Raakt niet aan ledenbeheer, familie-instellingen of bruggen, en ziet géén privé-personen.'],
+          },
+          {
+            h: 'Lezer',
+            p: ['Kijkt alleen mee in de familie-zichtbare boom. Ziet geen privé-personen. Je eigen "dit ben ik"-knooppunt mag je wel zelf aanpassen.'],
+          },
         ],
+        note: 'Privé zet je per persoon onder Bewerken. Een privé-persoon is alleen voor de beheerder; bewerkers en lezers zien op die plek een "verborgen persoon", zodat de boom blijft kloppen.',
       },
       {
         q: 'Foto’s',
@@ -190,9 +200,9 @@ const en: GuideContent = {
             h: 'Three levels of visibility',
             p: ['Every person — and every relationship — has a visibility:'],
             items: [
-              { label: 'Public', text: 'readable by anyone at the data level, even without login — only use this for what the whole world may see. (A public view for logged-out visitors is designed but not yet built.)' },
+              { label: 'Public', text: 'readable by anyone at the data level, even without login. Currently no longer offered (there is no public view yet); existing public people can be set back to family or private.' },
               { label: 'Family', text: 'for all members of this tree (the default).' },
-              { label: 'Private', text: 'for the admin only.' },
+              { label: 'Private', text: 'for the admin (the owner) only.' },
             ],
             note: 'If more than one setting applies, the strictest wins. Example: your grandma doesn’t want her birth year shared with the whole family → set her to private; only the admin sees her then.',
           },
@@ -218,17 +228,27 @@ const en: GuideContent = {
         q: 'Adding people and relationships',
         p: [
           'Click a person and choose + parent, + partner or + child. You create a new person, or link someone already in the family.',
-          'In Details you fill in name, years and a photo. Under "more details" are nickname, name in native script and visibility.',
+          'In Details you fill in name, years and a photo — plus nickname, name in native script, which name shows in the tree, and the visibility (family or private).',
         ],
       },
       {
-        q: 'Building together',
-        p: ['A family tree gets richer with more people. Invite family via Share.'],
-        items: [
-          { label: 'Admin', text: 'can do everything, including inviting and linking.' },
-          { label: 'Editor', text: 'can add people and relationships.' },
-          { label: 'Reader', text: 'views only.' },
+        q: 'Roles: who can do what',
+        p: ['A family tree gets richer with more people. Invite family via Share — you pick a role per person (reader or editor), and the admin can change it later.'],
+        blocks: [
+          {
+            h: 'Admin (owner)',
+            p: ['Full control. Can do everything an editor can, plus: invite members, change roles and remove members, rename or delete the family, and build bridges to other families. The admin is also the only one who sees private people.'],
+          },
+          {
+            h: 'Editor',
+            p: ['Builds the content: add, edit and delete people and relationships, manage photos, and invite family. Does not touch member management, family settings or bridges, and does not see private people.'],
+          },
+          {
+            h: 'Reader',
+            p: ['Views only, within the family-visible tree. Does not see private people. You may still edit your own "this is me" node.'],
+          },
         ],
+        note: 'You set private per person under Edit. A private person is for the admin only; editors and readers see a "hidden person" in that spot, so the tree still holds.',
       },
       {
         q: 'Photos',
@@ -286,9 +306,9 @@ const zh: GuideContent = {
             h: '三种可见性级别',
             p: ['每个人 — 以及每段关系 — 都有可见性：'],
             items: [
-              { label: '公开', text: '在数据层面所有人可读，无需登录——仅用于可以公之于众的内容。（面向未登录访客的公开视图已设计，但尚未实现。）' },
+              { label: '公开', text: '在数据层面所有人可读，无需登录。目前已不再提供（尚无公开视图）；已有的公开人物可改回家庭或私密。' },
               { label: '家庭', text: '本树所有成员可见（默认）。' },
-              { label: '私密', text: '仅管理员可见。' },
+              { label: '私密', text: '仅管理员（所有者）可见。' },
             ],
             note: '若有多项设置同时适用，以最严格者为准。例如：您奶奶不想把出生年份告诉全家 → 将她设为私密；这样只有管理员能看到她。',
           },
@@ -314,17 +334,27 @@ const zh: GuideContent = {
         q: '添加人物与关系',
         p: [
           '点击一个人，选择 +父母、+伴侣或+子女。您可以新建一个人物，或关联家庭中已有的人。',
-          '在"资料"中填写姓名、年份和照片。在"更多信息"下有昵称、母语文字姓名和可见性。',
+          '在"资料"中填写姓名、年份和照片——以及昵称、母语文字姓名、在树中显示哪个名字，和可见性（家庭或私密）。',
         ],
       },
       {
-        q: '共同构建',
-        p: ['人越多，家谱树越丰富。通过"分享"邀请家人。'],
-        items: [
-          { label: '管理员', text: '可执行一切操作，包括邀请和连接。' },
-          { label: '编辑者', text: '可添加人物和关系。' },
-          { label: '读者', text: '仅查看。' },
+        q: '角色：谁能做什么',
+        p: ['人越多，家谱树越丰富。通过"分享"邀请家人——可为每个人选择角色（读者或编辑者），管理员之后可更改。'],
+        blocks: [
+          {
+            h: '管理员（所有者）',
+            p: ['拥有完全控制权。可执行编辑者的所有操作，另外还可：邀请成员、更改角色并移除成员、重命名或删除家庭，以及与其他家庭建立桥接。管理员也是唯一能看到私密人物的人。'],
+          },
+          {
+            h: '编辑者',
+            p: ['共建内容：添加、编辑和删除人物与关系，管理照片，并邀请家人。不涉及成员管理、家庭设置或桥接，也看不到私密人物。'],
+          },
+          {
+            h: '读者',
+            p: ['仅在家庭可见的树中查看。看不到私密人物。但您可以编辑自己的"这是我"节点。'],
+          },
         ],
+        note: '在"编辑"中为每个人设置私密。私密人物仅管理员可见；编辑者和读者在该位置看到"隐藏人物"，以便家谱依然成立。',
       },
       {
         q: '照片',
@@ -383,9 +413,9 @@ const id: GuideContent = {
             h: 'Tiga tingkat visibilitas',
             p: ['Setiap orang — dan setiap hubungan — memiliki visibilitas:'],
             items: [
-              { label: 'Publik', text: 'dapat dibaca siapa pun di tingkat data, bahkan tanpa masuk — gunakan hanya untuk yang boleh dilihat seluruh dunia. (Tampilan publik untuk pengunjung yang belum masuk sudah dirancang, tetapi belum dibuat.)' },
+              { label: 'Publik', text: 'dapat dibaca siapa pun di tingkat data, bahkan tanpa masuk. Saat ini tidak lagi ditawarkan (belum ada tampilan publik); orang yang sudah publik bisa dikembalikan ke keluarga atau pribadi.' },
               { label: 'Keluarga', text: 'untuk semua anggota pohon ini (bawaan).' },
-              { label: 'Pribadi', text: 'hanya untuk admin.' },
+              { label: 'Pribadi', text: 'hanya untuk admin (pemilik).' },
             ],
             note: 'Jika lebih dari satu pengaturan berlaku, yang paling ketat menang. Contoh: nenek Anda tak ingin tahun lahirnya dibagikan ke seluruh keluarga → setel ke pribadi; hanya admin yang melihatnya.',
           },
@@ -411,17 +441,27 @@ const id: GuideContent = {
         q: 'Menambah orang dan hubungan',
         p: [
           'Klik seseorang dan pilih + orang tua, + pasangan, atau + anak. Anda membuat orang baru, atau menautkan seseorang yang sudah ada di keluarga.',
-          'Di Data Anda mengisi nama, tahun, dan foto. Di bawah "detail lainnya" ada nama panggilan, nama dalam aksara asli, dan visibilitas.',
+          'Di Data Anda mengisi nama, tahun, dan foto — juga nama panggilan, nama dalam aksara asli, nama mana yang tampil di pohon, dan visibilitas (keluarga atau pribadi).',
         ],
       },
       {
-        q: 'Membangun bersama',
-        p: ['Pohon keluarga makin kaya dengan lebih banyak orang. Undang keluarga lewat Bagikan.'],
-        items: [
-          { label: 'Admin', text: 'boleh melakukan segalanya, termasuk mengundang dan menautkan.' },
-          { label: 'Editor', text: 'boleh menambah orang dan hubungan.' },
-          { label: 'Pembaca', text: 'hanya melihat.' },
+        q: 'Peran: siapa boleh apa',
+        p: ['Pohon keluarga makin kaya dengan lebih banyak orang. Undang keluarga lewat Bagikan — Anda memilih peran per orang (pembaca atau editor), dan admin dapat mengubahnya nanti.'],
+        blocks: [
+          {
+            h: 'Admin (pemilik)',
+            p: ['Kendali penuh. Boleh melakukan semua yang bisa editor lakukan, ditambah: mengundang anggota, mengubah peran dan menghapus anggota, mengganti nama atau menghapus keluarga, dan membangun jembatan ke keluarga lain. Admin juga satu-satunya yang melihat orang pribadi.'],
+          },
+          {
+            h: 'Editor',
+            p: ['Membangun isi: menambah, mengubah, dan menghapus orang dan hubungan, mengelola foto, dan mengundang keluarga. Tidak menyentuh pengelolaan anggota, pengaturan keluarga, atau jembatan, dan tidak melihat orang pribadi.'],
+          },
+          {
+            h: 'Pembaca',
+            p: ['Hanya melihat, dalam pohon yang terlihat untuk keluarga. Tidak melihat orang pribadi. Anda tetap boleh menyunting simpul "ini saya" Anda sendiri.'],
+          },
         ],
+        note: 'Pribadi diatur per orang di bawah Ubah. Orang pribadi hanya untuk admin; editor dan pembaca melihat "orang tersembunyi" di tempat itu, agar pohon tetap utuh.',
       },
       {
         q: 'Foto',

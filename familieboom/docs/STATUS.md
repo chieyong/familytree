@@ -43,6 +43,7 @@ opnieuw draaien, dat kan geen kwaad.
 | 13 | `20260618150000_request_access.sql` | request_family_access | ✅ (brug + oversteken geverifieerd 2026-06-18) |
 | 14 | `20260618160000_editor_can_manage.sql` | can_manage_person erkent editor-rol (fix "Toevoegen mislukt" voor bewerkers) | ⚠️ onbevestigd |
 | 15 | `20260620120000_preferred_name.sql` | preferred_name kolom (welke naam als hoofd-label in de boom), _build_graph | ⚠️ nog draaien |
+| 16 | `20260620130000_owner_only_private.sql` | privé-personen alleen voor owner: persons_select + _build_graph gebruiken is_owner_of_person i.p.v. can_manage_person | ⚠️ nog draaien |
 
 **Actie voor een verse sessie:** t/m 13 zijn gedraaid (12/13 geverifieerd via de
 brug-test); 9, 11 en 14 zijn onbevestigd maar idempotent — bij twijfel gewoon
@@ -145,6 +146,25 @@ volledige naam, ook al kies je in het bewerkscherm een andere.
   zetten is. **Nog open**: bestaande `public`-personen blijven via de API leesbaar
   tot ze terugzet zijn; een migratie (`public`→`family` en/of `anon`-grant intrekken)
   is nog niet gemaakt.
+- **Privé alleen voor de owner** (migratie 16): `can_manage_person` telt sinds mig 14
+  ook editors mee, waardoor editors privé-/`fully_hidden`-personen volledig zagen. In
+  de lééspaden (`persons_select`-policy + `_build_graph.can_full`) nu
+  `is_owner_of_person` i.p.v. `can_manage_person`. Editors/lezers zien een privé-
+  persoon voortaan als "verborgen persoon"-silhouet; owner ziet 'm volledig; `is_self`
+  blijft. Schrijfrechten ongewijzigd (editors beheren nog gewoon).
+- **Rollen uitgelegd in de gids**: nieuwe sectie "Rollen: wie mag wat" in
+  `guideContent.ts` (NL/EN/ZH/ID) met owner/editor/lezer-rechten incl. de privé-regel;
+  verouderde "meer details"- en "openbaar"-teksten bijgewerkt. Zie ook het rol-overzicht
+  hieronder.
+
+## Rollen (samenvatting)
+- **Owner (beheerder)**: alles van editor + ledenbeheer (uitnodigen, rollen wijzigen,
+  verwijderen), familie hernoemen/verwijderen, bruggen leggen. **Enige die privé-
+  personen ziet.**
+- **Editor (bewerker)**: personen/relaties toevoegen·bewerken·verwijderen, foto's,
+  uitnodigen. Géén ledenbeheer, familie-instellingen of bruggen; ziet geen privé.
+- **Viewer (lezer)**: alleen-lezen op familie-zichtbare data; geen privé; mag wel het
+  eigen "dit ben ik"-knooppunt aanpassen (`is_self`).
 
 ## Verifiëren
 - Niet-ingelogde / demo-flows: headless Chrome screenshot, bv.
