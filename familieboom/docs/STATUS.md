@@ -151,10 +151,11 @@ de SQL-editor.
   `is_owner_of_person` i.p.v. `can_manage_person`. Editors/lezers zien een privé-
   persoon voortaan als "verborgen persoon"-silhouet; owner ziet 'm volledig; `is_self`
   blijft. Schrijfrechten ongewijzigd (editors beheren nog gewoon).
-- **Rollen uitgelegd in de gids**: nieuwe sectie "Rollen: wie mag wat" in
-  `guideContent.ts` (NL/EN/ZH/ID) met owner/editor/lezer-rechten incl. de privé-regel;
-  verouderde "meer details"- en "openbaar"-teksten bijgewerkt. Zie ook het rol-overzicht
-  hieronder.
+- **Rollen uitgelegd in de gids**: sectie "Rollen: wie mag wat" in `guideContent.ts`
+  (NL/EN/ZH/ID) als per-rol overzicht — drie blokken (beheerder/bewerker/lezer) met
+  een **bullet-lijst rechten** per rol, incl. mede-owner maken en de privé-regel.
+  Verouderde "meer details"- en "openbaar"-teksten bijgewerkt. `GuideItem` zonder
+  `label` rendert als gewone bullet (`HelpGuide.tsx`). Zie rol-overzicht hieronder.
 
 ## Rollen (samenvatting)
 - **Owner (beheerder)**: alles van editor + ledenbeheer (uitnodigen, rollen wijzigen,
@@ -185,6 +186,14 @@ de SQL-editor.
 
 ## Volgende stappen
 - ✅ Bruggen Lai ↔ Man via Weiyie getest met twee owners — werkte (2026-06-18).
+- **Nog live te verifiëren** (ingelogd, niet-headless, met 2 accounts/rollen):
+  (a) privé-persoon (mig 16) → bekijk als editor/lezer: hoort een "verborgen
+  persoon"-silhouet te zien, owner ziet 'm volledig; (b) mede-owner maken via
+  Delen → Leden + terug kunnen draaien.
+- **Open privacy-actie**: bestaande `public`-personen blijven via de `anon`-grant op
+  `get_full_graph`/`get_ego_graph` leesbaar zonder login. De UI biedt 'openbaar' niet
+  meer aan, maar er is nog **geen migratie** die bestaande `public`→`family` zet of de
+  `anon`-grant intrekt. Overweeg dat als de blootstelling echt dicht moet.
 - Bruggen v2 (later, zie design-doc): begrensd alleen-lezen oversteken, één
   doorlopend gestikt beeld, brug intrekken in de UI, profielsync tussen de
   spiegel-knopen.
