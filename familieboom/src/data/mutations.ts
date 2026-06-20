@@ -35,6 +35,7 @@ export interface NewRelative {
   nickname?: string;
   sex?: 'm' | 'f' | 'x';
   birthYear?: number;
+  deathYear?: number;
 }
 
 /** Voegt een persoon + relatie toe aan een ankerpunt (RPC add_relative). */
@@ -57,7 +58,16 @@ export async function addRelative(
     p_nickname: rel.nickname || null,
   });
   if (error) throw error;
-  return (data as { personId: string }).personId;
+  const personId = (data as { personId: string }).personId;
+  // De RPC kent (nog) geen sterfjaar; gericht bijwerken (RLS: aanmaker mag dit).
+  if (rel.deathYear != null) {
+    const { error: upErr } = await supabase
+      .from('persons')
+      .update({ death_year: rel.deathYear })
+      .eq('id', personId);
+    if (upErr) throw upErr;
+  }
+  return personId;
 }
 
 /** Koppelt twee bestaande personen (RLS: beheer over ≥1 eindpunt). */

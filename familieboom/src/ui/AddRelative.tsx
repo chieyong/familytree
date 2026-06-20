@@ -27,6 +27,7 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
   const [nickname, setNickname] = useState('');
   const [sex, setSex] = useState<'m' | 'f' | 'x' | ''>('');
   const [birthYear, setBirthYear] = useState('');
+  const [deathYear, setDeathYear] = useState('');
   const [query, setQuery] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
@@ -40,6 +41,7 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
     setNickname('');
     setSex('');
     setBirthYear('');
+    setDeathYear('');
     setQuery('');
     setError(undefined);
   };
@@ -57,6 +59,7 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
         nickname: nickname.trim() || undefined,
         sex: sex || undefined,
         birthYear: birthYear ? Number(birthYear) : undefined,
+        deathYear: deathYear ? Number(deathYear) : undefined,
       });
       bumpData();
       reset();
@@ -133,6 +136,8 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
             </select>
             <input className="add-rel-year" placeholder={t.add.birthYear} inputMode="numeric"
               value={birthYear} onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, ''))} />
+            <input className="add-rel-year" placeholder={t.add.deathYear} inputMode="numeric"
+              value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
           </div>
           <div className="add-rel-row">
             <button type="submit" disabled={busy}>{busy ? '…' : t.add.addBtn}</button>
