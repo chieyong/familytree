@@ -173,6 +173,16 @@ export async function setUnionType(id: string, type: UnionType): Promise<void> {
   if (error) throw error;
 }
 
+/** Zet (of wist) het startjaar van een verbintenis, bv. het huwelijksjaar. */
+export async function setUnionStart(id: string, year?: number): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const fields = year
+    ? { start_year: year }
+    : { start_year: null, start_month: null, start_day: null };
+  const { error } = await supabase.from('unions').update(fields).eq('id', id);
+  if (error) throw error;
+}
+
 /** Markeert een verbintenis als beëindigd (reden + jaar), of weer lopend (null). */
 export async function setUnionEnd(
   id: string,

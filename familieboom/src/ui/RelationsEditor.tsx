@@ -5,6 +5,7 @@ import {
   deleteUnion,
   setParentRole,
   setUnionEnd,
+  setUnionStart,
   setUnionType,
 } from '../data/mutations';
 import { shortName } from './theme';
@@ -35,6 +36,15 @@ function UnionRow({ union, otherName }: { union: Union; otherName: string }) {
           <option key={v} value={v}>{t.relations[v]}</option>
         ))}
       </select>
+      <input
+        className="rel-year"
+        placeholder={t.relations.sinceYear}
+        defaultValue={union.start?.year ?? ''}
+        onBlur={(e) => {
+          const y = e.target.value.replace(/\D/g, '');
+          after(setUnionStart(union.id, y ? Number(y) : undefined));
+        }}
+      />
       <select
         value={reason}
         onChange={(e) =>
@@ -96,7 +106,11 @@ export function RelationsEditor({
   embedded?: boolean;
   readOnly?: boolean;
 }) {
-  const [open, setOpen] = useState(embedded ?? false);
+  // Embedded (in het bewerk-paneel) staat altijd open. Niet via mount-state,
+  // want bij lezen→bewerken hergebruikt React deze instantie en zou useState
+  // niet opnieuw draaien — dan bleef het paneel dicht tot je erop klikte.
+  const [open, setOpen] = useState(false);
+  const isOpen = embedded || open;
   const t = useT();
   if (!graph) return null;
 
@@ -117,11 +131,12 @@ export function RelationsEditor({
         {partners.map((u) => {
           const other = name(u.partners[0] === person.id ? u.partners[1] : u.partners[0]);
           const type = u.type ? t.relations[u.type] : '';
+          const since = u.start?.year ? ` · ${t.relations.sinceYear} ${u.start.year}` : '';
           const ended = u.end?.reason ? ` · ${t.relations[u.end.reason]}` : '';
           return (
             <div className="rel-view-row" key={u.id}>
               <span className="rel-name">{other}</span>
-              <em>{type}{ended}</em>
+              <em>{type}{since}{ended}</em>
             </div>
           );
         })}
@@ -141,7 +156,7 @@ export function RelationsEditor({
     );
   }
 
-  if (!open) {
+  if (!isOpen) {
     return (
       <button className="add-rel-btn" onClick={() => setOpen(true)}>
         {t.relations.summary(partners.length, parents.length, children.length)} ✎
