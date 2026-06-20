@@ -1,7 +1,11 @@
 # Status & handoff
 
 Korte overdracht zodat een nieuwe sessie (ook op mobiel/Termius) verder kan.
-Laatst bijgewerkt: 2026-06-18.
+Laatst bijgewerkt: 2026-06-20.
+
+Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation`,
+`?theme=light|dark`, `?lang=nl|en|zh|id`, `?focus=<id>`, `?tour=1` (opent de
+rondleiding direct), `?data=habsburg`.
 
 ## Wat dit is
 Interactieve familieboom-webapp "Bloom". Stack: Vite + React 18 + TypeScript
@@ -37,11 +41,12 @@ opnieuw draaien, dat kan geen kwaad.
 | 11 | `20260618130000_claim_self.sql` | claim_self_person ("dit ben ik") | ⚠️ onbevestigd |
 | 12 | `20260618140000_tree_links.sql` | tree_links + bridge_invites + RPC's, _build_graph (bridge) | ✅ (brug werkte) |
 | 13 | `20260618150000_request_access.sql` | request_family_access | ✅ (brug + oversteken geverifieerd 2026-06-18) |
-| 14 | `20260618160000_editor_can_manage.sql` | can_manage_person erkent editor-rol (fix "Toevoegen mislukt" voor bewerkers) | ⚠️ nog draaien |
+| 14 | `20260618160000_editor_can_manage.sql` | can_manage_person erkent editor-rol (fix "Toevoegen mislukt" voor bewerkers) | ⚠️ onbevestigd |
 
-**Actie voor een verse sessie:** alle migraties t/m 13 zijn gedraaid; 9 en 11
-blijven onbevestigd maar idempotent (bij twijfel opnieuw draaien). De gebruiker
-draait ze zelf in de SQL-editor.
+**Actie voor een verse sessie:** t/m 13 zijn gedraaid (12/13 geverifieerd via de
+brug-test); 9, 11 en 14 zijn onbevestigd maar idempotent — bij twijfel gewoon
+opnieuw draaien. De gebruiker draait ze zelf in de SQL-editor. Sinds migratie 14
+zijn er **geen nieuwe migraties** bijgekomen; al het werk daarna is frontend.
 
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere
@@ -65,12 +70,45 @@ draait ze zelf in de SQL-editor.
   (brug leggen via koppel-code, owner-only) + fase 2 (oversteken: ↗-markering
   op de node, "↗ ook in familie X" op de kaart, toegang vragen → pending-lid dat
   de andere owner goedkeurt, kruimelpad terug). Spiegel-model.
+- **Editor-rechten** (migratie 14): bewerkers kunnen nu personen/relaties
+  beheren (can_manage_person erkent de editor-rol).
+
+## UI, talen & onboarding (mobiele sessie 2026-06-19 + 2026-06-20)
+- **Meertalig (NL/EN/ZH/ID)**: `src/ui/i18n.ts` (NL is bron, type eruit
+  afgeleid), `useT()`/`useGuide()`, taalkeuze als **vlag-knop** in het ⋯-menu.
+  Bij nieuwe UI-tekst → sleutel in alle 4 talen toevoegen.
+- **Topbar opgeruimd**: secundaire bediening (taal, thema, foto's, uitleg) onder
+  één **instellingen-menu** (schuifregelaars-icoon, `OverflowMenu`); topbar houdt
+  Tree|Tableau + account + delen. Volgorde toggle = **Tree | Tableau**.
+- **Onboarding**: welkomstkaart (eerste login) + **uitleg-gids** (`HelpGuide`,
+  accordeon, `guideContent.ts`) — privacy zit hierin. **Coachmark-rondleiding**
+  (`Tour.tsx`): spotlight op echte elementen, start via "✨ Rondleiding" in de
+  gids of `?tour=1`.
+- **Opstart-leader** (`Leader.tsx`): logo bloeit open + "Bloom", 1×/sessie,
+  overslaanbaar, uit bij reduced-motion; verdwijnt als de graaf geladen is.
+- **Genodigde** landt direct in z'n boom: auto-open van (laatste/eerste) familie
+  na login + "Open je familieboom: X"-banner als vangnet.
+- **Login**: Google-knop prominent (wit + logo), e-mail secundair. Ingelogd →
+  knop toont "Ingelogd"; klik opent popover met e-mail + uitloggen.
+- **Uitnodigingslink**: expliciete Kopieer-knop + native delen (`navigator.share`).
+- **Persoonskaart**: alleen zichtbaar bij een **geselecteerde** node; klik op leeg
+  vlak deselecteert. Klik op de kaart opent het **detailpaneel**, dat eerst
+  **alleen-lezen** is (gegevens + relaties opengeklapt) en pas op "bewerken"
+  bewerkbaar wordt. Geen potlood meer.
+- **Interactie**: pop-ups (familie-menu, delen, account, legenda) sluiten bij klik
+  buiten; **dubbelklik/-tik togglet zoom** (in → overzicht).
 
 ## Verifiëren
 - Niet-ingelogde / demo-flows: headless Chrome screenshot, bv.
   `--headless=new --screenshot=out.png "http://localhost:5199/?backend=fixtures&view=navigation&focus=lisa"`.
-- **Ingelogde flows (eigen familie, delen, bruggen, foto-upload) kunnen NIET
-  headless** — die test de gebruiker zelf op bloom.vizcraft.nl.
+- **Headless-valkuilen**: (1) de opstart-**leader** blijft onder headless hangen
+  (virtual-time stalt door continue animatie-frames) en kan de demo blokkeren;
+  (2) **CSS-animaties** lopen niet onder `--virtual-time-budget` (alleen
+  JS/framer-motion), dus CSS-fades tonen niet op de screenshot. Isoleer zulke
+  stukken in een los HTML-bestand om ze te verifiëren.
+- **Ingelogde flows (eigen familie, delen, bruggen, foto-upload) en interactie
+  (klikken/slepen/oversteken) kunnen NIET headless** — die test de gebruiker zelf
+  op bloom.vizcraft.nl.
 
 ## Volgende stappen
 - ✅ Bruggen Lai ↔ Man via Weiyie getest met twee owners — werkte (2026-06-18).
