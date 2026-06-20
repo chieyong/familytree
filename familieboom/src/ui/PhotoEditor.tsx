@@ -52,11 +52,7 @@ export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Prop
         ?.getUserMedia({ video: { facingMode: 'user' }, audio: false })
         .then((stream) => {
           streamRef.current = stream;
-          setCameraOn(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            void videoRef.current.play();
-          }
+          setCameraOn(true); // pas hierna verschijnt <video>; koppelen gebeurt in het effect hieronder
         })
         .catch(() => setCameraError(t.photo.cameraError));
     }
@@ -65,6 +61,16 @@ export function PhotoEditor({ initialFile, startCamera, onCancel, onSave }: Prop
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Stream pas aan het <video> koppelen wanneer het element gemount is
+  // (cameraOn → true). In de getUserMedia-callback bestaat de ref nog niet.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (cameraOn && video && streamRef.current && video.srcObject !== streamRef.current) {
+      video.srcObject = streamRef.current;
+      void video.play();
+    }
+  }, [cameraOn]);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
