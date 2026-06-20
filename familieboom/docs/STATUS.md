@@ -42,14 +42,13 @@ opnieuw draaien, dat kan geen kwaad.
 | 12 | `20260618140000_tree_links.sql` | tree_links + bridge_invites + RPC's, _build_graph (bridge) | ✅ (brug werkte) |
 | 13 | `20260618150000_request_access.sql` | request_family_access | ✅ (brug + oversteken geverifieerd 2026-06-18) |
 | 14 | `20260618160000_editor_can_manage.sql` | can_manage_person erkent editor-rol (fix "Toevoegen mislukt" voor bewerkers) | ⚠️ onbevestigd |
-| 15 | `20260620120000_preferred_name.sql` | preferred_name kolom (welke naam als hoofd-label in de boom), _build_graph | ⚠️ nog draaien |
-| 16 | `20260620130000_owner_only_private.sql` | privé-personen alleen voor owner: persons_select + _build_graph gebruiken is_owner_of_person i.p.v. can_manage_person | ⚠️ nog draaien |
+| 15 | `20260620120000_preferred_name.sql` | preferred_name kolom (welke naam als hoofd-label in de boom), _build_graph | ✅ (2026-06-20) |
+| 16 | `20260620130000_owner_only_private.sql` | privé-personen alleen voor owner: persons_select + _build_graph gebruiken is_owner_of_person i.p.v. can_manage_person | ✅ (2026-06-20) |
 
-**Actie voor een verse sessie:** t/m 13 zijn gedraaid (12/13 geverifieerd via de
-brug-test); 9, 11 en 14 zijn onbevestigd maar idempotent — bij twijfel gewoon
-opnieuw draaien. De gebruiker draait ze zelf in de SQL-editor. **Migratie 15
-(`preferred_name`) moet nog gedraaid worden** — anders blijft elke naam de
-volledige naam, ook al kies je in het bewerkscherm een andere.
+**Actie voor een verse sessie:** t/m 16 zijn gedraaid (12/13 geverifieerd via de
+brug-test; 15 en 16 gedraaid 2026-06-20); 9, 11 en 14 zijn onbevestigd maar
+idempotent — bij twijfel gewoon opnieuw draaien. De gebruiker draait ze zelf in
+de SQL-editor.
 
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere
