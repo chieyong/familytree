@@ -34,10 +34,6 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const [visibility, setVisibility] = useState<Visibility>(person.visibility);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
-  // Zelden gebruikte velden ingeklapt — maar open als ze al gevuld zijn.
-  const [showMore, setShowMore] = useState(
-    !!(person.nameNative || person.nickname || person.preferredName || person.visibility !== 'family'),
-  );
 
   // Profielfoto: huidige (ondertekende) preview + upload/verwijder.
   const [photoUrl, setPhotoUrl] = useState<string>();
@@ -190,30 +186,24 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         <input className="add-rel-year" placeholder={t.edit.deathAbbr} inputMode="numeric"
           value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
       </div>
-      {showMore ? (
-        <>
-          <input placeholder={t.edit.nativeName} value={nameNative}
-            onChange={(e) => setNameNative(e.target.value)} />
-          <input placeholder={t.edit.nickname} value={nickname}
-            onChange={(e) => setNickname(e.target.value)} />
-          <label className="edit-field-label">{t.edit.showInTree}</label>
-          <select value={preferredName}
-            onChange={(e) => setPreferredName(e.target.value as typeof preferredName)}>
-            <option value="full">{t.edit.showFull}</option>
-            <option value="native" disabled={!nameNative.trim()}>{t.edit.showNative}</option>
-            <option value="nickname" disabled={!nickname.trim()}>{t.edit.showNickname}</option>
-          </select>
-          <select value={visibility} onChange={(e) => setVisibility(e.target.value as Visibility)}>
-            <option value="family">{t.edit.visFamily}</option>
-            <option value="private">{t.edit.visPrivate}</option>
-            <option value="public">{t.edit.visPublic}</option>
-          </select>
-        </>
-      ) : (
-        <button type="button" className="more-toggle" onClick={() => setShowMore(true)}>
-          {t.edit.moreDetails}
-        </button>
-      )}
+      <input placeholder={t.edit.nativeName} value={nameNative}
+        onChange={(e) => setNameNative(e.target.value)} />
+      <input placeholder={t.edit.nickname} value={nickname}
+        onChange={(e) => setNickname(e.target.value)} />
+      <label className="edit-field-label">{t.edit.showInTree}</label>
+      <select value={preferredName}
+        onChange={(e) => setPreferredName(e.target.value as typeof preferredName)}>
+        <option value="full">{t.edit.showFull}</option>
+        <option value="native" disabled={!nameNative.trim()}>{t.edit.showNative}</option>
+        <option value="nickname" disabled={!nickname.trim()}>{t.edit.showNickname}</option>
+      </select>
+      {/* 'openbaar' niet meer aanbiedbaar (geen publieke weergave; data-blootstelling
+          zonder login). Alleen tonen als deze persoon er al op staat → terug te zetten. */}
+      <select value={visibility} onChange={(e) => setVisibility(e.target.value as Visibility)}>
+        <option value="family">{t.edit.visFamily}</option>
+        <option value="private">{t.edit.visPrivate}</option>
+        {visibility === 'public' && <option value="public">{t.edit.visPublicLegacy}</option>}
+      </select>
       {error && <p className="add-rel-error">{error}</p>}
       <div className="add-rel-row">
         <button type="submit" disabled={busy}>{busy ? '…' : t.edit.save}</button>
