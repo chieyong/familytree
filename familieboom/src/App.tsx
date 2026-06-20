@@ -24,7 +24,7 @@ import { Leader } from './ui/Leader';
 import { Tour } from './ui/Tour';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
 import { useT } from './ui/useT';
-import { lifespan, shortName } from './ui/theme';
+import { lifespan, nativeSubline, shortName } from './ui/theme';
 
 const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
@@ -241,8 +241,8 @@ export default function App() {
           )}
           <div className="person-card-main">
             <strong>{shortName(focusPerson)}</strong>
-            {focusPerson.nameNative && <span className="name-native">{focusPerson.nameNative}</span>}
-            {focusPerson.nickname && <span className="name-nick">‘{focusPerson.nickname}’</span>}
+            {nativeSubline(focusPerson) && <span className="name-native">{nativeSubline(focusPerson)}</span>}
+            {focusPerson.nickname && focusPerson.preferredName !== 'nickname' && <span className="name-nick">‘{focusPerson.nickname}’</span>}
             <span>{lifespan(focusPerson)}</span>
             {focusPerson.birth?.place && <span>{focusPerson.birth.place.name}</span>}
           </div>

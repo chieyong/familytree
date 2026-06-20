@@ -7,7 +7,7 @@ import { EditPerson } from './EditPerson';
 import { RelationsEditor } from './RelationsEditor';
 import { useAppStore } from './store';
 import { useT } from './useT';
-import { lifespan, shortName } from './theme';
+import { lifespan, nativeSubline, shortName } from './theme';
 
 interface Props {
   person: Person;
@@ -100,10 +100,10 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
           </>
         ) : (
           <>
-            {(person.nameNative || person.nickname || birthPlace || deathPlace || sexLabel || visLabel) && (
+            {(nativeSubline(person) || (person.nickname && person.preferredName !== 'nickname') || birthPlace || deathPlace || sexLabel || visLabel) && (
               <div className="panel-details">
-                {person.nameNative && <div className="pd-native">{person.nameNative}</div>}
-                {person.nickname && <div className="pd-nick">‘{person.nickname}’</div>}
+                {nativeSubline(person) && <div className="pd-native">{nativeSubline(person)}</div>}
+                {person.nickname && person.preferredName !== 'nickname' && <div className="pd-nick">‘{person.nickname}’</div>}
                 {(birthPlace || deathPlace) && (
                   <div className="pd-places">
                     {birthPlace && <span>° {birthPlace}</span>}

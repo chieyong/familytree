@@ -42,16 +42,20 @@ opnieuw draaien, dat kan geen kwaad.
 | 12 | `20260618140000_tree_links.sql` | tree_links + bridge_invites + RPC's, _build_graph (bridge) | ✅ (brug werkte) |
 | 13 | `20260618150000_request_access.sql` | request_family_access | ✅ (brug + oversteken geverifieerd 2026-06-18) |
 | 14 | `20260618160000_editor_can_manage.sql` | can_manage_person erkent editor-rol (fix "Toevoegen mislukt" voor bewerkers) | ⚠️ onbevestigd |
+| 15 | `20260620120000_preferred_name.sql` | preferred_name kolom (welke naam als hoofd-label in de boom), _build_graph | ⚠️ nog draaien |
 
 **Actie voor een verse sessie:** t/m 13 zijn gedraaid (12/13 geverifieerd via de
 brug-test); 9, 11 en 14 zijn onbevestigd maar idempotent — bij twijfel gewoon
-opnieuw draaien. De gebruiker draait ze zelf in de SQL-editor. Sinds migratie 14
-zijn er **geen nieuwe migraties** bijgekomen; al het werk daarna is frontend.
+opnieuw draaien. De gebruiker draait ze zelf in de SQL-editor. **Migratie 15
+(`preferred_name`) moet nog gedraaid worden** — anders blijft elke naam de
+volledige naam, ook al kies je in het bewerkscherm een andere.
 
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere
   gesplitste Chinese velden). Getoond op kaart + node (eigen schrift) en kaart
-  (bijnaam).
+  (bijnaam). **Voorkeursnaam** (migratie 15): per persoon kiezen welke naam het
+  hoofd-label in de boom is — volledige naam (standaard), eigen schrift of
+  bijnaam; `Person.preferredName`, helper `nativeSubline()` in `theme.ts`.
 - **Bulk-import** via platte CSV/TSV-template met preview; kan koppelen aan
   bestaande personen (resolver in de modal). Knop in familie-menu (owner).
 - **Profielfoto's**: privé storage-bucket, foto's via signed URLs, weergave

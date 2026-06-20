@@ -34,6 +34,12 @@ export interface Person {
   nameNative?: string;
   /** Bijnaam / roepnaam / alias. */
   nickname?: string;
+  /**
+   * Welke naam als hoofd-label in de boom getoond wordt. 'full' (standaard) =
+   * officiële naam, 'native' = naam in eigen schrift, 'nickname' = bijnaam.
+   * Valt terug op de volledige naam als het gekozen veld leeg is.
+   */
+  preferredName?: 'full' | 'native' | 'nickname';
   /** Opslag-pad van de profielfoto (<family_id>/<person_id>); via signed URL geladen. */
   photoPath?: string;
   /** Brug naar dezelfde persoon in een andere familie-boom (gekoppelde bomen). */

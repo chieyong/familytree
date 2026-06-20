@@ -25,6 +25,9 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const [familyName, setFamilyName] = useState(person.familyName ?? '');
   const [nameNative, setNameNative] = useState(person.nameNative ?? '');
   const [nickname, setNickname] = useState(person.nickname ?? '');
+  const [preferredName, setPreferredName] = useState<'full' | 'native' | 'nickname'>(
+    person.preferredName ?? 'full',
+  );
   const [sex, setSex] = useState<'m' | 'f' | 'x' | ''>(person.sex ?? '');
   const [birthYear, setBirthYear] = useState(String(person.birth?.date?.year ?? ''));
   const [deathYear, setDeathYear] = useState(String(person.death?.date?.year ?? ''));
@@ -33,7 +36,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const [error, setError] = useState<string>();
   // Zelden gebruikte velden ingeklapt — maar open als ze al gevuld zijn.
   const [showMore, setShowMore] = useState(
-    !!(person.nameNative || person.nickname || person.visibility !== 'family'),
+    !!(person.nameNative || person.nickname || person.preferredName || person.visibility !== 'family'),
   );
 
   // Profielfoto: huidige (ondertekende) preview + upload/verwijder.
@@ -101,6 +104,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         familyName: familyName.trim() || undefined,
         nameNative: nameNative.trim() || undefined,
         nickname: nickname.trim() || undefined,
+        preferredName,
         sex: sex || undefined,
         birthYear: birthYear ? Number(birthYear) : undefined,
         deathYear: deathYear ? Number(deathYear) : undefined,
@@ -192,6 +196,13 @@ export function EditPerson({ person, egoId, embedded }: Props) {
             onChange={(e) => setNameNative(e.target.value)} />
           <input placeholder={t.edit.nickname} value={nickname}
             onChange={(e) => setNickname(e.target.value)} />
+          <label className="edit-field-label">{t.edit.showInTree}</label>
+          <select value={preferredName}
+            onChange={(e) => setPreferredName(e.target.value as typeof preferredName)}>
+            <option value="full">{t.edit.showFull}</option>
+            <option value="native" disabled={!nameNative.trim()}>{t.edit.showNative}</option>
+            <option value="nickname" disabled={!nickname.trim()}>{t.edit.showNickname}</option>
+          </select>
           <select value={visibility} onChange={(e) => setVisibility(e.target.value as Visibility)}>
             <option value="family">{t.edit.visFamily}</option>
             <option value="private">{t.edit.visPrivate}</option>

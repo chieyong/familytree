@@ -96,6 +96,7 @@ export interface PersonEdit {
   familyName?: string;
   nameNative?: string;
   nickname?: string;
+  preferredName?: 'full' | 'native' | 'nickname';
   sex?: 'm' | 'f' | 'x';
   birthYear?: number;
   deathYear?: number;
@@ -112,6 +113,7 @@ export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
       family_name: e.familyName || null,
       name_native: e.nameNative || null,
       nickname: e.nickname || null,
+      preferred_name: e.preferredName && e.preferredName !== 'full' ? e.preferredName : null,
       sex: e.sex ?? null,
       birth_year: e.birthYear ?? null,
       death_year: e.deathYear ?? null,

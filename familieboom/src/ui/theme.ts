@@ -84,9 +84,22 @@ export function linkStyle(link: LayoutLink, color: string, palette: Palette): Li
 }
 
 export function shortName(person: Person): string {
-  const name = person.displayName ?? `${person.givenNames[0]} ${person.familyName ?? ''}`.trim();
+  const full = person.displayName ?? `${person.givenNames[0]} ${person.familyName ?? ''}`.trim();
+  // Voorkeursnaam als hoofd-label; valt terug op de volledige naam als leeg.
+  let name = full;
+  if (person.preferredName === 'native' && person.nameNative) name = person.nameNative;
+  else if (person.preferredName === 'nickname' && person.nickname) name = person.nickname;
   // Wikidata-items zonder label leveren een ruwe QID op — toon die niet.
   return /^Q\d+$/.test(name) ? 'Naam onbekend' : name;
+}
+
+/**
+ * De naam in eigen schrift om als tweede regel te tonen — maar niet wanneer die
+ * al de hoofdnaam is (zou dan dubbel staan).
+ */
+export function nativeSubline(person: Person): string | undefined {
+  if (!person.nameNative || person.preferredName === 'native') return undefined;
+  return person.nameNative;
 }
 
 export function lifespan(person: Person): string {
