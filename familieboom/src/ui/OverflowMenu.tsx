@@ -35,6 +35,7 @@ export function OverflowMenu({ photosAvailable }: Props) {
   const photos = useAppStore((s) => s.photos);
   const togglePhotos = useAppStore((s) => s.togglePhotos);
   const setGuideOpen = useAppStore((s) => s.setGuideOpen);
+  const setAboutOpen = useAppStore((s) => s.setAboutOpen);
   const [open, setOpen] = useState(false);
 
   return (
@@ -86,6 +87,16 @@ export function OverflowMenu({ photosAvailable }: Props) {
               }}
             >
               {t.topbar.help}
+            </button>
+
+            <button
+              className="more-item"
+              onClick={() => {
+                setAboutOpen(true);
+                setOpen(false);
+              }}
+            >
+              {t.topbar.about}
             </button>
           </div>
         </>

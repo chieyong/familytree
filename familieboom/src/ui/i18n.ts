@@ -34,6 +34,7 @@ const nl = {
     help: 'Hoe werkt Bloom?',
     language: 'Taal',
     more: 'Meer',
+    about: 'Over de maker',
   },
   tour: {
     start: 'Rondleiding',
@@ -83,6 +84,21 @@ const nl = {
     step: 'stief',
     branchSize: 'kleur = stamtak · grootte = nakomelingen',
     deceased: 'open = overleden',
+    story:
+      'Ontwerpgedachte: relaties zitten in vorm, kleur en lijnsoort in plaats van in tekst — zo blijven ook complexe familierelaties in één oogopslag leesbaar.',
+    byMaker: 'Ontworpen door Chie-Yong Lai',
+  },
+  about: {
+    title: 'Over deze familieboom',
+    body: [
+      'Bloom is een persoonlijk experiment van Chie-Yong Lai en het tweede deel in een kleine serie visualisaties over het leven zelf. Het eerste, WeeklyPulse, brengt het ritme van je week in beeld — wanneer energie en plezier pieken. Bloom kijkt naar een grotere boog: een hele familie.',
+      'De vraag erachter: kun je complexe familierelaties leesbaar maken in één beeld? Twee weergaven vertellen twee verhalen met dezelfde data. De Boom navigeert vanuit één persoon; het Tableau zet elk leven als lijn op een tijdas. Relaties zitten in vorm, kleur en lijnsoort in plaats van in tekst — datastorytelling, geen stamboomformulier.',
+      'Gebouwd met React en Supabase, samen met een AI-co-piloot: ik bepaalde richting, vorm en gevoel; de code volgde. Meer van mijn werk staat op vizcraft.nl.',
+    ],
+    portfolio: 'Bekijk mijn werk',
+    weeklypulse: 'WeeklyPulse',
+    linkedin: 'LinkedIn',
+    close: 'Sluiten',
   },
   auth: {
     login: 'Inloggen',
@@ -288,6 +304,7 @@ const en: Messages = {
     help: 'How does Bloom work?',
     language: 'Language',
     more: 'More',
+    about: 'About the maker',
   },
   tour: {
     start: 'Tour',
@@ -337,6 +354,21 @@ const en: Messages = {
     step: 'step',
     branchSize: 'colour = lineage · size = descendants',
     deceased: 'hollow = deceased',
+    story:
+      'Design idea: relationships live in shape, colour and line style rather than in text — so even complex family relationships stay readable at a glance.',
+    byMaker: 'Designed by Chie-Yong Lai',
+  },
+  about: {
+    title: 'About this family tree',
+    body: [
+      'Bloom is a personal experiment by Chie-Yong Lai and the second piece in a small series of visualizations about life itself. The first, WeeklyPulse, maps the rhythm of your week — when energy and joy peak. Bloom takes a longer arc: a whole family.',
+      'The question behind it: can you make complex family relationships readable in a single image? Two views tell two stories with the same data. The Tree navigates from one person; the Tableau places every life as a line on a timeline. Relationships live in shape, colour and line style rather than text — data storytelling, not a genealogy form.',
+      'Built with React and Supabase, alongside an AI co-pilot: I set the direction, form and feel; the code followed. More of my work lives at vizcraft.nl.',
+    ],
+    portfolio: 'See my work',
+    weeklypulse: 'WeeklyPulse',
+    linkedin: 'LinkedIn',
+    close: 'Close',
   },
   auth: {
     login: 'Log in',
@@ -539,6 +571,7 @@ const zh: Messages = {
     help: 'Bloom 怎么用？',
     language: '语言',
     more: '更多',
+    about: '关于作者',
   },
   tour: {
     start: '导览',
@@ -588,6 +621,21 @@ const zh: Messages = {
     step: '继亲',
     branchSize: '颜色＝宗支 · 大小＝后代数量',
     deceased: '空心＝已故',
+    story:
+      '设计理念：关系通过形状、颜色和线型来表达，而非文字 — 让复杂的家庭关系也能一眼读懂。',
+    byMaker: '设计者：Chie-Yong Lai',
+  },
+  about: {
+    title: '关于这棵家谱树',
+    body: [
+      'Bloom 是 Chie-Yong Lai 的个人实验，也是「关于生活本身」系列可视化中的第二件作品。第一件 WeeklyPulse 呈现你一周的节奏 — 精力与愉悦何时达到顶峰。Bloom 则着眼于更长的跨度：一整个家庭。',
+      '核心问题是：能否把复杂的家庭关系浓缩进一幅图里并保持可读？两种视图用同一份数据讲述两个故事。「树」从某个人出发进行导航；「图卷」把每个人的一生作为一条线放在时间轴上。关系通过形状、颜色和线型来编码，而非文字 — 这是数据叙事，而不是一张家谱表。',
+      '使用 React 和 Supabase 构建，并与 AI 副驾一同完成：方向、形式与感受由我决定，代码随之而来。更多作品见 vizcraft.nl。',
+    ],
+    portfolio: '查看我的作品',
+    weeklypulse: 'WeeklyPulse',
+    linkedin: 'LinkedIn',
+    close: '关闭',
   },
   auth: {
     login: '登录',
@@ -790,6 +838,7 @@ const id: Messages = {
     help: 'Bagaimana cara kerja Bloom?',
     language: 'Bahasa',
     more: 'Lainnya',
+    about: 'Tentang pembuat',
   },
   tour: {
     start: 'Tur',
@@ -839,6 +888,21 @@ const id: Messages = {
     step: 'tiri',
     branchSize: 'warna = garis keturunan · ukuran = keturunan',
     deceased: 'kosong = telah wafat',
+    story:
+      'Gagasan desain: hubungan tersimpan dalam bentuk, warna, dan jenis garis, bukan dalam teks — sehingga hubungan keluarga yang rumit pun tetap terbaca sekilas.',
+    byMaker: 'Dirancang oleh Chie-Yong Lai',
+  },
+  about: {
+    title: 'Tentang pohon keluarga ini',
+    body: [
+      'Bloom adalah eksperimen pribadi Chie-Yong Lai dan karya kedua dalam rangkaian kecil visualisasi tentang kehidupan itu sendiri. Yang pertama, WeeklyPulse, memetakan ritme minggumu — kapan energi dan kegembiraan memuncak. Bloom mengambil rentang yang lebih panjang: satu keluarga utuh.',
+      'Pertanyaan di baliknya: bisakah hubungan keluarga yang rumit dibuat terbaca dalam satu gambar? Dua tampilan menceritakan dua kisah dengan data yang sama. Pohon menavigasi dari satu orang; Tableau menempatkan setiap kehidupan sebagai garis pada garis waktu. Hubungan dikodekan dalam bentuk, warna, dan jenis garis, bukan teks — penceritaan data, bukan formulir silsilah.',
+      'Dibuat dengan React dan Supabase, bersama AI co-pilot: saya menentukan arah, bentuk, dan rasa; kodenya menyusul. Lebih banyak karya saya ada di vizcraft.nl.',
+    ],
+    portfolio: 'Lihat karya saya',
+    weeklypulse: 'WeeklyPulse',
+    linkedin: 'LinkedIn',
+    close: 'Tutup',
   },
   auth: {
     login: 'Masuk',

@@ -65,6 +65,8 @@ interface AppState {
   authOpen: boolean;
   /** Uitleg-gids open (gedeeld, zodat de welkomstkaart 'm kan openen). */
   guideOpen: boolean;
+  /** "Over de maker"-paneel open (gedeeld; menu, legenda en welkom openen 'm). */
+  aboutOpen: boolean;
   /** Coachmark-rondleiding actief. */
   tourOpen: boolean;
   /** Vluchtige melding (bv. 'uitgelogd'); App toont 'm als banner. */
@@ -86,6 +88,7 @@ interface AppState {
   crossBack: () => void;
   setAuthOpen: (open: boolean) => void;
   setGuideOpen: (open: boolean) => void;
+  setAboutOpen: (open: boolean) => void;
   setTourOpen: (open: boolean) => void;
   setNotice: (notice?: string) => void;
   bumpData: () => void;
@@ -139,6 +142,7 @@ export const useAppStore = create<AppState>((set) => ({
   bridgeReturn: null,
   authOpen: false,
   guideOpen: false,
+  aboutOpen: false,
   tourOpen: params.get('tour') === '1',
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
@@ -192,6 +196,7 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   setAuthOpen: (authOpen) => set({ authOpen }),
   setGuideOpen: (guideOpen) => set({ guideOpen }),
+  setAboutOpen: (aboutOpen) => set({ aboutOpen }),
   setTourOpen: (tourOpen) => set({ tourOpen }),
   setNotice: (notice) => set({ notice }),
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),

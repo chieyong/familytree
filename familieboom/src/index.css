@@ -464,6 +464,31 @@ body {
   color: var(--ink-dim) !important;
 }
 
+/* ── Over-de-maker-paneel ──────────────────────────────────────────────── */
+.about-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.about-link {
+  flex: 1 1 auto;
+  text-align: center;
+  border-radius: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--surface-border);
+  color: var(--ink-dim);
+  font: 600 0.82rem var(--font-ui);
+  text-decoration: none;
+}
+
+.about-link.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
 /* ── Import-modal ──────────────────────────────────────────────────────── */
 .import-card {
   width: min(94vw, 560px);
@@ -1894,6 +1919,31 @@ body {
 
 .legend-read strong {
   color: var(--ink);
+}
+
+.legend-story {
+  position: relative;
+  margin: 8px 0 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--surface-border);
+  line-height: 1.5;
+  color: var(--ink-dim);
+  font-style: italic;
+}
+
+.legend-credit {
+  position: relative;
+  display: block;
+  margin-top: 8px;
+  padding: 6px 0 0;
+  border: 0;
+  border-top: 1px solid var(--surface-border);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+  font: 600 0.7rem var(--font-ui);
+  color: var(--accent);
 }
 
 .legend ul {

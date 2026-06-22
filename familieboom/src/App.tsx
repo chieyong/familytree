@@ -15,6 +15,7 @@ import { supabase } from './data/supabaseClient';
 import { PersonPanel } from './ui/PersonPanel';
 import { HelpGuide } from './ui/HelpGuide';
 import { WelcomeCard } from './ui/WelcomeCard';
+import { AboutCard } from './ui/AboutCard';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -30,7 +31,7 @@ const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setNotice } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setAboutOpen, setNotice } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();
@@ -303,6 +304,7 @@ export default function App() {
 
       <FamilyMenu />
       <WelcomeCard />
+      <AboutCard />
 
       {legendOpen && <div className="legend-backdrop" onClick={() => setLegendOpen(false)} />}
       <div className="legend">
@@ -312,6 +314,7 @@ export default function App() {
         {legendOpen && (
           <>
             {mode === 'artwork' && <p className="legend-read">{t.legend.artworkRead}</p>}
+            <p className="legend-story">{t.legend.story}</p>
             <ul>
               {mode === 'artwork' ? (
                 <>
@@ -330,6 +333,9 @@ export default function App() {
               <li><span className="swatch dot" /> {t.legend.branchSize}</li>
               <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>
             </ul>
+            <button className="legend-credit" onClick={() => setAboutOpen(true)}>
+              {t.legend.byMaker}
+            </button>
           </>
         )}
       </div>
