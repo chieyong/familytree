@@ -1,7 +1,7 @@
 # Status & handoff
 
 Korte overdracht zodat een nieuwe sessie (ook op mobiel/Termius) verder kan.
-Laatst bijgewerkt: 2026-06-20.
+Laatst bijgewerkt: 2026-06-22.
 
 Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation`,
 `?theme=light|dark`, `?lang=nl|en|zh|id`, `?focus=<id>`, `?tour=1` (opent de
@@ -156,6 +156,37 @@ de SQL-editor.
   een **bullet-lijst rechten** per rol, incl. mede-owner maken en de privé-regel.
   Verouderde "meer details"- en "openbaar"-teksten bijgewerkt. `GuideItem` zonder
   `label` rendert als gewone bullet (`HelpGuide.tsx`). Zie rol-overzicht hieronder.
+
+## Portfolio-exposure (sessie 2026-06-22)
+Doel: Bloom als portfolio-stuk inzetten voor exposure in **datavisualisatie &
+data­storytelling**. Drie toevoegingen, alle teksten in NL/EN/ZH/ID.
+- **"Over de maker"-paneel** (`src/ui/AboutCard.tsx`): korte bio die Bloom framet
+  als **tweede deel in een persoonlijke serie levensvisualisaties** (deel 1 =
+  WeeklyPulse, `https://weeklypulse.vizcraft.nl/`). Neutrale toon ("complexe
+  familierelaties", géén BI-specialist-claim, AI als co-piloot). Links naar
+  vizcraft.nl / WeeklyPulse / LinkedIn. Store-state `aboutOpen`/`setAboutOpen`.
+  Bereikbaar via het ⋯-menu ("Over de maker") **en** via de credit-knop in de
+  legenda. i18n: `topbar.about` + sectie `about.*`.
+- **Storytelling-legenda**: extra `legend.story`-regel (ontwerpgedachte: relaties
+  zitten in vorm/kleur/lijnsoort i.p.v. tekst) in beide weergaven + credit-knop
+  `legend.byMaker` ("Ontworpen door Chie-Yong Lai") die het paneel opent. CSS:
+  `.about-*`, `.legend-story`, `.legend-credit` in `index.css`.
+- **Deelkaart/SEO** (`index.html`): description, author, canonical, Open Graph +
+  Twitter-tags → `https://bloom.vizcraft.nl/`. OG-afbeelding `public/og-image.png`
+  (1200×630, gemaakt van een Habsburg-tableau-screenshot). **Na deploy** de cache
+  verversen via de LinkedIn Post Inspector.
+- Gecommit + gepusht naar `main` (Netlify auto-deploy).
+
+## Git nu via SSH (belangrijk voor Termius/mobiel)
+- Alle git-repo's op deze Mac (incl. familytree) zijn omgezet van **HTTPS → SSH**
+  (`git@github.com:chieyong/<repo>.git`). Aanleiding: een Personal Access Token
+  stond in platte tekst in de familytree-remote-URL (lek). Beide oude PAT's zijn
+  ingetrokken; het Keychain-token is gewist.
+- Auth loopt nu via SSH-sleutel **`~/.ssh/id_ed25519`** (ed25519, **zonder**
+  passphrase → werkt vlot in een Termius-sessie ín de Mac). `git push`/`pull`
+  hebben geen token meer nodig.
+- **Nieuwe clones**: pak de **SSH**-URL (groene Code-knop → tab SSH). Beland je per
+  ongeluk op een HTTPS-remote → `git remote set-url origin git@github.com:chieyong/<repo>.git`.
 
 ## Rollen (samenvatting)
 - **Owner (beheerder)**: alles van editor + ledenbeheer (uitnodigen, rollen wijzigen,
