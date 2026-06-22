@@ -16,7 +16,6 @@ interface Props {
 /** CRUD: voeg een ouder/partner/kind toe — nieuw of een bestaande persoon. */
 export function AddRelative({ familyId, anchorId, anchorName, candidates }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
-  const setFocus = useAppStore((s) => s.setFocus);
   const t = useT();
   const LABEL: Record<RelationKind, string> = { parent: t.add.parent, partner: t.add.partner, child: t.add.child };
   const [relation, setRelation] = useState<RelationKind | null>(null);
@@ -52,7 +51,7 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
     setBusy(true);
     setError(undefined);
     try {
-      const id = await addRelative(familyId, relation, anchorId, {
+      await addRelative(familyId, relation, anchorId, {
         given: given.trim(),
         familyName: familyName.trim() || undefined,
         nameNative: nameNative.trim() || undefined,
@@ -61,9 +60,10 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
         birthYear: birthYear ? Number(birthYear) : undefined,
         deathYear: deathYear ? Number(deathYear) : undefined,
       });
+      // Focus blijft bewust op de ankerpersoon, zodat het bewerkpaneel waar je de
+      // relatie toevoegde open blijft (en je meteen nóg een relatie kunt toevoegen).
       bumpData();
       reset();
-      setFocus(id);
     } catch (err) {
       setError(err instanceof Error ? err.message : t.add.addFailed);
     } finally {
@@ -79,7 +79,6 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
       await linkRelative(familyId, relation, anchorId, otherId);
       bumpData();
       reset();
-      setFocus(otherId);
     } catch (err) {
       setError(err instanceof Error ? err.message : t.add.linkFailed);
     } finally {
