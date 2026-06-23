@@ -1424,6 +1424,41 @@ body {
   max-width: 90px;
 }
 
+.edit-field-label {
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+}
+
+/* Geslacht-keuze als knoppen (vervangt native <select>; zie SexPicker). */
+.seg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seg-control {
+  display: flex;
+  gap: 6px;
+}
+
+.seg-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink-dim);
+  font: 600 0.82rem var(--font-ui);
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.seg-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
 .add-relative-form button[type='submit'] {
   border: 0;
   background: var(--accent);

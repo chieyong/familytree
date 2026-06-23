@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Person, Visibility } from '../data/types';
 import { deletePerson, removePersonPhoto, signedAvatarUrls, updatePerson, uploadPersonPhoto } from '../data/mutations';
 import { PhotoEditor } from './PhotoEditor';
+import { SexPicker } from './SexPicker';
 import { useAppStore } from './store';
 import { useT } from './useT';
 
@@ -174,13 +175,8 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         onChange={(e) => setGiven(e.target.value)} />
       <input placeholder={t.edit.lastName} value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
+      <SexPicker value={sex} onChange={setSex} />
       <div className="add-rel-row">
-        <select value={sex} onChange={(e) => setSex(e.target.value as typeof sex)}>
-          <option value="">{t.edit.sex}</option>
-          <option value="f">{t.edit.sexF}</option>
-          <option value="m">{t.edit.sexM}</option>
-          <option value="x">{t.edit.sexX}</option>
-        </select>
         <input className="add-rel-year" placeholder={t.edit.birthAbbr} inputMode="numeric"
           value={birthYear} onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, ''))} />
         <input className="add-rel-year" placeholder={t.edit.deathAbbr} inputMode="numeric"
