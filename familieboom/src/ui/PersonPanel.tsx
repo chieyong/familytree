@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { FamilyGraph, Person } from '../data/types';
+import { useVisualViewportOverlay } from './useVisualViewportOverlay';
 import { claimSelfPerson } from '../data/invites';
 import { AddRelative } from './AddRelative';
 import { BridgeSection } from './BridgeSection';
@@ -29,6 +30,7 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
   const setNotice = useAppStore((s) => s.setNotice);
   const t = useT();
   const [editing, setEditing] = useState(false);
+  const overlayRef = useVisualViewportOverlay<HTMLDivElement>();
   const isSelf = person.id === egoId;
 
   const claimSelf = async () => {
@@ -51,7 +53,7 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
   const deathPlace = person.death?.place?.name;
 
   return (
-    <div className="panel-overlay" onClick={onClose}>
+    <div className="panel-overlay" ref={overlayRef} onClick={onClose}>
       <div className="person-panel" onClick={(e) => e.stopPropagation()}>
         <div className="panel-head">
           <div className="panel-id">
