@@ -60,6 +60,15 @@ het ontkoppelen van een brug. De gebruiker draait ze zelf in de SQL-editor.
 verwijder-knop is een subtiele tekstlink. Een brug kan ontkoppeld worden in
 `BridgeSection` (owner-only, RPC `remove_bridge`).
 
+Bewerkformulier verder opgeschoond: **floating labels** (`FloatField`, pure CSS),
+**zichtbaarheid als knoppen** (segmented, geen native picker meer), en **"toon in
+boom" verwijderd** — de roepnaam regelt nu het label. De roepnaam wordt bij
+*bestaande* personen niet meer auto-afgeleid: leeg roepnaam-veld = de volledige
+voornaam als label in de boom (juist voor meerdelige namen als "Buk Sing"). De
+auto-suggestie (eerste voornaam) blijft alleen bij het *toevoegen* van een nieuw
+persoon. `preferredName` blijft als kolom bestaan (oude waarden behouden), maar is
+niet meer in de UI instelbaar.
+
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere
   gesplitste Chinese velden). Getoond op kaart + node (eigen schrift) en kaart

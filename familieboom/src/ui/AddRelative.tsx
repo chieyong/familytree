@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Person } from '../data/types';
 import { addRelative, linkRelative, type RelationKind } from '../data/mutations';
+import { FloatField } from './FloatField';
 import { SexPicker } from './SexPicker';
 import { shortName } from './theme';
 import { useAppStore } from './store';
@@ -129,25 +130,25 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates, onAddi
 
       {mode === 'new' ? (
         <form onSubmit={submitNew}>
-          <input placeholder={t.edit.firstName} value={given} required autoFocus
+          <FloatField label={t.edit.firstName} value={given} required autoFocus
             onChange={(e) => {
               const v = e.target.value;
               setGiven(v);
               if (!callTouched) setCallName(v.trim().split(/\s+/)[0] ?? '');
             }} />
-          <input placeholder={t.edit.callName} value={callName}
+          <FloatField label={t.edit.callName} value={callName}
             onChange={(e) => { setCallName(e.target.value); setCallTouched(true); }} />
-          <input placeholder={t.edit.lastName} value={familyName}
+          <FloatField label={t.edit.lastName} value={familyName}
             onChange={(e) => setFamilyName(e.target.value)} />
-          <input placeholder={t.edit.nativeName} value={nameNative}
+          <FloatField label={t.edit.nativeName} value={nameNative}
             onChange={(e) => setNameNative(e.target.value)} />
-          <input placeholder={t.edit.nickname} value={nickname}
+          <FloatField label={t.edit.nickname} value={nickname}
             onChange={(e) => setNickname(e.target.value)} />
           <SexPicker value={sex} onChange={setSex} />
           <div className="add-rel-row">
-            <input className="add-rel-year" placeholder={t.add.birthYear} inputMode="numeric"
+            <FloatField label={t.add.birthYear} inputMode="numeric"
               value={birthYear} onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, ''))} />
-            <input className="add-rel-year" placeholder={t.add.deathYear} inputMode="numeric"
+            <FloatField label={t.add.deathYear} inputMode="numeric"
               value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
           </div>
           <div className="add-rel-row">

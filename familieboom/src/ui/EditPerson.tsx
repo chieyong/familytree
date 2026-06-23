@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Person, Visibility } from '../data/types';
 import { deletePerson, removePersonPhoto, signedAvatarUrls, updatePerson, uploadPersonPhoto } from '../data/mutations';
+import { FloatField } from './FloatField';
 import { PhotoEditor } from './PhotoEditor';
 import { SexPicker } from './SexPicker';
 import { useAppStore } from './store';
@@ -23,16 +24,16 @@ export function EditPerson({ person, egoId, embedded }: Props) {
 
   const [open, setOpen] = useState(embedded ?? false);
   const [given, setGiven] = useState(person.givenNames.join(' '));
-  // Roepnaam: bestaande waarde, of afgeleid van de eerste voornaam. Is er al een
-  // roepnaam, dan geldt die als "aangeraakt" zodat typen in voornamen 'm niet wist.
-  const [callName, setCallName] = useState(person.callName ?? (person.givenNames.join(' ').split(/\s+/)[0] ?? ''));
-  const [callTouched, setCallTouched] = useState(!!person.callName);
+  // Roepnaam = label in de boom. Leeg laten betekent: val terug op de volledige
+  // voornaam (juist voor een meerdelige naam als "Buk Sing"). Bij een bestaande
+  // persoon staat hier de opgeslagen roepnaam (of leeg) — geen auto-spiegeling,
+  // zodat het bewerken van voornamen 'm niet ongewenst overschrijft.
+  const [callName, setCallName] = useState(person.callName ?? '');
   const [familyName, setFamilyName] = useState(person.familyName ?? '');
   const [nameNative, setNameNative] = useState(person.nameNative ?? '');
   const [nickname, setNickname] = useState(person.nickname ?? '');
-  const [preferredName, setPreferredName] = useState<'full' | 'native' | 'nickname'>(
-    person.preferredName ?? 'full',
-  );
+  // "Toon in boom" is vervangen door de roepnaam; bewaar een eventuele oude waarde.
+  const preferredName = person.preferredName;
   const [sex, setSex] = useState<'m' | 'f' | 'x' | ''>(person.sex ?? '');
   const [birthYear, setBirthYear] = useState(String(person.birth?.date?.year ?? ''));
   const [deathYear, setDeathYear] = useState(String(person.death?.date?.year ?? ''));
@@ -196,41 +197,43 @@ export function EditPerson({ person, egoId, embedded }: Props) {
           onSave={onCropped}
         />
       )}
-      <input placeholder={t.edit.firstName} value={given} required
-        onChange={(e) => {
-          const v = e.target.value;
-          setGiven(v);
-          if (!callTouched) setCallName(v.trim().split(/\s+/)[0] ?? '');
-        }} />
-      <input placeholder={t.edit.callName} value={callName}
-        onChange={(e) => { setCallName(e.target.value); setCallTouched(true); }} />
-      <input placeholder={t.edit.lastName} value={familyName}
+      <FloatField label={t.edit.firstName} value={given} required
+        onChange={(e) => setGiven(e.target.value)} />
+      <FloatField label={t.edit.callName} value={callName}
+        onChange={(e) => setCallName(e.target.value)} />
+      <FloatField label={t.edit.lastName} value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
       <SexPicker value={sex} onChange={setSex} />
       <div className="add-rel-row">
-        <input className="add-rel-year" placeholder={t.edit.birthAbbr} inputMode="numeric"
+        <FloatField label={t.edit.birthAbbr} inputMode="numeric"
           value={birthYear} onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, ''))} />
-        <input className="add-rel-year" placeholder={t.edit.deathAbbr} inputMode="numeric"
+        <FloatField label={t.edit.deathAbbr} inputMode="numeric"
           value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
       </div>
-      <input placeholder={t.edit.nativeName} value={nameNative}
+      <FloatField label={t.edit.nativeName} value={nameNative}
         onChange={(e) => setNameNative(e.target.value)} />
-      <input placeholder={t.edit.nickname} value={nickname}
+      <FloatField label={t.edit.nickname} value={nickname}
         onChange={(e) => setNickname(e.target.value)} />
-      <label className="edit-field-label">{t.edit.showInTree}</label>
-      <select value={preferredName}
-        onChange={(e) => setPreferredName(e.target.value as typeof preferredName)}>
-        <option value="full">{t.edit.showFull}</option>
-        <option value="native" disabled={!nameNative.trim()}>{t.edit.showNative}</option>
-        <option value="nickname" disabled={!nickname.trim()}>{t.edit.showNickname}</option>
-      </select>
-      {/* 'openbaar' niet meer aanbiedbaar (geen publieke weergave; data-blootstelling
-          zonder login). Alleen tonen als deze persoon er al op staat → terug te zetten. */}
-      <select value={visibility} onChange={(e) => setVisibility(e.target.value as Visibility)}>
-        <option value="family">{t.edit.visFamily}</option>
-        <option value="private">{t.edit.visPrivate}</option>
-        {visibility === 'public' && <option value="public">{t.edit.visPublicLegacy}</option>}
-      </select>
+      {/* Zichtbaarheid als knoppen. 'openbaar' niet meer aanbiedbaar (geen publieke
+          weergave); alleen tonen als deze persoon er al op staat → terug te zetten. */}
+      <div className="seg-field">
+        <span className="edit-field-label">{t.edit.visibilityLabel}</span>
+        <div className="seg-control" role="group" aria-label={t.edit.visibilityLabel}>
+          <button type="button" className={`seg-btn${visibility === 'family' ? ' active' : ''}`}
+            aria-pressed={visibility === 'family'} onClick={() => setVisibility('family')}>
+            {t.edit.visFamilyShort}
+          </button>
+          <button type="button" className={`seg-btn${visibility === 'private' ? ' active' : ''}`}
+            aria-pressed={visibility === 'private'} onClick={() => setVisibility('private')}>
+            {t.edit.visPrivateShort}
+          </button>
+          {visibility === 'public' && (
+            <button type="button" className="seg-btn active" aria-pressed>
+              {t.edit.visPublicShort}
+            </button>
+          )}
+        </div>
+      </div>
       {error && <p className="add-rel-error">{error}</p>}
       <div className="autosave-row">
         <span className="autosave-status" aria-live="polite">

@@ -1424,6 +1424,38 @@ body {
   max-width: 90px;
 }
 
+/* Floating-label-veld (zie FloatField): label zweeft omhoog bij invullen. */
+.float-field {
+  position: relative;
+  display: block;
+}
+
+.add-relative-form .float-field > input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 15px 9px 5px;
+}
+
+.float-label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-dim);
+  font-size: 0.78rem;
+  pointer-events: none;
+  transition: top 0.14s ease, font-size 0.14s ease, color 0.14s ease, transform 0.14s ease;
+}
+
+.float-field > input:focus + .float-label,
+.float-field > input:not(:placeholder-shown) + .float-label {
+  top: 4px;
+  transform: none;
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+}
+
 .edit-field-label {
   font-size: 0.7rem;
   color: var(--ink-dim);
