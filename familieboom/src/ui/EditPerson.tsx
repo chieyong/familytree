@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Person, Visibility } from '../data/types';
 import { deletePerson, removePersonPhoto, signedAvatarUrls, updatePerson, uploadPersonPhoto } from '../data/mutations';
 import { PhotoEditor } from './PhotoEditor';
@@ -95,31 +95,51 @@ export function EditPerson({ person, egoId, embedded }: Props) {
     }
   };
 
-  const save = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    setError(undefined);
-    try {
-      await updatePerson(person.id, {
-        given: given.trim(),
-        callName: callName.trim() || undefined,
-        familyName: familyName.trim() || undefined,
-        nameNative: nameNative.trim() || undefined,
-        nickname: nickname.trim() || undefined,
-        preferredName,
-        sex: sex || undefined,
-        birthYear: birthYear ? Number(birthYear) : undefined,
-        deathYear: deathYear ? Number(deathYear) : undefined,
-        visibility,
-      });
-      bumpData();
-      if (!embedded) setOpen(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t.edit.saveFailed);
-    } finally {
-      setBusy(false);
+  // Automatisch opslaan: elke veldwijziging schrijft (debounced) weg; geen
+  // opslaan-knop meer. "Voornamen" is verplicht — bij een leeg veld slaan we niet
+  // op (anders zou je per ongeluk de naam wissen).
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const firstRender = useRef(true);
+
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
     }
-  };
+    if (!given.trim()) return;
+    const handle = setTimeout(async () => {
+      setSaveState('saving');
+      setError(undefined);
+      try {
+        await updatePerson(person.id, {
+          given: given.trim(),
+          callName: callName.trim() || undefined,
+          familyName: familyName.trim() || undefined,
+          nameNative: nameNative.trim() || undefined,
+          nickname: nickname.trim() || undefined,
+          preferredName,
+          sex: sex || undefined,
+          birthYear: birthYear ? Number(birthYear) : undefined,
+          deathYear: deathYear ? Number(deathYear) : undefined,
+          visibility,
+        });
+        bumpData();
+        setSaveState('saved');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t.edit.saveFailed);
+        setSaveState('idle');
+      }
+    }, 700);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [given, callName, familyName, nameNative, nickname, preferredName, sex, birthYear, deathYear, visibility]);
+
+  // "Opgeslagen ✓" weer laten vervagen.
+  useEffect(() => {
+    if (saveState !== 'saved') return;
+    const handle = setTimeout(() => setSaveState('idle'), 1600);
+    return () => clearTimeout(handle);
+  }, [saveState]);
 
   const remove = async () => {
     if (!confirm(t.edit.confirmDelete(person.givenNames[0] ?? '?'))) return;
@@ -146,7 +166,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   }
 
   return (
-    <form className="add-relative-form" onSubmit={save}>
+    <form className="add-relative-form" onSubmit={(e) => e.preventDefault()}>
       <div className="edit-photo">
         {photoUrl ? (
           <img className="edit-photo-preview" src={photoUrl} alt="" />
@@ -212,17 +232,16 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         {visibility === 'public' && <option value="public">{t.edit.visPublicLegacy}</option>}
       </select>
       {error && <p className="add-rel-error">{error}</p>}
-      <div className="add-rel-row">
-        <button type="submit" disabled={busy}>{busy ? '…' : t.edit.save}</button>
-        {!embedded && (
-          <button type="button" className="add-rel-cancel" onClick={() => setOpen(false)}>{t.edit.cancel}</button>
+      <div className="autosave-row">
+        <span className="autosave-status" aria-live="polite">
+          {saveState === 'saving' ? t.edit.saving : saveState === 'saved' ? t.edit.saved : ''}
+        </span>
+        {person.id !== egoId && (
+          <button type="button" className="delete-btn" onClick={remove} disabled={busy}>
+            {t.edit.delete}
+          </button>
         )}
       </div>
-      {person.id !== egoId && (
-        <button type="button" className="delete-btn" onClick={remove} disabled={busy}>
-          {t.edit.delete}
-        </button>
-      )}
     </form>
   );
 }

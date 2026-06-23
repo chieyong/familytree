@@ -44,13 +44,21 @@ opnieuw draaien, dat kan geen kwaad.
 | 14 | `20260618160000_editor_can_manage.sql` | can_manage_person erkent editor-rol (fix "Toevoegen mislukt" voor bewerkers) | ⚠️ onbevestigd |
 | 15 | `20260620120000_preferred_name.sql` | preferred_name kolom (welke naam als hoofd-label in de boom), _build_graph | ✅ (2026-06-20) |
 | 16 | `20260620130000_owner_only_private.sql` | privé-personen alleen voor owner: persons_select + _build_graph gebruiken is_owner_of_person i.p.v. can_manage_person | ✅ (2026-06-20) |
-| 17 | `20260623120000_call_name.sql` | roepnaam: kolom `call_name` + `_build_graph` geeft `callName` mee | ⚠️ MOET nog gedraaid (2026-06-23) |
+| 17 | `20260623120000_call_name.sql` | roepnaam: kolom `call_name` + `_build_graph` geeft `callName` mee | ✅ (2026-06-23) |
+| 18 | `20260623130000_remove_bridge.sql` | `remove_bridge(p_person)` RPC: owner verbreekt een brug (tree_links delete) | ⚠️ MOET nog gedraaid (2026-06-23) |
 
 **Actie voor een verse sessie:** t/m 16 zijn gedraaid (12/13 geverifieerd via de
 brug-test; 15 en 16 gedraaid 2026-06-20); 9, 11 en 14 zijn onbevestigd maar
-idempotent — bij twijfel gewoon opnieuw draaien. **Migratie 17 (roepnaam) moet
-nog gedraaid worden**: zonder die kolom faalt opslaan/toevoegen van een persoon
-(de frontend schrijft `call_name`). De gebruiker draait ze zelf in de SQL-editor.
+idempotent — bij twijfel gewoon opnieuw draaien. 17 (roepnaam) is gedraaid;
+**migratie 18 (remove_bridge) moet nog gedraaid worden** — zonder die RPC faalt
+het ontkoppelen van een brug. De gebruiker draait ze zelf in de SQL-editor.
+
+**Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
+(`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced
+(700 ms) weg via `updatePerson`, met een subtiele "Opslaan…/Opgeslagen ✓"-status.
+"Voornamen" is verplicht → bij een leeg veld wordt niet opgeslagen. De
+verwijder-knop is een subtiele tekstlink. Een brug kan ontkoppeld worden in
+`BridgeSection` (owner-only, RPC `remove_bridge`).
 
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere

@@ -1618,18 +1618,42 @@ body {
   color: var(--accent);
 }
 
+/* Opslaan-statusregel onderaan het bewerkformulier (vervangt de opslaan-knop). */
+.autosave-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  min-height: 18px;
+}
+
+.autosave-status {
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+  transition: opacity 0.3s ease;
+}
+
+/* Verwijderen: subtiele tekstlink i.p.v. een opvallende knop. */
 .delete-btn {
-  border: 1px solid rgba(201, 112, 93, 0.5);
+  margin-left: auto;
+  border: 0;
   background: transparent;
-  color: #c9705d;
-  font: 600 0.72rem var(--font-ui);
-  border-radius: 8px;
-  padding: 6px 9px;
+  color: var(--ink-dim);
+  font: 500 0.74rem var(--font-ui);
+  padding: 4px 2px;
   cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .delete-btn:hover {
-  background: rgba(201, 112, 93, 0.12);
+  color: #c9705d;
+}
+
+.delete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .panel-overlay {

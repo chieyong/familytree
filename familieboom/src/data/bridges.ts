@@ -38,6 +38,13 @@ export async function acceptBridgeInvite(
   return data as BridgeAccepted;
 }
 
+/** Verbreek de brug van deze persoon (owner van één van beide bomen). */
+export async function removeBridge(personId: string): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.rpc('remove_bridge', { p_person: personId });
+  if (error) throw error;
+}
+
 /** Vraag toegang tot een via een brug verbonden familie (→ pending lidmaatschap). */
 export async function requestFamilyAccess(familyId: string): Promise<string> {
   if (!supabase) throw new Error('Geen Supabase-client.');

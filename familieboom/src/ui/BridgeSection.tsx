@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Person } from '../data/types';
-import { acceptBridgeInvite, createBridgeInvite } from '../data/bridges';
+import { acceptBridgeInvite, createBridgeInvite, removeBridge } from '../data/bridges';
 import { useAppStore } from './store';
 import { useFamilies } from './useFamilies';
 import { useT } from './useT';
@@ -27,11 +27,33 @@ export function BridgeSection({ person, familyId }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
 
+  const unlink = async () => {
+    if (!person.bridge) return;
+    if (!confirm(t.bridge.unlinkConfirm(person.bridge.familyName))) return;
+    setBusy(true);
+    setError(undefined);
+    try {
+      await removeBridge(person.id);
+      setNotice(t.bridge.unlinked(person.bridge.familyName));
+      bumpData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.bridge.unlinkFailed);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (person.bridge) {
     return (
       <section className="panel-section">
         <div className="panel-label">{t.bridge.section}</div>
         <p className="bridge-linked">{t.bridge.linked(person.bridge.familyName)}</p>
+        {isOwner && (
+          <button className="link-btn link-danger" disabled={busy} onClick={unlink}>
+            {t.bridge.unlink}
+          </button>
+        )}
+        {error && <p className="add-rel-error">{error}</p>}
       </section>
     );
   }
