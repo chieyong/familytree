@@ -29,10 +29,13 @@ export interface Person {
   id: PersonID;
   givenNames: string[];
   familyName?: string;
+  /** Roepnaam: het hoofd-label in de boom. Eerst afgeleid van de eerste voornaam,
+   *  daarna vrij te overschrijven (bv. een meerdelige voornaam als "Mey Yen"). */
+  callName?: string;
   displayName?: string;
   /** Naam in eigen schrift (Chinees, Cyrillisch, Arabisch…); cultuur-neutraal vrij veld. */
   nameNative?: string;
-  /** Bijnaam / roepnaam / alias. */
+  /** Bijnaam (informeel, bv. "Joop") — los van de roepnaam. */
   nickname?: string;
   /**
    * Welke naam als hoofd-label in de boom getoond wordt. 'full' (standaard) =

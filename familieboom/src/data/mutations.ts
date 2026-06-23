@@ -30,6 +30,7 @@ export type RelationKind = 'parent' | 'partner' | 'child';
 
 export interface NewRelative {
   given: string;
+  callName?: string;
   familyName?: string;
   nameNative?: string;
   nickname?: string;
@@ -59,12 +60,12 @@ export async function addRelative(
   });
   if (error) throw error;
   const personId = (data as { personId: string }).personId;
-  // De RPC kent (nog) geen sterfjaar; gericht bijwerken (RLS: aanmaker mag dit).
-  if (rel.deathYear != null) {
-    const { error: upErr } = await supabase
-      .from('persons')
-      .update({ death_year: rel.deathYear })
-      .eq('id', personId);
+  // De RPC kent geen sterfjaar/roepnaam; gericht bijwerken (RLS: aanmaker mag dit).
+  const patch: Record<string, unknown> = {};
+  if (rel.deathYear != null) patch.death_year = rel.deathYear;
+  if (rel.callName?.trim()) patch.call_name = rel.callName.trim();
+  if (Object.keys(patch).length > 0) {
+    const { error: upErr } = await supabase.from('persons').update(patch).eq('id', personId);
     if (upErr) throw upErr;
   }
   return personId;
@@ -103,6 +104,7 @@ export async function linkRelative(
 
 export interface PersonEdit {
   given: string;
+  callName?: string;
   familyName?: string;
   nameNative?: string;
   nickname?: string;
@@ -120,6 +122,7 @@ export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
     .from('persons')
     .update({
       given_names: [e.given],
+      call_name: e.callName?.trim() || null,
       family_name: e.familyName || null,
       name_native: e.nameNative || null,
       nickname: e.nickname || null,

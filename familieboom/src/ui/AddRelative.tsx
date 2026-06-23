@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Person } from '../data/types';
 import { addRelative, linkRelative, type RelationKind } from '../data/mutations';
 import { SexPicker } from './SexPicker';
@@ -12,16 +12,23 @@ interface Props {
   anchorName: string;
   /** Bestaande personen om aan te koppelen (de hele familie). */
   candidates: Person[];
+  /** Meldt of er nu een relatie wordt toegevoegd (een type gekozen is), zodat de
+   *  rest van het paneel kan inklappen en alleen het nieuwe formulier toont. */
+  onAddingChange?: (adding: boolean) => void;
 }
 
 /** CRUD: voeg een ouder/partner/kind toe — nieuw of een bestaande persoon. */
-export function AddRelative({ familyId, anchorId, anchorName, candidates }: Props) {
+export function AddRelative({ familyId, anchorId, anchorName, candidates, onAddingChange }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
   const t = useT();
   const LABEL: Record<RelationKind, string> = { parent: t.add.parent, partner: t.add.partner, child: t.add.child };
   const [relation, setRelation] = useState<RelationKind | null>(null);
+  useEffect(() => onAddingChange?.(relation !== null), [relation, onAddingChange]);
   const [mode, setMode] = useState<'new' | 'existing'>('new');
   const [given, setGiven] = useState('');
+  // Roepnaam spiegelt de eerste voornaam tot je hem zelf aanpast.
+  const [callName, setCallName] = useState('');
+  const [callTouched, setCallTouched] = useState(false);
   const [familyName, setFamilyName] = useState('');
   const [nameNative, setNameNative] = useState('');
   const [nickname, setNickname] = useState('');
@@ -36,6 +43,8 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
     setRelation(null);
     setMode('new');
     setGiven('');
+    setCallName('');
+    setCallTouched(false);
     setFamilyName('');
     setNameNative('');
     setNickname('');
@@ -54,6 +63,7 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
     try {
       await addRelative(familyId, relation, anchorId, {
         given: given.trim(),
+        callName: callName.trim() || undefined,
         familyName: familyName.trim() || undefined,
         nameNative: nameNative.trim() || undefined,
         nickname: nickname.trim() || undefined,
@@ -120,7 +130,13 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates }: Prop
       {mode === 'new' ? (
         <form onSubmit={submitNew}>
           <input placeholder={t.edit.firstName} value={given} required autoFocus
-            onChange={(e) => setGiven(e.target.value)} />
+            onChange={(e) => {
+              const v = e.target.value;
+              setGiven(v);
+              if (!callTouched) setCallName(v.trim().split(/\s+/)[0] ?? '');
+            }} />
+          <input placeholder={t.edit.callName} value={callName}
+            onChange={(e) => { setCallName(e.target.value); setCallTouched(true); }} />
           <input placeholder={t.edit.lastName} value={familyName}
             onChange={(e) => setFamilyName(e.target.value)} />
           <input placeholder={t.edit.nativeName} value={nameNative}

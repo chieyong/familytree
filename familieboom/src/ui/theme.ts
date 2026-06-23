@@ -84,7 +84,12 @@ export function linkStyle(link: LayoutLink, color: string, palette: Palette): Li
 }
 
 export function shortName(person: Person): string {
-  const full = person.displayName ?? `${person.givenNames[0]} ${person.familyName ?? ''}`.trim();
+  // Roepnaam wint als hij gezet is; anders de eerste voornaam (of een import-
+  // displayName, zoals bij Wikidata-data).
+  const main = person.callName?.trim()
+    ? `${person.callName.trim()} ${person.familyName ?? ''}`.trim()
+    : (person.displayName ?? `${person.givenNames[0]} ${person.familyName ?? ''}`.trim());
+  const full = main;
   // Voorkeursnaam als hoofd-label; valt terug op de volledige naam als leeg.
   let name = full;
   if (person.preferredName === 'native' && person.nameNative) name = person.nameNative;

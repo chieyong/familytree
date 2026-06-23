@@ -30,6 +30,9 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
   const setNotice = useAppStore((s) => s.setNotice);
   const t = useT();
   const [editing, setEditing] = useState(false);
+  // True zodra in AddRelative een relatietype is gekozen: dan klapt de rest van
+  // het paneel in en zie je alleen de invoervelden van de nieuwe persoon.
+  const [adding, setAdding] = useState(false);
   const overlayRef = useVisualViewportOverlay<HTMLDivElement>();
   const isSelf = person.id === egoId;
 
@@ -49,6 +52,11 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
     person.sex === 'm' ? t.edit.sexM : person.sex === 'f' ? t.edit.sexF : person.sex === 'x' ? t.edit.sexX : undefined;
   const visLabel =
     person.visibility === 'private' ? t.edit.visPrivate : person.visibility === 'public' ? t.edit.visPublic : undefined;
+  // Volledige voornamen tonen wanneer er een roepnaam is die ervan afwijkt
+  // (anders staat dezelfde naam al als hoofd-label boven het paneel).
+  const fullNames = person.givenNames.join(' ').trim();
+  const callName = person.callName?.trim();
+  const showFullNames = !!callName && !!fullNames && fullNames !== callName;
   const birthPlace = person.birth?.place?.name;
   const deathPlace = person.death?.place?.name;
 
@@ -76,15 +84,19 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
 
         {editing ? (
           <>
-            <section className="panel-section">
-              <div className="panel-label">{t.panel.sectionData}</div>
-              <EditPerson person={person} egoId={egoId} embedded />
-            </section>
+            {!adding && (
+              <section className="panel-section">
+                <div className="panel-label">{t.panel.sectionData}</div>
+                <EditPerson person={person} egoId={egoId} embedded />
+              </section>
+            )}
 
-            <section className="panel-section">
-              <div className="panel-label">{t.panel.sectionRelations}</div>
-              <RelationsEditor person={person} graph={graph} embedded />
-            </section>
+            {!adding && (
+              <section className="panel-section">
+                <div className="panel-label">{t.panel.sectionRelations}</div>
+                <RelationsEditor person={person} graph={graph} embedded />
+              </section>
+            )}
 
             <section className="panel-section">
               <div className="panel-label">{t.panel.sectionAdd}</div>
@@ -93,17 +105,21 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
                 anchorId={person.id}
                 anchorName={person.givenNames[0] ?? 'deze persoon'}
                 candidates={graph?.persons ?? []}
+                onAddingChange={setAdding}
               />
             </section>
 
-            <BridgeSection person={person} familyId={familyId} />
+            {!adding && <BridgeSection person={person} familyId={familyId} />}
 
-            <button className="panel-done" onClick={() => setEditing(false)}>{t.panel.done}</button>
+            {!adding && (
+              <button className="panel-done" onClick={() => setEditing(false)}>{t.panel.done}</button>
+            )}
           </>
         ) : (
           <>
-            {(nativeSubline(person) || (person.nickname && person.preferredName !== 'nickname') || birthPlace || deathPlace || sexLabel || visLabel) && (
+            {(showFullNames || nativeSubline(person) || (person.nickname && person.preferredName !== 'nickname') || birthPlace || deathPlace || sexLabel || visLabel) && (
               <div className="panel-details">
+                {showFullNames && <div className="pd-fullnames">{t.edit.firstName}: {fullNames}</div>}
                 {nativeSubline(person) && <div className="pd-native">{nativeSubline(person)}</div>}
                 {person.nickname && person.preferredName !== 'nickname' && <div className="pd-nick">‘{person.nickname}’</div>}
                 {(birthPlace || deathPlace) && (

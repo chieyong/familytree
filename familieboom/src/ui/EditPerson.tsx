@@ -22,7 +22,11 @@ export function EditPerson({ person, egoId, embedded }: Props) {
   const t = useT();
 
   const [open, setOpen] = useState(embedded ?? false);
-  const [given, setGiven] = useState(person.givenNames[0] ?? '');
+  const [given, setGiven] = useState(person.givenNames.join(' '));
+  // Roepnaam: bestaande waarde, of afgeleid van de eerste voornaam. Is er al een
+  // roepnaam, dan geldt die als "aangeraakt" zodat typen in voornamen 'm niet wist.
+  const [callName, setCallName] = useState(person.callName ?? (person.givenNames.join(' ').split(/\s+/)[0] ?? ''));
+  const [callTouched, setCallTouched] = useState(!!person.callName);
   const [familyName, setFamilyName] = useState(person.familyName ?? '');
   const [nameNative, setNameNative] = useState(person.nameNative ?? '');
   const [nickname, setNickname] = useState(person.nickname ?? '');
@@ -98,6 +102,7 @@ export function EditPerson({ person, egoId, embedded }: Props) {
     try {
       await updatePerson(person.id, {
         given: given.trim(),
+        callName: callName.trim() || undefined,
         familyName: familyName.trim() || undefined,
         nameNative: nameNative.trim() || undefined,
         nickname: nickname.trim() || undefined,
@@ -172,7 +177,13 @@ export function EditPerson({ person, egoId, embedded }: Props) {
         />
       )}
       <input placeholder={t.edit.firstName} value={given} required
-        onChange={(e) => setGiven(e.target.value)} />
+        onChange={(e) => {
+          const v = e.target.value;
+          setGiven(v);
+          if (!callTouched) setCallName(v.trim().split(/\s+/)[0] ?? '');
+        }} />
+      <input placeholder={t.edit.callName} value={callName}
+        onChange={(e) => { setCallName(e.target.value); setCallTouched(true); }} />
       <input placeholder={t.edit.lastName} value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
       <SexPicker value={sex} onChange={setSex} />
