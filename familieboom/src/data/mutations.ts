@@ -138,24 +138,88 @@ export interface PersonEdit {
   visibility: 'public' | 'family' | 'private';
 }
 
+/** PersonEdit → de persons-kolommen (gedeeld door updatePerson en voorstellen). */
+function personEditColumns(e: PersonEdit) {
+  return {
+    given_names: [e.given],
+    call_name: e.callName?.trim() || null,
+    family_name: e.familyName || null,
+    name_native: e.nameNative || null,
+    nickname: e.nickname || null,
+    preferred_name: e.preferredName && e.preferredName !== 'full' ? e.preferredName : null,
+    sex: e.sex ?? null,
+    birth_year: e.birthYear ?? null,
+    death_year: e.deathYear ?? null,
+    visibility: e.visibility,
+  };
+}
+
 /** Wijzigt een persoon (RLS: beheerder/owner, of jezelf strenger zetten). */
 export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
   if (!supabase) throw new Error('Geen Supabase-client.');
-  const { error } = await supabase
-    .from('persons')
-    .update({
-      given_names: [e.given],
-      call_name: e.callName?.trim() || null,
-      family_name: e.familyName || null,
-      name_native: e.nameNative || null,
-      nickname: e.nickname || null,
-      preferred_name: e.preferredName && e.preferredName !== 'full' ? e.preferredName : null,
-      sex: e.sex ?? null,
-      birth_year: e.birthYear ?? null,
-      death_year: e.deathYear ?? null,
-      visibility: e.visibility,
-    })
-    .eq('id', id);
+  const { error } = await supabase.from('persons').update(personEditColumns(e)).eq('id', id);
+  if (error) throw error;
+}
+
+export interface Proposal {
+  id: string;
+  familyId: string;
+  authorLabel: string | null;
+  kind: 'person_update';
+  targetPersonId: string | null;
+  payload: Record<string, unknown>;
+  summary: string | null;
+  createdAt: string;
+}
+
+/** Dien een wijziging aan een bestaande persoon in als voorstel (rol Bijdrager). */
+export async function submitPersonProposal(
+  familyId: string,
+  personId: string,
+  e: PersonEdit,
+  summary: string,
+  authorLabel: string,
+): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { data: auth } = await supabase.auth.getUser();
+  const { error } = await supabase.from('change_proposals').insert({
+    family_id: familyId,
+    author: auth.user?.id,
+    author_label: authorLabel,
+    kind: 'person_update',
+    target_person_id: personId,
+    payload: personEditColumns(e),
+    summary,
+  });
+  if (error) throw error;
+}
+
+/** Open voorstellen voor een familie (RLS: owner/editor ziet alles). */
+export async function listPendingProposals(familyId: string): Promise<Proposal[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('change_proposals')
+    .select('id, family_id, author_label, kind, target_person_id, payload, summary, created_at')
+    .eq('family_id', familyId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    id: r.id as string,
+    familyId: r.family_id as string,
+    authorLabel: r.author_label as string | null,
+    kind: r.kind as 'person_update',
+    targetPersonId: r.target_person_id as string | null,
+    payload: (r.payload as Record<string, unknown>) ?? {},
+    summary: r.summary as string | null,
+    createdAt: r.created_at as string,
+  }));
+}
+
+/** Keur een voorstel goed (toepassen) of wijs het af (RPC, owner/editor). */
+export async function resolveProposal(id: string, approve: boolean): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.rpc('resolve_proposal', { p_id: id, p_approve: approve });
   if (error) throw error;
 }
 

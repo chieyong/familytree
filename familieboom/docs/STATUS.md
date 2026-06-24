@@ -47,14 +47,17 @@ opnieuw draaien, dat kan geen kwaad.
 | 17 | `20260623120000_call_name.sql` | roepnaam: kolom `call_name` + `_build_graph` geeft `callName` mee | ✅ (2026-06-23) |
 | 18 | `20260623130000_remove_bridge.sql` | `remove_bridge(p_person)` RPC: owner verbreekt een brug (tree_links delete) | ✅ (2026-06-23) |
 | 19 | `20260623140000_copy_persons.sql` | `copy_persons(bron, doel, ids[])` RPC: kopieert personen + onderlinge unions/parent_links naar een andere boom (owner van bron én doel) | ✅ (2026-06-23) |
-| 20 | `20260624120000_copy_persons_anchors.sql` | `copy_persons(...,p_anchors)`: anchors-map (bron→bestaand doel) om kopieën aan bestaande personen te knopen; dedup van bestaande relaties. Dropt oude 3-arg signatuur | ⚠️ MOET nog gedraaid (2026-06-24) |
+| 20 | `20260624120000_copy_persons_anchors.sql` | `copy_persons(...,p_anchors)`: anchors-map (bron→bestaand doel) om kopieën aan bestaande personen te knopen; dedup van bestaande relaties. Dropt oude 3-arg signatuur | ✅ (2026-06-24) |
+| 21 | `20260624130000_manage_by_role_only.sql` | `can_manage_person` zonder `managed_by`-tak: beheerrecht volgt alleen de actieve rol (owner/editor) — dicht lek waarbij gedegradeerde viewer eigen aangemaakte personen bleef bewerken | ⚠️ MOET nog gedraaid (2026-06-24) |
+| 22 | `20260624140000_role_contributor.sql` | enum `member_role` krijgt `contributor` (Bijdrager). **Apart** want enum-waarde moet committen vóór migratie 23 'm gebruikt | ⚠️ MOET nog gedraaid (2026-06-24) |
+| 23 | `20260624150000_change_proposals.sql` | `change_proposals`-tabel + RLS + RPC `resolve_proposal` (owner/editor keurt voorstel goed/af, past person_update toe) | ⚠️ MOET (NA 22) gedraaid (2026-06-24) |
 
 **Actie voor een verse sessie:** t/m 16 zijn gedraaid (12/13 geverifieerd via de
 brug-test; 15 en 16 gedraaid 2026-06-20); 9, 11 en 14 zijn onbevestigd maar
-idempotent — bij twijfel gewoon opnieuw draaien. 17–19 zijn gedraaid;
-**migratie 20 (copy_persons + anchors) moet nog gedraaid worden** — die dropt de
-oude 3-arg `copy_persons` en maakt de versie met `p_anchors`. De gebruiker draait
-ze zelf in de SQL-editor.
+idempotent — bij twijfel gewoon opnieuw draaien. 17–20 zijn gedraaid;
+**migraties 21, 22 en 23 moeten nog gedraaid worden** (22 vóór 23, want 23
+gebruikt de nieuwe enum-waarde): 21 dicht het bewerk-lek, 22+23 voegen de rol
+Bijdrager + voorstellen-wachtrij toe. De gebruiker draait ze zelf in de SQL-editor.
 
 **Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
 (`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced
@@ -230,12 +233,29 @@ data­storytelling**. Drie toevoegingen, alle teksten in NL/EN/ZH/ID.
 - **Nieuwe clones**: pak de **SSH**-URL (groene Code-knop → tab SSH). Beland je per
   ongeluk op een HTTPS-remote → `git remote set-url origin git@github.com:chieyong/<repo>.git`.
 
+## Bijdrager-rol + voorstellen (sessie 2026-06-24)
+Nieuwe rol **`contributor` (Bijdrager)**: mag niet direct schrijven (telt niet als
+owner/editor in `can_manage_person`), maar mag **wijzigingen voorstellen**.
+- **Indienen**: in het persoonspaneel ziet een bijdrager "Wijziging voorstellen" →
+  `EditPerson` in `proposalMode` (geen auto-opslaan, knop "Voorstel indienen") →
+  `submitPersonProposal` schrijft een rij in `change_proposals` (kind `person_update`,
+  payload = dezelfde kolommen als `updatePerson`).
+- **Afhandelen**: owner/editor ziet een banner "N open voorstellen" → `ProposalsReview`
+  (modal) → goedkeuren (RPC `resolve_proposal` past de wijziging toe) of afwijzen.
+- Rol is toewijsbaar in Delen → Leden (en bij uitnodigen). v1 = alleen
+  person_update; nieuwe personen/relaties voorstellen + verwijderen = latere fase.
+- Bestanden: `ProposalsReview.tsx`, `EditPerson.tsx` (proposalMode), `PersonPanel.tsx`
+  (canPropose), `App.tsx` (banner/fetch), `mutations.ts` (submit/list/resolve),
+  migraties 22+23.
+
 ## Rollen (samenvatting)
 - **Owner (beheerder)**: alles van editor + ledenbeheer (uitnodigen, rollen wijzigen,
   verwijderen), familie hernoemen/verwijderen, bruggen leggen. **Enige die privé-
   personen ziet.**
 - **Editor (bewerker)**: personen/relaties toevoegen·bewerken·verwijderen, foto's,
   uitnodigen. Géén ledenbeheer, familie-instellingen of bruggen; ziet geen privé.
+- **Contributor (bijdrager)**: als viewer (geen directe schrijfrechten, geen privé),
+  maar mag **wijzigingen voorstellen** die owner/editor goedkeurt (zie hierboven).
 - **Viewer (lezer)**: alleen-lezen op familie-zichtbare data; geen privé; mag wel het
   eigen "dit ben ik"-knooppunt aanpassen (`is_self`).
 - **Mede-owner maken** (frontend-only, geen migratie): in Delen → Leden kan een owner

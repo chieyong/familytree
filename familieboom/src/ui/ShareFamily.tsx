@@ -12,7 +12,7 @@ export function ShareFamily() {
   const [members, setMembers] = useState<Member[]>([]);
   const [link, setLink] = useState<string>();
   const [copied, setCopied] = useState(false);
-  const [inviteRole, setInviteRole] = useState<'viewer' | 'editor'>('viewer');
+  const [inviteRole, setInviteRole] = useState<'viewer' | 'contributor' | 'editor'>('viewer');
   const [error, setError] = useState<string>();
 
   const refetch = async () => {
@@ -84,7 +84,7 @@ export function ShareFamily() {
     }
   };
 
-  const changeRole = async (profileId: string, role: 'viewer' | 'editor' | 'owner') => {
+  const changeRole = async (profileId: string, role: 'viewer' | 'contributor' | 'editor' | 'owner') => {
     // Promoveren tot owner is ingrijpend: een mede-owner mag alles, ook jou
     // verwijderen of de familie verwijderen. Daarom een bevestiging.
     if (role === 'owner' && !confirm(t.share.confirmMakeOwner)) return;
@@ -122,8 +122,9 @@ export function ShareFamily() {
               {isOwner && (
                 <label className="share-role">
                   {t.share.inviteAs}
-                  <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as 'viewer' | 'editor')}>
+                  <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as 'viewer' | 'contributor' | 'editor')}>
                     <option value="viewer">{t.share.roleViewerLong}</option>
+                    <option value="contributor">{t.share.roleContributorLong}</option>
                     <option value="editor">{t.share.roleEditorLong}</option>
                   </select>
                 </label>
@@ -158,9 +159,10 @@ export function ShareFamily() {
                   <select
                     className="share-role-select"
                     value={m.role}
-                    onChange={(e) => changeRole(m.profileId, e.target.value as 'viewer' | 'editor' | 'owner')}
+                    onChange={(e) => changeRole(m.profileId, e.target.value as 'viewer' | 'contributor' | 'editor' | 'owner')}
                   >
                     <option value="viewer">{t.share.roleViewer}</option>
+                    <option value="contributor">{t.share.roleContributor}</option>
                     <option value="editor">{t.share.roleEditor}</option>
                     <option value="owner">{t.share.roleOwner}</option>
                   </select>

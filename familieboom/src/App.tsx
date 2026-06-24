@@ -16,6 +16,8 @@ import { PersonPanel } from './ui/PersonPanel';
 import { HelpGuide } from './ui/HelpGuide';
 import { WelcomeCard } from './ui/WelcomeCard';
 import { AboutCard } from './ui/AboutCard';
+import { ProposalsReview } from './ui/ProposalsReview';
+import { listPendingProposals, type Proposal } from './data/mutations';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
@@ -31,7 +33,7 @@ const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setAboutOpen, setNotice } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setAboutOpen, setNotice, bumpData } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();
@@ -77,6 +79,8 @@ export default function App() {
   const [cardOpen, setCardOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   // Ondertekende URL's voor de profielfoto's (privé-bucket). Eén keer per
   // graaf-versie; ze verlopen na een uur en worden bij de volgende load ververst.
@@ -127,6 +131,23 @@ export default function App() {
 
   const focusPerson = fullGraph?.persons.find((person) => person.id === focusId);
   const defaultEgo = activeFamily ? activeFamily.ego : DATASET_EGO[dataset];
+
+  // Alleen owner/editor mag personen bewerken; viewers krijgen een alleen-lezen
+  // paneel (de RLS dwingt dit ook af, maar zo tonen we de bewerk-UI niet onnodig).
+  const myRole = activeFamily ? families.find((f) => f.id === activeFamily.id)?.role : undefined;
+  const canEdit = myRole === 'owner' || myRole === 'editor';
+  const canPropose = myRole === 'contributor';
+
+  // Open voorstellen ophalen voor owner/editor (en herladen na een mutatie).
+  useEffect(() => {
+    if (!activeFamily || !canEdit) {
+      setProposals([]);
+      return;
+    }
+    listPendingProposals(activeFamily.id)
+      .then(setProposals)
+      .catch(() => setProposals([]));
+  }, [activeFamily, canEdit, dataVersion]);
 
   // Relatie van de focuspersoon t.o.v. het gekozen perspectief ("ik").
   const ikPerson = fullGraph?.persons.find((person) => person.id === ikId);
@@ -198,6 +219,12 @@ export default function App() {
       {notice && (
         <button className="invite-banner" onClick={() => setNotice(undefined)}>
           {notice} <span className="invite-dismiss">×</span>
+        </button>
+      )}
+
+      {canEdit && proposals.length > 0 && (
+        <button className="invite-banner" onClick={() => setReviewOpen(true)}>
+          {t.proposal.banner(proposals.length)}
         </button>
       )}
 
@@ -298,6 +325,8 @@ export default function App() {
           egoId={activeFamily.ego}
           graph={fullGraph}
           photoUrl={photoByPerson.get(focusPerson.id)}
+          canEdit={canEdit}
+          canPropose={canPropose}
           onClose={() => setPanelOpen(false)}
         />
       )}
@@ -305,6 +334,14 @@ export default function App() {
       <FamilyMenu />
       <WelcomeCard />
       <AboutCard />
+
+      {reviewOpen && (
+        <ProposalsReview
+          proposals={proposals}
+          onClose={() => setReviewOpen(false)}
+          onResolved={() => bumpData()}
+        />
+      )}
 
       {legendOpen && <div className="legend-backdrop" onClick={() => setLegendOpen(false)} />}
       <div className="legend">

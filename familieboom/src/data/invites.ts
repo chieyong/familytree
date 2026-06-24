@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient';
 export interface Member {
   profileId: string;
   name: string;
-  role: 'owner' | 'editor' | 'viewer';
+  role: 'owner' | 'editor' | 'contributor' | 'viewer';
   status: 'pending' | 'active';
 }
 
@@ -66,7 +66,7 @@ export async function claimSelfPerson(familyId: string, personId: string): Promi
 export async function updateMemberRole(
   familyId: string,
   profileId: string,
-  role: 'viewer' | 'editor' | 'owner',
+  role: 'viewer' | 'contributor' | 'editor' | 'owner',
 ): Promise<void> {
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase

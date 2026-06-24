@@ -584,6 +584,64 @@ body {
   color: var(--ink-dim);
 }
 
+/* ── Voorstellen (review) ──────────────────────────────────────────────── */
+.proposal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.proposal-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+}
+
+.proposal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.proposal-author {
+  font-size: 0.72rem;
+  color: var(--ink-dim);
+}
+
+.proposal-fields {
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+}
+
+.proposal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.proposal-actions button {
+  flex: 1;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 0.8rem var(--font-ui);
+  cursor: pointer;
+}
+
+.proposal-actions button.welcome-more {
+  background: transparent !important;
+  border: 1px solid var(--surface-border) !important;
+  color: var(--ink-dim) !important;
+}
+
 .import-intro code {
   font-size: 0.8em;
   padding: 1px 4px;

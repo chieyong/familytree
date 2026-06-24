@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FamilyGraph, Person } from '../data/types';
 import { useVisualViewportOverlay } from './useVisualViewportOverlay';
 import { claimSelfPerson } from '../data/invites';
+import { submitPersonProposal, type PersonEdit } from '../data/mutations';
 import { AddRelative } from './AddRelative';
 import { BridgeSection } from './BridgeSection';
 import { EditPerson } from './EditPerson';
@@ -17,6 +18,10 @@ interface Props {
   graph: FamilyGraph | undefined;
   /** Ondertekende profielfoto-URL (uit App, geen extra fetch nodig). */
   photoUrl?: string;
+  /** Owner/editor mag bewerken; viewers krijgen alleen-lezen. */
+  canEdit?: boolean;
+  /** Bijdrager mag wijzigingen voorstellen (niet direct opslaan). */
+  canPropose?: boolean;
   onClose: () => void;
 }
 
@@ -24,12 +29,21 @@ interface Props {
  * Detailpaneel: toont eerst alle gegevens + relaties (alleen-lezen). Pas op
  * "bewerken" verschijnen de bewerkbare velden, relaties en toevoeg-acties.
  */
-export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose }: Props) {
+export function PersonPanel({ person, familyId, egoId, graph, photoUrl, canEdit, canPropose, onClose }: Props) {
   const activeFamily = useAppStore((s) => s.activeFamily);
   const setActiveFamily = useAppStore((s) => s.setActiveFamily);
   const setNotice = useAppStore((s) => s.setNotice);
+  const user = useAppStore((s) => s.user);
   const t = useT();
   const [editing, setEditing] = useState(false);
+  const [proposing, setProposing] = useState(false);
+
+  const submitProposal = async (e: PersonEdit) => {
+    await submitPersonProposal(familyId, person.id, e, shortName(person), user?.email ?? '');
+    setProposing(false);
+    setNotice(t.proposal.sent);
+    onClose();
+  };
   // True zodra in AddRelative een relatietype is gekozen: dan klapt de rest van
   // het paneel in en zie je alleen de invoervelden van de nieuwe persoon.
   const [adding, setAdding] = useState(false);
@@ -82,7 +96,16 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
           </button>
         )}
 
-        {editing ? (
+        {proposing ? (
+          <>
+            <section className="panel-section">
+              <div className="panel-label">{t.proposal.sectionPropose}</div>
+              <p className="bridge-hint">{t.proposal.hint}</p>
+              <EditPerson person={person} egoId={egoId} embedded proposalMode onSubmitProposal={submitProposal} />
+            </section>
+            <button className="panel-done" onClick={() => setProposing(false)}>{t.edit.cancel}</button>
+          </>
+        ) : editing ? (
           <>
             {!adding && (
               <section className="panel-section">
@@ -146,8 +169,11 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, onClose 
               <p className="bridge-linked">{t.bridge.linked(person.bridge.familyName)}</p>
             )}
 
-            {activeFamily && (
+            {activeFamily && canEdit && (
               <button className="panel-edit" onClick={() => setEditing(true)}>✎ {t.edit.edit}</button>
+            )}
+            {activeFamily && !canEdit && canPropose && (
+              <button className="panel-edit" onClick={() => setProposing(true)}>✎ {t.proposal.propose}</button>
             )}
           </>
         )}
