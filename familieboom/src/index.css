@@ -492,6 +492,17 @@ body {
 /* ── Import-modal ──────────────────────────────────────────────────────── */
 .import-card {
   width: min(94vw, 560px);
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+/* Actieknoppen onderaan de import-kaart blijven in beeld bij een lange lijst. */
+.import-card .welcome-actions {
+  position: sticky;
+  bottom: -24px; /* compenseert de 24px card-padding zodat er geen kier valt */
+  background: var(--bg-raised);
+  margin: 0 -24px -24px;
+  padding: 12px 24px 24px;
 }
 
 /* ── Personen kopiëren ─────────────────────────────────────────────────── */
@@ -526,7 +537,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  max-height: 42vh;
+  max-height: 34vh;
   overflow-y: auto;
   border: 1px solid var(--surface-border);
   border-radius: 8px;
@@ -884,9 +895,18 @@ body {
   z-index: 50;
   display: grid;
   place-items: center;
+  padding: 16px;
+  box-sizing: border-box;
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(3px);
   pointer-events: auto;
+}
+
+/* Legenda verbergen zolang er een modaal venster open is (anders schemert ze er
+   doorheen / overlapt ze). */
+.app:has(.auth-overlay) .legend,
+.app:has(.panel-overlay) .legend {
+  display: none;
 }
 
 .auth-card {

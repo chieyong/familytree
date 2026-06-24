@@ -72,7 +72,8 @@ auto-suggestie (eerste voornaam) blijft alleen bij het *toevoegen* van een nieuw
 persoon. `preferredName` blijft als kolom bestaan (oude waarden behouden), maar is
 niet meer in de UI instelbaar.
 
-**Personen kopiëren tussen bomen** (sessie 2026-06-23): `CopyPersons` (in het
+**Personen kopiëren tussen bomen** — in de UI "Personen **importeren**" genoemd
+(component/RPC heten nog copy*) — (sessie 2026-06-23): `CopyPersons` (in het
 familie-menu, owner van de actieve boom + ≥1 andere eigen boom). Kies een
 bronboom → doorzoekbare aanvinklijst → kopieer. RPC `copy_persons` (migratie 19)
 maakt nieuwe records in de doelboom en neemt de unions/parent_links mee waarvan
