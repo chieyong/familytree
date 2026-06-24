@@ -282,6 +282,8 @@ const nl = {
     done: (n: number) => `${n} ${n === 1 ? 'persoon' : 'personen'} gekopieerd.`,
     noSources: 'Je hebt geen andere eigen boom om uit te kopiëren.',
     noMatch: 'Geen personen gevonden.',
+    linkLabel: 'Aanknopen aan bestaande personen',
+    linkHint: 'Sommige geselecteerde personen zijn verwant aan iemand die al in deze boom staat. Vink aan om die relatie aan de bestaande persoon te koppelen.',
     failed: 'Kopiëren mislukt',
   },
   import: {
@@ -580,6 +582,8 @@ const en: Messages = {
     done: (n) => `${n} ${n === 1 ? 'person' : 'people'} copied.`,
     noSources: 'You have no other tree of your own to copy from.',
     noMatch: 'No people found.',
+    linkLabel: 'Connect to existing people',
+    linkHint: 'Some selected people are related to someone already in this tree. Tick to attach that relationship to the existing person.',
     failed: 'Copy failed',
   },
   import: {
@@ -875,6 +879,8 @@ const zh: Messages = {
     done: (n) => `已复制 ${n} 人。`,
     noSources: '你没有其他自己的树可供复制。',
     noMatch: '未找到人物。',
+    linkLabel: '连接到已有人物',
+    linkHint: '部分所选人物与本树中已有的人有亲属关系。勾选即可将该关系连到已有人物。',
     failed: '复制失败',
   },
   import: {
@@ -1170,6 +1176,8 @@ const id: Messages = {
     done: (n) => `${n} orang disalin.`,
     noSources: 'Anda tidak punya pohon lain untuk disalin.',
     noMatch: 'Tidak ada orang ditemukan.',
+    linkLabel: 'Hubungkan ke orang yang sudah ada',
+    linkHint: 'Sebagian orang yang dipilih berkerabat dengan seseorang yang sudah ada di pohon ini. Centang untuk menautkan hubungan itu ke orang yang sudah ada.',
     failed: 'Penyalinan gagal',
   },
   import: {

@@ -558,6 +558,21 @@ body {
   font-size: 0.75rem;
 }
 
+.copy-anchors {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.copy-anchor-hint {
+  margin: 0 0 4px;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: var(--ink-dim);
+}
+
 .import-intro code {
   font-size: 0.8em;
   padding: 1px 4px;

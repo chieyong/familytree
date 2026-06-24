@@ -46,13 +46,15 @@ opnieuw draaien, dat kan geen kwaad.
 | 16 | `20260620130000_owner_only_private.sql` | privé-personen alleen voor owner: persons_select + _build_graph gebruiken is_owner_of_person i.p.v. can_manage_person | ✅ (2026-06-20) |
 | 17 | `20260623120000_call_name.sql` | roepnaam: kolom `call_name` + `_build_graph` geeft `callName` mee | ✅ (2026-06-23) |
 | 18 | `20260623130000_remove_bridge.sql` | `remove_bridge(p_person)` RPC: owner verbreekt een brug (tree_links delete) | ✅ (2026-06-23) |
-| 19 | `20260623140000_copy_persons.sql` | `copy_persons(bron, doel, ids[])` RPC: kopieert personen + onderlinge unions/parent_links naar een andere boom (owner van bron én doel) | ⚠️ MOET nog gedraaid (2026-06-23) |
+| 19 | `20260623140000_copy_persons.sql` | `copy_persons(bron, doel, ids[])` RPC: kopieert personen + onderlinge unions/parent_links naar een andere boom (owner van bron én doel) | ✅ (2026-06-23) |
+| 20 | `20260624120000_copy_persons_anchors.sql` | `copy_persons(...,p_anchors)`: anchors-map (bron→bestaand doel) om kopieën aan bestaande personen te knopen; dedup van bestaande relaties. Dropt oude 3-arg signatuur | ⚠️ MOET nog gedraaid (2026-06-24) |
 
 **Actie voor een verse sessie:** t/m 16 zijn gedraaid (12/13 geverifieerd via de
 brug-test; 15 en 16 gedraaid 2026-06-20); 9, 11 en 14 zijn onbevestigd maar
-idempotent — bij twijfel gewoon opnieuw draaien. 17 en 18 zijn gedraaid;
-**migratie 19 (copy_persons) moet nog gedraaid worden** — zonder die RPC faalt
-het kopiëren van personen tussen bomen. De gebruiker draait ze zelf in de SQL-editor.
+idempotent — bij twijfel gewoon opnieuw draaien. 17–19 zijn gedraaid;
+**migratie 20 (copy_persons + anchors) moet nog gedraaid worden** — die dropt de
+oude 3-arg `copy_persons` en maakt de versie met `p_anchors`. De gebruiker draait
+ze zelf in de SQL-editor.
 
 **Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
 (`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced
@@ -77,6 +79,17 @@ maakt nieuwe records in de doelboom en neemt de unions/parent_links mee waarvan
 beide personen geselecteerd zijn. Foto's/bruggen gaan niet mee; `places` is
 globaal dus plaats-verwijzingen blijven gedeeld. Bronkeuze is knoppen (geen
 native picker).
+
+**Aanknopen bij kopiëren** (migratie 20): een gekopieerde persoon kan verwant zijn
+aan iemand die al in de doelboom staat. `CopyPersons` detecteert die grenspersonen
+(verwant aan een geselecteerde persoon, zelf niet geselecteerd) en matcht ze op
+**naam+geboortejaar** met de doelboom; de gebruiker vinkt aan welke aangeknoopt
+worden. `copy_persons` krijgt dan een `p_anchors`-map (bron-id → bestaand doel-id):
+voor anchors wordt geen nieuw record gemaakt en relaties worden aan het bestaande
+knooppunt gehangen (met dedup van al bestaande relaties). NB: een relatieloze
+persoon is alleen zichtbaar in **Tableau** (`flowLayout(fullGraph)`), niet in de
+**Boom** (`egoLayout` toont alleen verbonden personen) — vandaar dat aanknopen nodig
+is om kopieën in de boom-weergave te zien.
 
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere

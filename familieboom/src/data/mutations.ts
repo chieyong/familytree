@@ -35,12 +35,15 @@ export async function copyPersons(
   sourceFamilyId: string,
   targetFamilyId: string,
   personIds: string[],
+  /** Map bron-persoon-id → bestaand doel-persoon-id om relaties aan te knopen. */
+  anchors: Record<string, string> = {},
 ): Promise<number> {
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { data, error } = await supabase.rpc('copy_persons', {
     p_source: sourceFamilyId,
     p_target: targetFamilyId,
     p_ids: personIds,
+    p_anchors: anchors,
   });
   if (error) throw error;
   return (data as number) ?? 0;
