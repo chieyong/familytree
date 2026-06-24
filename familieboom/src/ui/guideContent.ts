@@ -121,7 +121,7 @@ const nl: GuideContent = {
         q: 'Personen en relaties toevoegen',
         p: [
           'Klik op een persoon en kies + ouder, + partner of + kind. Je maakt een nieuw persoon aan, of koppelt iemand die al in de familie staat.',
-          'In Gegevens vul je naam, jaren en een foto in — en ook bijnaam, naam in eigen schrift, welke naam in de boom komt, en de zichtbaarheid (familie of privé).',
+          'In Gegevens vul je voornamen, roepnaam (die in de boom komt), achternaam, jaren en een foto in — en ook bijnaam, naam in eigen schrift, en de zichtbaarheid (familie of privé). Wijzigingen worden automatisch bewaard.',
         ],
       },
       {
@@ -146,8 +146,19 @@ const nl: GuideContent = {
               { text: 'personen toevoegen, bewerken en verwijderen' },
               { text: 'relaties (huwelijk, ouder–kind) beheren, met jaartallen' },
               { text: 'foto’s toevoegen en verwijderen' },
+              { text: 'voorstellen van bijdragers goedkeuren of afwijzen' },
               { text: 'familie uitnodigen (als lezer)' },
               { text: 'géén ledenbeheer, familie-instellingen of bruggen; ziet geen privé-personen' },
+            ],
+          },
+          {
+            h: 'Bijdrager',
+            p: ['Draagt bij via voorstellen — bouwt mee zonder direct te wijzigen:'],
+            items: [
+              { text: 'stelt wijzigingen aan personen voor' },
+              { text: 'stelt nieuwe personen en koppelingen voor' },
+              { text: 'een beheerder of bewerker keurt elk voorstel goed of af' },
+              { text: 'kan zelf niets direct opslaan; ziet geen privé-personen' },
             ],
           },
           {
@@ -170,10 +181,19 @@ const nl: GuideContent = {
         ],
       },
       {
+        q: 'Personen importeren uit een andere boom',
+        p: [
+          'Heb je meer dan één eigen boom met overlappende familie? Via het familiemenu → "Personen importeren" neem je een selectie personen over uit een andere boom van jou.',
+          'Hun onderlinge relaties komen mee. Staat iemand al in deze boom (herkend op naam en geboortejaar), dan kun je de gekopieerde personen daaraan koppelen, zodat ze niet los komen te staan.',
+        ],
+        note: 'Alleen voor de beheerder, en alleen uit bomen waarvan je zelf beheerder bent.',
+      },
+      {
         q: 'Families koppelen (bruggen)',
         p: [
           'Komt dezelfde persoon in twee families voor — bijvoorbeeld door een huwelijk? Dan leg je een brug: de twee bomen blijven apart, maar je kunt van de één naar de ander oversteken.',
           'Beide beheerders moeten het doen: de één maakt een koppelcode, de ander plakt ’m.',
+          'Een brug kun je later weer ontkoppelen via het persoonspaneel (beheerder).',
         ],
         note: 'Gevorderd — niet nodig om te beginnen.',
       },
@@ -247,7 +267,7 @@ const en: GuideContent = {
         q: 'Adding people and relationships',
         p: [
           'Click a person and choose + parent, + partner or + child. You create a new person, or link someone already in the family.',
-          'In Details you fill in name, years and a photo — plus nickname, name in native script, which name shows in the tree, and the visibility (family or private).',
+          'In Details you fill in given names, a call name (shown in the tree), family name, years and a photo — plus nickname, name in native script, and the visibility (family or private). Changes are saved automatically.',
         ],
       },
       {
@@ -272,8 +292,19 @@ const en: GuideContent = {
               { text: 'add, edit and delete people' },
               { text: 'manage relationships (marriage, parent–child), with years' },
               { text: 'add and remove photos' },
+              { text: 'approve or reject contributors’ proposals' },
               { text: 'invite family (as readers)' },
               { text: 'no member management, family settings or bridges; does not see private people' },
+            ],
+          },
+          {
+            h: 'Contributor',
+            p: ['Contributes via proposals — helps build without changing directly:'],
+            items: [
+              { text: 'proposes changes to people' },
+              { text: 'proposes new people and links' },
+              { text: 'an admin or editor approves or rejects each proposal' },
+              { text: 'cannot save anything directly; does not see private people' },
             ],
           },
           {
@@ -296,10 +327,19 @@ const en: GuideContent = {
         ],
       },
       {
+        q: 'Importing people from another tree',
+        p: [
+          'Have more than one tree of your own with overlapping family? Via the family menu → "Import people" you bring a selection of people over from another tree of yours.',
+          'Their mutual relationships come along. If someone is already in this tree (matched on name and birth year), you can connect the imported people to them, so they don’t end up loose.',
+        ],
+        note: 'Admin only, and only from trees you own yourself.',
+      },
+      {
         q: 'Linking families (bridges)',
         p: [
           'Does the same person appear in two families — through a marriage, say? Then you build a bridge: the two trees stay separate, but you can cross from one to the other.',
           'Both admins must do it: one creates a link code, the other pastes it.',
+          'You can unlink a bridge later from the person panel (admin).',
         ],
         note: 'Advanced — not needed to get started.',
       },
@@ -372,7 +412,7 @@ const zh: GuideContent = {
         q: '添加人物与关系',
         p: [
           '点击一个人，选择 +父母、+伴侣或+子女。您可以新建一个人物，或关联家庭中已有的人。',
-          '在"资料"中填写姓名、年份和照片——以及昵称、母语文字姓名、在树中显示哪个名字，和可见性（家庭或私密）。',
+          '在"资料"中填写名字、常用名（显示在树中）、姓氏、年份和照片——以及昵称、母语文字姓名，和可见性（家庭或私密）。更改会自动保存。',
         ],
       },
       {
@@ -397,8 +437,19 @@ const zh: GuideContent = {
               { text: '添加、编辑和删除人物' },
               { text: '管理关系（婚姻、亲子），含年份' },
               { text: '添加和删除照片' },
+              { text: '批准或拒绝贡献者的提议' },
               { text: '邀请家人（作为读者）' },
               { text: '不涉及成员管理、家庭设置或桥接；看不到私密人物' },
+            ],
+          },
+          {
+            h: '贡献者',
+            p: ['通过提议参与——共建但不直接修改：'],
+            items: [
+              { text: '提议修改人物' },
+              { text: '提议新增人物和关联' },
+              { text: '由管理员或编辑者批准或拒绝每条提议' },
+              { text: '不能直接保存任何内容；看不到私密人物' },
             ],
           },
           {
@@ -421,10 +472,19 @@ const zh: GuideContent = {
         ],
       },
       {
+        q: '从另一棵树导入人物',
+        p: [
+          '你有不止一棵存在重叠亲属的自己的树吗？通过家庭菜单 →"导入人物"，可从你自己的另一棵树中选取人物导入。',
+          '他们之间的关系会一并导入。若某人已在本树中（按姓名与出生年份识别），可将导入的人物与其关联，避免出现孤立人物。',
+        ],
+        note: '仅管理员可用，且只能从你自己作为管理员的树导入。',
+      },
+      {
         q: '连接家庭（桥接）',
         p: [
           '同一个人是否出现在两个家庭中 — 比如因为一段婚姻？那就建立一座桥：两棵树保持独立，但您可以从一棵跨越到另一棵。',
           '需双方管理员操作：一方生成连接代码，另一方粘贴。',
+          '之后也可在人物面板中解除桥接（管理员）。',
         ],
         note: '进阶功能 — 入门时无需使用。',
       },
@@ -498,7 +558,7 @@ const id: GuideContent = {
         q: 'Menambah orang dan hubungan',
         p: [
           'Klik seseorang dan pilih + orang tua, + pasangan, atau + anak. Anda membuat orang baru, atau menautkan seseorang yang sudah ada di keluarga.',
-          'Di Data Anda mengisi nama, tahun, dan foto — juga nama panggilan, nama dalam aksara asli, nama mana yang tampil di pohon, dan visibilitas (keluarga atau pribadi).',
+          'Di Data Anda mengisi nama depan, nama panggilan (tampil di pohon), nama keluarga, tahun, dan foto — juga julukan, nama dalam aksara asli, dan visibilitas (keluarga atau pribadi). Perubahan tersimpan otomatis.',
         ],
       },
       {
@@ -523,8 +583,19 @@ const id: GuideContent = {
               { text: 'menambah, mengubah, dan menghapus orang' },
               { text: 'mengelola hubungan (pernikahan, orang tua–anak), dengan tahun' },
               { text: 'menambah dan menghapus foto' },
+              { text: 'menyetujui atau menolak usulan kontributor' },
               { text: 'mengundang keluarga (sebagai pembaca)' },
               { text: 'tanpa pengelolaan anggota, pengaturan keluarga, atau jembatan; tidak melihat orang pribadi' },
+            ],
+          },
+          {
+            h: 'Kontributor',
+            p: ['Berkontribusi lewat usulan — ikut membangun tanpa mengubah langsung:'],
+            items: [
+              { text: 'mengusulkan perubahan pada orang' },
+              { text: 'mengusulkan orang dan tautan baru' },
+              { text: 'admin atau editor menyetujui atau menolak setiap usulan' },
+              { text: 'tidak bisa menyimpan apa pun secara langsung; tidak melihat orang pribadi' },
             ],
           },
           {
@@ -547,10 +618,19 @@ const id: GuideContent = {
         ],
       },
       {
+        q: 'Mengimpor orang dari pohon lain',
+        p: [
+          'Punya lebih dari satu pohon sendiri dengan keluarga yang tumpang tindih? Lewat menu keluarga → "Impor orang" Anda membawa sejumlah orang dari pohon Anda yang lain.',
+          'Hubungan di antara mereka ikut terbawa. Jika seseorang sudah ada di pohon ini (dicocokkan berdasarkan nama dan tahun lahir), Anda dapat menautkan orang yang diimpor kepadanya, agar tidak terlepas sendiri.',
+        ],
+        note: 'Hanya admin, dan hanya dari pohon yang Anda miliki sendiri.',
+      },
+      {
         q: 'Menautkan keluarga (jembatan)',
         p: [
           'Apakah orang yang sama muncul di dua keluarga — misalnya karena pernikahan? Maka Anda membangun jembatan: kedua pohon tetap terpisah, tetapi Anda bisa menyeberang dari satu ke yang lain.',
           'Kedua admin harus melakukannya: yang satu membuat kode taut, yang lain menempelkannya.',
+          'Tautan jembatan dapat dilepas lagi nanti dari panel orang (admin).',
         ],
         note: 'Tingkat lanjut — tidak perlu untuk memulai.',
       },
