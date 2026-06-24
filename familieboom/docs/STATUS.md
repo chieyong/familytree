@@ -45,13 +45,14 @@ opnieuw draaien, dat kan geen kwaad.
 | 15 | `20260620120000_preferred_name.sql` | preferred_name kolom (welke naam als hoofd-label in de boom), _build_graph | ✅ (2026-06-20) |
 | 16 | `20260620130000_owner_only_private.sql` | privé-personen alleen voor owner: persons_select + _build_graph gebruiken is_owner_of_person i.p.v. can_manage_person | ✅ (2026-06-20) |
 | 17 | `20260623120000_call_name.sql` | roepnaam: kolom `call_name` + `_build_graph` geeft `callName` mee | ✅ (2026-06-23) |
-| 18 | `20260623130000_remove_bridge.sql` | `remove_bridge(p_person)` RPC: owner verbreekt een brug (tree_links delete) | ⚠️ MOET nog gedraaid (2026-06-23) |
+| 18 | `20260623130000_remove_bridge.sql` | `remove_bridge(p_person)` RPC: owner verbreekt een brug (tree_links delete) | ✅ (2026-06-23) |
+| 19 | `20260623140000_copy_persons.sql` | `copy_persons(bron, doel, ids[])` RPC: kopieert personen + onderlinge unions/parent_links naar een andere boom (owner van bron én doel) | ⚠️ MOET nog gedraaid (2026-06-23) |
 
 **Actie voor een verse sessie:** t/m 16 zijn gedraaid (12/13 geverifieerd via de
 brug-test; 15 en 16 gedraaid 2026-06-20); 9, 11 en 14 zijn onbevestigd maar
-idempotent — bij twijfel gewoon opnieuw draaien. 17 (roepnaam) is gedraaid;
-**migratie 18 (remove_bridge) moet nog gedraaid worden** — zonder die RPC faalt
-het ontkoppelen van een brug. De gebruiker draait ze zelf in de SQL-editor.
+idempotent — bij twijfel gewoon opnieuw draaien. 17 en 18 zijn gedraaid;
+**migratie 19 (copy_persons) moet nog gedraaid worden** — zonder die RPC faalt
+het kopiëren van personen tussen bomen. De gebruiker draait ze zelf in de SQL-editor.
 
 **Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
 (`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced
@@ -68,6 +69,14 @@ voornaam als label in de boom (juist voor meerdelige namen als "Buk Sing"). De
 auto-suggestie (eerste voornaam) blijft alleen bij het *toevoegen* van een nieuw
 persoon. `preferredName` blijft als kolom bestaan (oude waarden behouden), maar is
 niet meer in de UI instelbaar.
+
+**Personen kopiëren tussen bomen** (sessie 2026-06-23): `CopyPersons` (in het
+familie-menu, owner van de actieve boom + ≥1 andere eigen boom). Kies een
+bronboom → doorzoekbare aanvinklijst → kopieer. RPC `copy_persons` (migratie 19)
+maakt nieuwe records in de doelboom en neemt de unions/parent_links mee waarvan
+beide personen geselecteerd zijn. Foto's/bruggen gaan niet mee; `places` is
+globaal dus plaats-verwijzingen blijven gedeeld. Bronkeuze is knoppen (geen
+native picker).
 
 ## Features gebouwd na de PoC/backend (samenvatting van 6–13)
 - **Namen in eigen schrift + bijnaam** (cultuur-neutraal; vervingen de eerdere

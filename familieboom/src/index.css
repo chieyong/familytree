@@ -494,6 +494,70 @@ body {
   width: min(94vw, 560px);
 }
 
+/* ── Personen kopiëren ─────────────────────────────────────────────────── */
+.copy-sources {
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.copy-search {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 0.85rem var(--font-ui);
+}
+
+.copy-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.copy-count {
+  font-size: 0.72rem;
+  color: var(--ink-dim);
+}
+
+.copy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 42vh;
+  overflow-y: auto;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.copy-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.copy-row:hover {
+  background: var(--surface);
+}
+
+.copy-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.copy-sub {
+  flex: 0 0 auto;
+  color: var(--ink-dim);
+  font-size: 0.75rem;
+}
+
 .import-intro code {
   font-size: 0.8em;
   padding: 1px 4px;

@@ -26,6 +26,26 @@ export async function importFamily(
   return res as ImportResult;
 }
 
+/**
+ * Kopieert geselecteerde personen (+ hun onderlinge relaties) van de ene boom
+ * naar de andere als nieuwe records (RPC copy_persons, owner van bron én doel).
+ * Geeft het aantal gekopieerde personen terug.
+ */
+export async function copyPersons(
+  sourceFamilyId: string,
+  targetFamilyId: string,
+  personIds: string[],
+): Promise<number> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { data, error } = await supabase.rpc('copy_persons', {
+    p_source: sourceFamilyId,
+    p_target: targetFamilyId,
+    p_ids: personIds,
+  });
+  if (error) throw error;
+  return (data as number) ?? 0;
+}
+
 export type RelationKind = 'parent' | 'partner' | 'child';
 
 export interface NewRelative {

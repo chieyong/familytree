@@ -4,6 +4,7 @@ import { LAST_FAMILY_KEY, useAppStore, type DatasetId } from './store';
 import { useFamilies } from './useFamilies';
 import { useT } from './useT';
 import { ImportFamily } from './ImportFamily';
+import { CopyPersons } from './CopyPersons';
 
 const PRESET_IDS: DatasetId[] = ['demo', 'habsburg'];
 
@@ -32,6 +33,7 @@ export function FamilyMenu() {
 
   const [open, setOpen] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [copying, setCopying] = useState(false);
   const [creating, setCreating] = useState(false);
   const [famName, setFamName] = useState('');
   const [given, setGiven] = useState('');
@@ -49,6 +51,13 @@ export function FamilyMenu() {
     IMPORT_ENABLED &&
     !!activeFamily &&
     families.find((f) => f.id === activeFamily.id)?.role === 'owner';
+
+  // Personen kopiëren naar de actieve boom: owner van de actieve boom + minstens
+  // één andere eigen boom om uit te kopiëren.
+  const canCopy =
+    !!activeFamily &&
+    families.find((f) => f.id === activeFamily.id)?.role === 'owner' &&
+    families.some((f) => f.role === 'owner' && f.id !== activeFamily.id);
 
   const choosePreset = (id: DatasetId) => {
     setDataset(id);
@@ -129,6 +138,15 @@ export function FamilyMenu() {
                   {t.family.importPeople}
                 </button>
               )}
+
+              {canCopy && (
+                <button
+                  className="family-item family-import"
+                  onClick={() => { setCopying(true); setOpen(false); }}
+                >
+                  {t.family.copyPeople}
+                </button>
+              )}
             </>
           )}
 
@@ -138,6 +156,10 @@ export function FamilyMenu() {
 
       {importing && activeFamily && (
         <ImportFamily familyId={activeFamily.id} onClose={() => setImporting(false)} />
+      )}
+
+      {copying && activeFamily && (
+        <CopyPersons targetFamilyId={activeFamily.id} onClose={() => setCopying(false)} />
       )}
     </div>
   );
