@@ -290,6 +290,9 @@ const nl = {
   },
   proposal: {
     propose: 'Wijziging voorstellen',
+    kindUpdate: 'Wijziging',
+    kindAdd: 'Nieuw persoon',
+    kindLink: 'Koppeling',
     submit: 'Voorstel indienen',
     submitFailed: 'Voorstel indienen mislukt',
     sent: 'Je voorstel is ingediend ter goedkeuring.',
@@ -608,6 +611,9 @@ const en: Messages = {
   },
   proposal: {
     propose: 'Propose a change',
+    kindUpdate: 'Change',
+    kindAdd: 'New person',
+    kindLink: 'Link',
     submit: 'Submit proposal',
     submitFailed: 'Submitting proposal failed',
     sent: 'Your proposal has been submitted for approval.',
@@ -923,6 +929,9 @@ const zh: Messages = {
   },
   proposal: {
     propose: '提议修改',
+    kindUpdate: '修改',
+    kindAdd: '新人物',
+    kindLink: '关联',
     submit: '提交提议',
     submitFailed: '提交提议失败',
     sent: '你的提议已提交待审批。',
@@ -1238,6 +1247,9 @@ const id: Messages = {
   },
   proposal: {
     propose: 'Usulkan perubahan',
+    kindUpdate: 'Perubahan',
+    kindAdd: 'Orang baru',
+    kindLink: 'Tautan',
     submit: 'Kirim usulan',
     submitFailed: 'Gagal mengirim usulan',
     sent: 'Usulan Anda telah dikirim untuk disetujui.',

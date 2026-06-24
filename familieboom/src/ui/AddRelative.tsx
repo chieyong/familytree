@@ -16,10 +16,17 @@ interface Props {
   /** Meldt of er nu een relatie wordt toegevoegd (een type gekozen is), zodat de
    *  rest van het paneel kan inklappen en alleen het nieuwe formulier toont. */
   onAddingChange?: (adding: boolean) => void;
+  /** Voorstel-modus (rol Bijdrager): niet direct toevoegen, maar indienen. */
+  proposalMode?: boolean;
+  onSubmitProposal?: (
+    kind: 'person_add' | 'relation_add',
+    payload: Record<string, unknown>,
+    summary: string,
+  ) => Promise<void>;
 }
 
 /** CRUD: voeg een ouder/partner/kind toe — nieuw of een bestaande persoon. */
-export function AddRelative({ familyId, anchorId, anchorName, candidates, onAddingChange }: Props) {
+export function AddRelative({ familyId, anchorId, anchorName, candidates, onAddingChange, proposalMode, onSubmitProposal }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
   const t = useT();
   const LABEL: Record<RelationKind, string> = { parent: t.add.parent, partner: t.add.partner, child: t.add.child };
@@ -62,6 +69,23 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates, onAddi
     setBusy(true);
     setError(undefined);
     try {
+      if (proposalMode && onSubmitProposal) {
+        const name = [given.trim(), familyName.trim()].filter(Boolean).join(' ');
+        await onSubmitProposal('person_add', {
+          relation,
+          given_names: [given.trim()],
+          family_name: familyName.trim() || null,
+          call_name: callName.trim() || null,
+          name_native: nameNative.trim() || null,
+          nickname: nickname.trim() || null,
+          sex: sex || null,
+          birth_year: birthYear ? Number(birthYear) : null,
+          death_year: deathYear ? Number(deathYear) : null,
+          visibility: 'family',
+        }, `${name} · ${LABEL[relation]} · ${anchorName}`);
+        reset();
+        return;
+      }
       await addRelative(familyId, relation, anchorId, {
         given: given.trim(),
         callName: callName.trim() || undefined,
@@ -88,6 +112,14 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates, onAddi
     setBusy(true);
     setError(undefined);
     try {
+      if (proposalMode && onSubmitProposal) {
+        const other = candidates.find((p) => p.id === otherId);
+        const otherName = other ? shortName(other) : '?';
+        await onSubmitProposal('relation_add', { relation, other_id: otherId },
+          `${otherName} · ${LABEL[relation]} · ${anchorName}`);
+        reset();
+        return;
+      }
       await linkRelative(familyId, relation, anchorId, otherId);
       bumpData();
       reset();
@@ -152,7 +184,7 @@ export function AddRelative({ familyId, anchorId, anchorName, candidates, onAddi
               value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
           </div>
           <div className="add-rel-row">
-            <button type="submit" disabled={busy}>{busy ? '…' : t.add.addBtn}</button>
+            <button type="submit" disabled={busy}>{busy ? '…' : proposalMode ? t.proposal.submit : t.add.addBtn}</button>
             <button type="button" className="add-rel-cancel" onClick={reset}>{t.add.cancel}</button>
           </div>
         </form>

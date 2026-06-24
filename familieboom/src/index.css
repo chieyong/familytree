@@ -614,6 +614,17 @@ body {
   color: var(--ink-dim);
 }
 
+.proposal-kind {
+  align-self: flex-start;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
 .proposal-fields {
   font-size: 0.82rem;
   color: var(--ink-dim);

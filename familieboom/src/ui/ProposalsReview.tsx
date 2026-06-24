@@ -54,6 +54,11 @@ export function ProposalsReview({ proposals, onClose, onResolved }: Props) {
                   <strong>{p.summary}</strong>
                   {p.authorLabel && <span className="proposal-author">{t.proposal.by(p.authorLabel)}</span>}
                 </div>
+                <span className="proposal-kind">
+                  {p.kind === 'person_add' ? t.proposal.kindAdd
+                    : p.kind === 'relation_add' ? t.proposal.kindLink
+                    : t.proposal.kindUpdate}
+                </span>
                 <div className="proposal-fields">{proposed(p)}</div>
                 <div className="proposal-actions">
                   <button disabled={busyId === p.id} onClick={() => resolve(p.id, true)}>

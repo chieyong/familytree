@@ -50,14 +50,15 @@ opnieuw draaien, dat kan geen kwaad.
 | 20 | `20260624120000_copy_persons_anchors.sql` | `copy_persons(...,p_anchors)`: anchors-map (bron→bestaand doel) om kopieën aan bestaande personen te knopen; dedup van bestaande relaties. Dropt oude 3-arg signatuur | ✅ (2026-06-24) |
 | 21 | `20260624130000_manage_by_role_only.sql` | `can_manage_person` zonder `managed_by`-tak: beheerrecht volgt alleen de actieve rol (owner/editor) — dicht lek waarbij gedegradeerde viewer eigen aangemaakte personen bleef bewerken | ⚠️ MOET nog gedraaid (2026-06-24) |
 | 22 | `20260624140000_role_contributor.sql` | enum `member_role` krijgt `contributor` (Bijdrager). **Apart** want enum-waarde moet committen vóór migratie 23 'm gebruikt | ⚠️ MOET nog gedraaid (2026-06-24) |
-| 23 | `20260624150000_change_proposals.sql` | `change_proposals`-tabel + RLS + RPC `resolve_proposal` (owner/editor keurt voorstel goed/af, past person_update toe) | ⚠️ MOET (NA 22) gedraaid (2026-06-24) |
+| 23 | `20260624150000_change_proposals.sql` | `change_proposals`-tabel + RLS + RPC `resolve_proposal` (owner/editor keurt voorstel goed/af, past person_update toe) | ✅ (2026-06-24) |
+| 24 | `20260624160000_proposals_add.sql` | `resolve_proposal` + kinds `person_add` & `relation_add` (bijdrager stelt nieuwe persoon/koppeling voor; goedkeuren past add_relative/linkRelative-logica toe) | ⚠️ MOET nog gedraaid (2026-06-24) |
 
 **Actie voor een verse sessie:** t/m 16 zijn gedraaid (12/13 geverifieerd via de
 brug-test; 15 en 16 gedraaid 2026-06-20); 9, 11 en 14 zijn onbevestigd maar
-idempotent — bij twijfel gewoon opnieuw draaien. 17–20 zijn gedraaid;
-**migraties 21, 22 en 23 moeten nog gedraaid worden** (22 vóór 23, want 23
-gebruikt de nieuwe enum-waarde): 21 dicht het bewerk-lek, 22+23 voegen de rol
-Bijdrager + voorstellen-wachtrij toe. De gebruiker draait ze zelf in de SQL-editor.
+idempotent — bij twijfel gewoon opnieuw draaien. 17–23 zijn gedraaid;
+**migratie 24 (proposals_add) moet nog gedraaid worden** — voegt de voorstel-kinds
+person_add & relation_add toe aan `resolve_proposal`. De gebruiker draait ze zelf
+in de SQL-editor.
 
 **Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
 (`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced
@@ -242,8 +243,12 @@ owner/editor in `can_manage_person`), maar mag **wijzigingen voorstellen**.
   payload = dezelfde kolommen als `updatePerson`).
 - **Afhandelen**: owner/editor ziet een banner "N open voorstellen" → `ProposalsReview`
   (modal) → goedkeuren (RPC `resolve_proposal` past de wijziging toe) of afwijzen.
-- Rol is toewijsbaar in Delen → Leden (en bij uitnodigen). v1 = alleen
-  person_update; nieuwe personen/relaties voorstellen + verwijderen = latere fase.
+- Rol is toewijsbaar in Delen → Leden (en bij uitnodigen).
+- **Fase 2b** (migratie 24): bijdrager kan ook **nieuwe personen** (`person_add`) en
+  **koppelingen aan bestaande personen** (`relation_add`) voorstellen — in het
+  proposing-paneel staat naast de velden ook `AddRelative` in `proposalMode`.
+  `resolve_proposal` past bij goedkeuren dezelfde inserts toe als add_relative/
+  linkRelative. Nog open (fase 2c): **verwijderen** voorstellen, en **foto's**.
 - Bestanden: `ProposalsReview.tsx`, `EditPerson.tsx` (proposalMode), `PersonPanel.tsx`
   (canPropose), `App.tsx` (banner/fetch), `mutations.ts` (submit/list/resolve),
   migraties 22+23.

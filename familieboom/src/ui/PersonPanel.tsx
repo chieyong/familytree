@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FamilyGraph, Person } from '../data/types';
 import { useVisualViewportOverlay } from './useVisualViewportOverlay';
 import { claimSelfPerson } from '../data/invites';
-import { submitPersonProposal, type PersonEdit } from '../data/mutations';
+import { submitPersonProposal, submitRelativeProposal, type PersonEdit } from '../data/mutations';
 import { AddRelative } from './AddRelative';
 import { BridgeSection } from './BridgeSection';
 import { EditPerson } from './EditPerson';
@@ -43,6 +43,15 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, canEdit,
     setProposing(false);
     setNotice(t.proposal.sent);
     onClose();
+  };
+
+  const submitRelProposal = async (
+    kind: 'person_add' | 'relation_add',
+    payload: Record<string, unknown>,
+    summary: string,
+  ) => {
+    await submitRelativeProposal(familyId, person.id, kind, payload, summary, user?.email ?? '');
+    setNotice(t.proposal.sent);
   };
   // True zodra in AddRelative een relatietype is gekozen: dan klapt de rest van
   // het paneel in en zie je alleen de invoervelden van de nieuwe persoon.
@@ -103,6 +112,19 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, canEdit,
               <p className="bridge-hint">{t.proposal.hint}</p>
               <EditPerson person={person} egoId={egoId} embedded proposalMode onSubmitProposal={submitProposal} />
             </section>
+
+            <section className="panel-section">
+              <div className="panel-label">{t.panel.sectionAdd}</div>
+              <AddRelative
+                familyId={familyId}
+                anchorId={person.id}
+                anchorName={person.givenNames[0] ?? 'deze persoon'}
+                candidates={graph?.persons ?? []}
+                proposalMode
+                onSubmitProposal={submitRelProposal}
+              />
+            </section>
+
             <button className="panel-done" onClick={() => setProposing(false)}>{t.edit.cancel}</button>
           </>
         ) : editing ? (

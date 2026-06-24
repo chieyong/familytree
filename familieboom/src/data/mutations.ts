@@ -161,11 +161,13 @@ export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
   if (error) throw error;
 }
 
+export type ProposalKind = 'person_update' | 'person_add' | 'relation_add';
+
 export interface Proposal {
   id: string;
   familyId: string;
   authorLabel: string | null;
-  kind: 'person_update';
+  kind: ProposalKind;
   targetPersonId: string | null;
   payload: Record<string, unknown>;
   summary: string | null;
@@ -194,6 +196,29 @@ export async function submitPersonProposal(
   if (error) throw error;
 }
 
+/** Voorstel voor een nieuwe persoon (person_add) of nieuwe koppeling (relation_add). */
+export async function submitRelativeProposal(
+  familyId: string,
+  anchorId: string,
+  kind: 'person_add' | 'relation_add',
+  payload: Record<string, unknown>,
+  summary: string,
+  authorLabel: string,
+): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { data: auth } = await supabase.auth.getUser();
+  const { error } = await supabase.from('change_proposals').insert({
+    family_id: familyId,
+    author: auth.user?.id,
+    author_label: authorLabel,
+    kind,
+    target_person_id: anchorId,
+    payload,
+    summary,
+  });
+  if (error) throw error;
+}
+
 /** Open voorstellen voor een familie (RLS: owner/editor ziet alles). */
 export async function listPendingProposals(familyId: string): Promise<Proposal[]> {
   if (!supabase) return [];
@@ -208,7 +233,7 @@ export async function listPendingProposals(familyId: string): Promise<Proposal[]
     id: r.id as string,
     familyId: r.family_id as string,
     authorLabel: r.author_label as string | null,
-    kind: r.kind as 'person_update',
+    kind: r.kind as ProposalKind,
     targetPersonId: r.target_person_id as string | null,
     payload: (r.payload as Record<string, unknown>) ?? {},
     summary: r.summary as string | null,
