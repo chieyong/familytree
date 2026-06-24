@@ -129,14 +129,22 @@ const nl: GuideContent = {
         p: ['Nodig familie uit via Delen. Je kiest per persoon een rol; een beheerder kan rollen later wijzigen — en een ander lid ook tot beheerder maken.'],
         blocks: [
           {
-            h: 'Beheerder (eigenaar)',
-            p: ['Volledige zeggenschap — alles wat een bewerker mag, plus:'],
+            h: 'Lezer',
+            p: ['Kijkt mee, maar verandert niets:'],
             items: [
-              { text: 'leden uitnodigen, goedkeuren en verwijderen' },
-              { text: 'rollen wijzigen, en een ander lid tot beheerder maken' },
-              { text: 'de familie hernoemen of verwijderen' },
-              { text: 'bruggen naar andere families leggen' },
-              { text: 'ziet als enige de privé-personen' },
+              { text: 'bekijkt de familie-zichtbare boom' },
+              { text: 'mag het eigen "dit ben ik"-knooppunt aanpassen' },
+              { text: 'kan niets toevoegen, bewerken of verwijderen; ziet geen privé-personen' },
+            ],
+          },
+          {
+            h: 'Bijdrager',
+            p: ['Draagt bij via voorstellen — bouwt mee zonder direct te wijzigen:'],
+            items: [
+              { text: 'stelt wijzigingen aan personen voor' },
+              { text: 'stelt nieuwe personen en koppelingen voor' },
+              { text: 'een beheerder of bewerker keurt elk voorstel goed of af' },
+              { text: 'kan zelf niets direct opslaan; ziet geen privé-personen' },
             ],
           },
           {
@@ -152,22 +160,14 @@ const nl: GuideContent = {
             ],
           },
           {
-            h: 'Bijdrager',
-            p: ['Draagt bij via voorstellen — bouwt mee zonder direct te wijzigen:'],
+            h: 'Beheerder (eigenaar)',
+            p: ['Volledige zeggenschap — alles wat een bewerker mag, plus:'],
             items: [
-              { text: 'stelt wijzigingen aan personen voor' },
-              { text: 'stelt nieuwe personen en koppelingen voor' },
-              { text: 'een beheerder of bewerker keurt elk voorstel goed of af' },
-              { text: 'kan zelf niets direct opslaan; ziet geen privé-personen' },
-            ],
-          },
-          {
-            h: 'Lezer',
-            p: ['Kijkt mee, maar verandert niets:'],
-            items: [
-              { text: 'bekijkt de familie-zichtbare boom' },
-              { text: 'mag het eigen "dit ben ik"-knooppunt aanpassen' },
-              { text: 'kan niets toevoegen, bewerken of verwijderen; ziet geen privé-personen' },
+              { text: 'leden uitnodigen, goedkeuren en verwijderen' },
+              { text: 'rollen wijzigen, en een ander lid tot beheerder maken' },
+              { text: 'de familie hernoemen of verwijderen' },
+              { text: 'bruggen naar andere families leggen' },
+              { text: 'ziet als enige de privé-personen' },
             ],
           },
         ],
@@ -275,14 +275,22 @@ const en: GuideContent = {
         p: ['Invite family via Share. You pick a role per person; an admin can change roles later — and also make another member an admin.'],
         blocks: [
           {
-            h: 'Admin (owner)',
-            p: ['Full control — everything an editor can do, plus:'],
+            h: 'Reader',
+            p: ['Looks on, but changes nothing:'],
             items: [
-              { text: 'invite, approve and remove members' },
-              { text: 'change roles, and make another member an admin' },
-              { text: 'rename or delete the family' },
-              { text: 'build bridges to other families' },
-              { text: 'the only one who sees private people' },
+              { text: 'views the family-visible tree' },
+              { text: 'may edit their own "this is me" node' },
+              { text: 'cannot add, edit or delete anything; does not see private people' },
+            ],
+          },
+          {
+            h: 'Contributor',
+            p: ['Contributes via proposals — helps build without changing directly:'],
+            items: [
+              { text: 'proposes changes to people' },
+              { text: 'proposes new people and links' },
+              { text: 'an admin or editor approves or rejects each proposal' },
+              { text: 'cannot save anything directly; does not see private people' },
             ],
           },
           {
@@ -298,22 +306,14 @@ const en: GuideContent = {
             ],
           },
           {
-            h: 'Contributor',
-            p: ['Contributes via proposals — helps build without changing directly:'],
+            h: 'Admin (owner)',
+            p: ['Full control — everything an editor can do, plus:'],
             items: [
-              { text: 'proposes changes to people' },
-              { text: 'proposes new people and links' },
-              { text: 'an admin or editor approves or rejects each proposal' },
-              { text: 'cannot save anything directly; does not see private people' },
-            ],
-          },
-          {
-            h: 'Reader',
-            p: ['Looks on, but changes nothing:'],
-            items: [
-              { text: 'views the family-visible tree' },
-              { text: 'may edit their own "this is me" node' },
-              { text: 'cannot add, edit or delete anything; does not see private people' },
+              { text: 'invite, approve and remove members' },
+              { text: 'change roles, and make another member an admin' },
+              { text: 'rename or delete the family' },
+              { text: 'build bridges to other families' },
+              { text: 'the only one who sees private people' },
             ],
           },
         ],
@@ -420,14 +420,22 @@ const zh: GuideContent = {
         p: ['通过"分享"邀请家人。可为每个人选择角色；管理员之后可更改角色——也可把另一位成员设为管理员。'],
         blocks: [
           {
-            h: '管理员（所有者）',
-            p: ['拥有完全控制权——编辑者能做的一切，另外还可：'],
+            h: '读者',
+            p: ['只看，不做任何更改：'],
             items: [
-              { text: '邀请、批准和移除成员' },
-              { text: '更改角色，并把另一位成员设为管理员' },
-              { text: '重命名或删除家庭' },
-              { text: '与其他家庭建立桥接' },
-              { text: '唯一能看到私密人物的人' },
+              { text: '查看家庭可见的树' },
+              { text: '可编辑自己的"这是我"节点' },
+              { text: '不能添加、编辑或删除任何内容；看不到私密人物' },
+            ],
+          },
+          {
+            h: '贡献者',
+            p: ['通过提议参与——共建但不直接修改：'],
+            items: [
+              { text: '提议修改人物' },
+              { text: '提议新增人物和关联' },
+              { text: '由管理员或编辑者批准或拒绝每条提议' },
+              { text: '不能直接保存任何内容；看不到私密人物' },
             ],
           },
           {
@@ -443,22 +451,14 @@ const zh: GuideContent = {
             ],
           },
           {
-            h: '贡献者',
-            p: ['通过提议参与——共建但不直接修改：'],
+            h: '管理员（所有者）',
+            p: ['拥有完全控制权——编辑者能做的一切，另外还可：'],
             items: [
-              { text: '提议修改人物' },
-              { text: '提议新增人物和关联' },
-              { text: '由管理员或编辑者批准或拒绝每条提议' },
-              { text: '不能直接保存任何内容；看不到私密人物' },
-            ],
-          },
-          {
-            h: '读者',
-            p: ['只看，不做任何更改：'],
-            items: [
-              { text: '查看家庭可见的树' },
-              { text: '可编辑自己的"这是我"节点' },
-              { text: '不能添加、编辑或删除任何内容；看不到私密人物' },
+              { text: '邀请、批准和移除成员' },
+              { text: '更改角色，并把另一位成员设为管理员' },
+              { text: '重命名或删除家庭' },
+              { text: '与其他家庭建立桥接' },
+              { text: '唯一能看到私密人物的人' },
             ],
           },
         ],
@@ -566,14 +566,22 @@ const id: GuideContent = {
         p: ['Undang keluarga lewat Bagikan. Anda memilih peran per orang; admin dapat mengubah peran nanti — dan juga menjadikan anggota lain admin.'],
         blocks: [
           {
-            h: 'Admin (pemilik)',
-            p: ['Kendali penuh — semua yang bisa editor lakukan, ditambah:'],
+            h: 'Pembaca',
+            p: ['Menyaksikan, tetapi tidak mengubah apa pun:'],
             items: [
-              { text: 'mengundang, menyetujui, dan menghapus anggota' },
-              { text: 'mengubah peran, dan menjadikan anggota lain admin' },
-              { text: 'mengganti nama atau menghapus keluarga' },
-              { text: 'membangun jembatan ke keluarga lain' },
-              { text: 'satu-satunya yang melihat orang pribadi' },
+              { text: 'melihat pohon yang terlihat untuk keluarga' },
+              { text: 'boleh menyunting simpul "ini saya" sendiri' },
+              { text: 'tidak bisa menambah, mengubah, atau menghapus apa pun; tidak melihat orang pribadi' },
+            ],
+          },
+          {
+            h: 'Kontributor',
+            p: ['Berkontribusi lewat usulan — ikut membangun tanpa mengubah langsung:'],
+            items: [
+              { text: 'mengusulkan perubahan pada orang' },
+              { text: 'mengusulkan orang dan tautan baru' },
+              { text: 'admin atau editor menyetujui atau menolak setiap usulan' },
+              { text: 'tidak bisa menyimpan apa pun secara langsung; tidak melihat orang pribadi' },
             ],
           },
           {
@@ -589,22 +597,14 @@ const id: GuideContent = {
             ],
           },
           {
-            h: 'Kontributor',
-            p: ['Berkontribusi lewat usulan — ikut membangun tanpa mengubah langsung:'],
+            h: 'Admin (pemilik)',
+            p: ['Kendali penuh — semua yang bisa editor lakukan, ditambah:'],
             items: [
-              { text: 'mengusulkan perubahan pada orang' },
-              { text: 'mengusulkan orang dan tautan baru' },
-              { text: 'admin atau editor menyetujui atau menolak setiap usulan' },
-              { text: 'tidak bisa menyimpan apa pun secara langsung; tidak melihat orang pribadi' },
-            ],
-          },
-          {
-            h: 'Pembaca',
-            p: ['Menyaksikan, tetapi tidak mengubah apa pun:'],
-            items: [
-              { text: 'melihat pohon yang terlihat untuk keluarga' },
-              { text: 'boleh menyunting simpul "ini saya" sendiri' },
-              { text: 'tidak bisa menambah, mengubah, atau menghapus apa pun; tidak melihat orang pribadi' },
+              { text: 'mengundang, menyetujui, dan menghapus anggota' },
+              { text: 'mengubah peran, dan menjadikan anggota lain admin' },
+              { text: 'mengganti nama atau menghapus keluarga' },
+              { text: 'membangun jembatan ke keluarga lain' },
+              { text: 'satu-satunya yang melihat orang pribadi' },
             ],
           },
         ],
