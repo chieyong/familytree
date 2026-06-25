@@ -1,7 +1,7 @@
 # Status & handoff
 
 Korte overdracht zodat een nieuwe sessie (ook op mobiel/Termius) verder kan.
-Laatst bijgewerkt: 2026-06-23.
+Laatst bijgewerkt: 2026-06-24.
 
 Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation`,
 `?theme=light|dark`, `?lang=nl|en|zh|id`, `?focus=<id>`, `?tour=1` (opent de
@@ -48,17 +48,15 @@ opnieuw draaien, dat kan geen kwaad.
 | 18 | `20260623130000_remove_bridge.sql` | `remove_bridge(p_person)` RPC: owner verbreekt een brug (tree_links delete) | ✅ (2026-06-23) |
 | 19 | `20260623140000_copy_persons.sql` | `copy_persons(bron, doel, ids[])` RPC: kopieert personen + onderlinge unions/parent_links naar een andere boom (owner van bron én doel) | ✅ (2026-06-23) |
 | 20 | `20260624120000_copy_persons_anchors.sql` | `copy_persons(...,p_anchors)`: anchors-map (bron→bestaand doel) om kopieën aan bestaande personen te knopen; dedup van bestaande relaties. Dropt oude 3-arg signatuur | ✅ (2026-06-24) |
-| 21 | `20260624130000_manage_by_role_only.sql` | `can_manage_person` zonder `managed_by`-tak: beheerrecht volgt alleen de actieve rol (owner/editor) — dicht lek waarbij gedegradeerde viewer eigen aangemaakte personen bleef bewerken | ⚠️ MOET nog gedraaid (2026-06-24) |
-| 22 | `20260624140000_role_contributor.sql` | enum `member_role` krijgt `contributor` (Bijdrager). **Apart** want enum-waarde moet committen vóór migratie 23 'm gebruikt | ⚠️ MOET nog gedraaid (2026-06-24) |
+| 21 | `20260624130000_manage_by_role_only.sql` | `can_manage_person` zonder `managed_by`-tak: beheerrecht volgt alleen de actieve rol (owner/editor) — dicht lek waarbij gedegradeerde viewer eigen aangemaakte personen bleef bewerken | ✅ (2026-06-24) |
+| 22 | `20260624140000_role_contributor.sql` | enum `member_role` krijgt `contributor` (Bijdrager). **Apart** want enum-waarde moet committen vóór migratie 23 'm gebruikt | ✅ (2026-06-24) |
 | 23 | `20260624150000_change_proposals.sql` | `change_proposals`-tabel + RLS + RPC `resolve_proposal` (owner/editor keurt voorstel goed/af, past person_update toe) | ✅ (2026-06-24) |
-| 24 | `20260624160000_proposals_add.sql` | `resolve_proposal` + kinds `person_add` & `relation_add` (bijdrager stelt nieuwe persoon/koppeling voor; goedkeuren past add_relative/linkRelative-logica toe) | ⚠️ MOET nog gedraaid (2026-06-24) |
+| 24 | `20260624160000_proposals_add.sql` | `resolve_proposal` + kinds `person_add` & `relation_add` (bijdrager stelt nieuwe persoon/koppeling voor; goedkeuren past add_relative/linkRelative-logica toe) | ✅ (2026-06-24) |
 
-**Actie voor een verse sessie:** t/m 16 zijn gedraaid (12/13 geverifieerd via de
-brug-test; 15 en 16 gedraaid 2026-06-20); 9, 11 en 14 zijn onbevestigd maar
-idempotent — bij twijfel gewoon opnieuw draaien. 17–23 zijn gedraaid;
-**migratie 24 (proposals_add) moet nog gedraaid worden** — voegt de voorstel-kinds
-person_add & relation_add toe aan `resolve_proposal`. De gebruiker draait ze zelf
-in de SQL-editor.
+**Actie voor een verse sessie:** **alle migraties t/m 24 zijn gedraaid** (12/13
+geverifieerd via de brug-test; 9, 11 en 14 zijn destijds onbevestigd maar
+idempotent — bij twijfel gewoon opnieuw draaien). Geen openstaande migraties.
+De gebruiker draait nieuwe migraties zelf in de SQL-editor.
 
 **Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
 (`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced
@@ -287,14 +285,20 @@ owner/editor in `can_manage_person`), maar mag **wijzigingen voorstellen**.
 - **Nog live te verifiëren** (ingelogd, niet-headless, met 2 accounts/rollen):
   (a) privé-persoon (mig 16) → bekijk als editor/lezer: hoort een "verborgen
   persoon"-silhouet te zien, owner ziet 'm volledig; (b) mede-owner maken via
-  Delen → Leden + terug kunnen draaien.
+  Delen → Leden + terug kunnen draaien; (c) viewer ziet geen bewerk-knop en kan
+  niets opslaan (mig 21, ook op eigen oude toevoegingen); (d) Bijdrager: voorstel
+  indienen (wijziging / nieuw persoon / koppeling) → owner/editor ziet de banner
+  en kan goedkeuren (past toe) of afwijzen.
 - **Open privacy-actie**: bestaande `public`-personen blijven via de `anon`-grant op
   `get_full_graph`/`get_ego_graph` leesbaar zonder login. De UI biedt 'openbaar' niet
   meer aan, maar er is nog **geen migratie** die bestaande `public`→`family` zet of de
   `anon`-grant intrekt. Overweeg dat als de blootstelling echt dicht moet.
+- **Bijdrager fase 2c** (later): voorstellen om personen/relaties te **verwijderen**
+  en om **foto's** toe te voegen; evt. een diff-weergave (oud → nieuw) in het
+  review-scherm, en een telling per familie.
 - Bruggen v2 (later, zie design-doc): begrensd alleen-lezen oversteken, één
-  doorlopend gestikt beeld, brug intrekken in de UI, profielsync tussen de
-  spiegel-knopen.
+  doorlopend gestikt beeld, profielsync tussen de spiegel-knopen. (Brug intrekken
+  in de UI is gedaan — mig 18 / ontkoppelen.)
 
 ## Conventies
 - Commits eindigen met `Co-Authored-By: Claude <noreply@anthropic.com>` (neutraal; voorheen "Claude Fable 5").
