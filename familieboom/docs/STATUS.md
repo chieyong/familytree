@@ -5,7 +5,8 @@ Laatst bijgewerkt: 2026-06-24.
 
 Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation|globe`,
 `?theme=light|dark`, `?lang=nl|en|zh|id`, `?focus=<id>`, `?tour=1` (opent de
-rondleiding direct), `?data=habsburg`.
+rondleiding direct), `?data=demo|diaspora|habsburg`, `?layer=migration|life`
+(Atlas-verhaallaag).
 
 ## Wat dit is
 Interactieve familieboom-webapp "Bloom". Stack: Vite + React 18 + TypeScript
@@ -275,6 +276,32 @@ reduced-motion). Achterkant-stippen/✕ worden gecullt (hoekafstand); bogen word
 De **legenda** staat op desktop (≥900px) standaard open en blijft open bij het
 wisselen van weergave (sluiten via de knop); de klik-buiten-backdrop is daar uit
 zodat hij het slepen van de bol niet blokkeert. Op smal scherm: dicht, met backdrop.
+
+**Mobiel/interactie-verfijningen (sessie 2026-06-26, deel 2):**
+- **Rotatiegevoeligheid = `(180/π)/scale`** (graden per pixel): een punt blijft onder
+  de vinger, dus ingezoomd draait de bol vanzelf rustiger (loste "te gevoelig bij
+  inzoomen" op).
+- **Pinch-zoom** (twee vingers) naast scrollwiel en +/−-knoppen; pointer-events met
+  een `Map` van actieve pointers, één vinger = draaien.
+- **Zoom-bereik 0.6–60×** (was max 6×) zodat je echt op landniveau kunt inzoomen.
+- **Kaart op `countries-50m`** (was `land-110m`): fijnere kustlijn + subtiele
+  landsgrenzen (mesh) → NL herkenbaar bij inzoomen. (+~690 KB precache, bewust.)
+- **Mobiele indeling herzien** (de toggle botste/verdween achter andere knoppen):
+  vier hoeken i.p.v. gestapelde groepen — **linksboven** `Demo ▾` (familie/dataset,
+  dropdown opent omlaag), **rechtsboven** Boom·Tableau·Atlas, **linksonder** Legenda,
+  **onder-midden** de Migratie·Levensreis-toggle (rechterhelft vrij). `.globe-layers`
+  kreeg `z-index: 12` zodat de toggle nooit achter de topbar valt. Credit-regel in de
+  legenda flink subtieler.
+
+**Datasets:** **`diaspora` (in de UI gelabeld "Demo") is nu de default-demo** — een
+Chinees-Indonesisch/Maleisische familie die over drie generaties van Hongkong,
+Penang/KL, Medan/Jakarta/Bandung naar Amsterdam/Den Haag/Rotterdam migreert, met
+geboorte-, sterfte- én woonplaatsen. Toont de Atlas op z'n best. De oude Nederlandse
+**`demo` is verborgen** in het familie-menu (`PRESET_IDS = ['diaspora','habsburg']`)
+maar blijft bestaan en bereikbaar via `?data=demo`. Fixtures-only (niet in Supabase
+geseed; placeholder-UUID in `DATASET_FAMILY_ID`). Bestand:
+`src/data/fixtures/diaspora.ts`; gewired in `store.ts`/`App.tsx`/`FamilyMenu.tsx`
+(+ `family.presetDiaspora` i18n).
 
 Bestanden: `src/layout/globeLayout.ts` (pure data-laag: punten + migratie-/
 levensbogen + centroid + spread), `src/ui/GlobeCanvas.tsx` (projectie, rotatie,

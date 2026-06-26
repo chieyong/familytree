@@ -6,7 +6,7 @@ import type { Lang } from './i18n';
 export type ViewMode = 'artwork' | 'navigation' | 'globe';
 /** Verhaallaag in de Atlas-view: migratie (ouder→kind) of levensreis (geboorte→sterfte). */
 export type GlobeLayer = 'migration' | 'life';
-export type DatasetId = 'demo' | 'habsburg';
+export type DatasetId = 'demo' | 'diaspora' | 'habsburg';
 export type Backend = 'fixtures' | 'supabase';
 
 const params = new URLSearchParams(window.location.search);
@@ -19,16 +19,19 @@ export const BACKEND: Backend =
       ? 'fixtures'
       : ((import.meta.env.VITE_BACKEND as Backend) ?? 'fixtures');
 
-/** Geseede familie-UUID's (zie supabase/seed.sql), voor de Supabase-repository. */
+/** Geseede familie-UUID's (zie supabase/seed.sql), voor de Supabase-repository.
+ *  'diaspora' is een fixtures-only demo (niet geseed) → placeholder-UUID. */
 export const DATASET_FAMILY_ID: Record<DatasetId, string> = {
   demo: '0a5905fb-54ca-5a29-819b-6017b3600af2',
+  diaspora: '00000000-0000-5000-8000-000000000d1a',
   habsburg: '83efcaf5-dc36-5d5a-8cae-5366a940d58b',
 };
 
 // Startpersoon per dataset; ids verschillen per datalaag (slug vs geseede uuid).
-const EGO_FIXTURES: Record<DatasetId, PersonID> = { demo: 'lisa', habsburg: 'Q32500' };
+const EGO_FIXTURES: Record<DatasetId, PersonID> = { demo: 'lisa', diaspora: 'eric', habsburg: 'Q32500' };
 const EGO_SUPABASE: Record<DatasetId, PersonID> = {
   demo: 'eba5edcf-87af-5b3b-874c-9b9f15014772', // Lisa Jansen
+  diaspora: 'eric', // fixtures-only; bij supabase valt de app terug op de eerste persoon
   habsburg: '9037837e-337f-5829-8750-1532de2586f2', // Keizer Karel V
 };
 
@@ -102,7 +105,11 @@ interface AppState {
 const viewParam = params.get('view');
 const initialMode: ViewMode =
   viewParam === 'artwork' ? 'artwork' : viewParam === 'globe' ? 'globe' : 'navigation';
-const initialDataset: DatasetId = params.get('data') === 'habsburg' ? 'habsburg' : 'demo';
+// Default-demo is de internationale familie (toont de Atlas op z'n best); de oude
+// 'demo' blijft bestaan en is bereikbaar via ?data=demo, maar niet meer de default.
+const dataParam = params.get('data');
+const initialDataset: DatasetId =
+  dataParam === 'habsburg' ? 'habsburg' : dataParam === 'demo' ? 'demo' : 'diaspora';
 
 const THEME_KEY = 'familieboom-theme';
 const PHOTOS_KEY = 'familieboom-photos';

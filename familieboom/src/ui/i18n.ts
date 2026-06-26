@@ -274,6 +274,7 @@ const nl = {
   },
   family: {
     presetDemo: 'Demo-familie',
+    presetDiaspora: 'Demo',
     presetHabsburg: 'Habsburg (Wikidata)',
     demo: 'Demo',
     mine: 'Mijn families',
@@ -613,6 +614,7 @@ const en: Messages = {
   },
   family: {
     presetDemo: 'Demo family',
+    presetDiaspora: 'Demo',
     presetHabsburg: 'Habsburg (Wikidata)',
     demo: 'Demo',
     mine: 'My families',
@@ -949,6 +951,7 @@ const zh: Messages = {
   },
   family: {
     presetDemo: '示例家庭',
+    presetDiaspora: '示例',
     presetHabsburg: '哈布斯堡（Wikidata）',
     demo: '示例',
     mine: '我的家庭',
@@ -1285,6 +1288,7 @@ const id: Messages = {
   },
   family: {
     presetDemo: 'Keluarga demo',
+    presetDiaspora: 'Demo',
     presetHabsburg: 'Habsburg (Wikidata)',
     demo: 'Demo',
     mine: 'Keluarga saya',

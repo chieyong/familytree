@@ -2,21 +2,25 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import { useReducedMotion } from 'framer-motion';
 import { geoGraticule10, geoInterpolate, geoOrthographic, geoPath } from 'd3-geo';
 import type { GeoPermissibleObjects } from 'd3-geo';
-import { feature } from 'topojson-client';
+import { feature, mesh } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
-import type { Feature, FeatureCollection, LineString, Position } from 'geojson';
-import landTopo from 'world-atlas/land-110m.json';
+import type { Feature, FeatureCollection, LineString, MultiLineString, Position } from 'geojson';
+import worldTopo from 'world-atlas/countries-50m.json';
 import type { FamilyGraph, PersonID } from '../data/types';
 import { globeData, type GlobeArc, type LifePath } from '../layout/globeLayout';
 import { branchColor, PALETTES, type ThemeName } from './theme';
 import { useAppStore, type GlobeLayer } from './store';
 import { useT } from './useT';
 
-/** Landmassa één keer uit de topologie afleiden (module-niveau, niet per render). */
-const land = feature(
-  landTopo as unknown as Topology,
-  (landTopo as unknown as Topology<{ land: GeometryCollection }>).objects.land,
-) as unknown as FeatureCollection;
+/** Zoom-bereik (× de auto-fit-basis). Ruim genoeg om op landniveau in te zoomen. */
+const ZOOM_MIN = 0.6;
+const ZOOM_MAX = 60;
+const clampZoom = (k: number) => Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k));
+
+/** Landmassa (50m: fijnere kustlijn) + landsgrenzen, één keer uit de topologie. */
+const topo = worldTopo as unknown as Topology<{ land: GeometryCollection; countries: GeometryCollection }>;
+const land = feature(topo, topo.objects.land) as unknown as FeatureCollection;
+const borders = mesh(topo, topo.objects.countries, (a, b) => a !== b) as unknown as MultiLineString;
 const graticule = geoGraticule10();
 
 interface Props {
@@ -138,7 +142,7 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, onFocus, onDe
     if (!svg) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      setZoomK((k) => Math.max(0.6, Math.min(6, k * Math.exp(-e.deltaY * 0.0012))));
+      setZoomK((k) => clampZoom(k * Math.exp(-e.deltaY * 0.0012)));
     };
     svg.addEventListener('wheel', onWheel, { passive: false });
     return () => svg.removeEventListener('wheel', onWheel);
@@ -224,32 +228,72 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, onFocus, onDe
     return best;
   };
 
-  // Slepen draait de bol; een korte tik zonder verschuiving = selectie.
-  const drag = useRef<{ x: number; y: number; rot: [number, number]; moved: boolean } | null>(null);
+  // Eén vinger sleept (draaien), twee vingers knijpen (zoomen); een korte tik
+  // zonder verschuiving selecteert. Pointer-events dekken muis én touch.
+  const pointers = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const rotateRef = useRef<{ x: number; y: number; rot: [number, number] } | null>(null);
+  const pinchRef = useRef<{ dist: number; zoom: number } | null>(null);
+  const movedRef = useRef(false);
+  const twoFingerDist = () => {
+    const [a, b] = [...pointers.current.values()];
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  };
+
   const onPointerDown = (e: ReactPointerEvent<SVGSVGElement>) => {
     cancelAnimationFrame(introRef.current);
-    (e.target as Element).setPointerCapture?.(e.pointerId);
-    drag.current = { x: e.clientX, y: e.clientY, rot: rotation, moved: false };
+    (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.current.size === 1) {
+      rotateRef.current = { x: e.clientX, y: e.clientY, rot: rotation };
+      pinchRef.current = null;
+      movedRef.current = false;
+    } else if (pointers.current.size === 2) {
+      pinchRef.current = { dist: twoFingerDist(), zoom: zoomK };
+      rotateRef.current = null;
+      movedRef.current = true; // knijpen telt niet als tik
+    }
   };
   const onPointerMove = (e: ReactPointerEvent<SVGSVGElement>) => {
-    const d = drag.current;
+    if (!pointers.current.has(e.pointerId)) return;
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.current.size >= 2 && pinchRef.current) {
+      const ratio = twoFingerDist() / pinchRef.current.dist;
+      setZoomK(clampZoom(pinchRef.current.zoom * ratio));
+      return;
+    }
+    const d = rotateRef.current;
     if (!d) return;
     const dx = e.clientX - d.x;
     const dy = e.clientY - d.y;
-    if (Math.abs(dx) + Math.abs(dy) > 4) d.moved = true;
-    const k = 0.32;
+    if (Math.abs(dx) + Math.abs(dy) > 4) movedRef.current = true;
+    // Graden per pixel ≈ (180/π)/scale: een punt onder de vinger blijft eronder,
+    // dus ingezoomd (grote scale) draait de bol vanzelf rustiger.
+    const k = (180 / Math.PI) / scale;
     const phi = Math.max(-89, Math.min(89, d.rot[1] - dy * k));
     setRotation([d.rot[0] + dx * k, phi]);
   };
-  const onPointerUp = (e: ReactPointerEvent<SVGSVGElement>) => {
-    const d = drag.current;
-    drag.current = null;
-    if (!d || d.moved) return;
-    const rect = svgRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const hit = hitTest(e.clientX - rect.left, e.clientY - rect.top);
-    if (hit) onFocus(hit);
-    else onDeselect?.();
+  const endPointer = (e: ReactPointerEvent<SVGSVGElement>) => {
+    pointers.current.delete(e.pointerId);
+    (e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
+    if (pointers.current.size === 1) {
+      // Van knijpen terug naar één vinger: herijk de sleep-basis (geen sprong).
+      const [only] = [...pointers.current.values()];
+      rotateRef.current = { x: only.x, y: only.y, rot: rotation };
+      pinchRef.current = null;
+      return;
+    }
+    if (pointers.current.size === 0) {
+      const wasRotate = rotateRef.current;
+      rotateRef.current = null;
+      pinchRef.current = null;
+      if (!movedRef.current && wasRotate) {
+        const rect = svgRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const hit = hitTest(e.clientX - rect.left, e.clientY - rect.top);
+        if (hit) onFocus(hit);
+        else onDeselect?.();
+      }
+    }
   };
 
   const sphere: GeoPermissibleObjects = { type: 'Sphere' };
@@ -281,7 +325,8 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, onFocus, onDe
         className="viz globe-viz"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
+        onPointerUp={endPointer}
+        onPointerCancel={endPointer}
       >
         <defs>
           <radialGradient id="globe-shade" cx="0.38" cy="0.34" r="0.75">
@@ -294,6 +339,7 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, onFocus, onDe
         <path d={path(sphere) ?? undefined} fill={palette.globeOcean} stroke="none" />
         <path d={path(graticule as unknown as GeoPermissibleObjects) ?? undefined} fill="none" stroke={palette.globeGraticule} strokeWidth={0.5} />
         <path d={path(land) ?? undefined} fill={palette.globeLand} stroke="none" opacity={0.92} />
+        <path d={path(borders as unknown as GeoPermissibleObjects) ?? undefined} fill="none" stroke={palette.globeOcean} strokeWidth={0.4} opacity={0.55} />
 
         {/* Verhaallaag: lijnen (migratiebogen of levenspaden) */}
         <g style={{ pointerEvents: 'none' }}>
@@ -386,8 +432,8 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, onFocus, onDe
 
       {!empty && (
         <div className="globe-zoom">
-          <button aria-label={t.globe.zoomIn} onClick={() => setZoomK((k) => Math.min(6, k * 1.4))}>+</button>
-          <button aria-label={t.globe.zoomOut} onClick={() => setZoomK((k) => Math.max(0.6, k / 1.4))}>−</button>
+          <button aria-label={t.globe.zoomIn} onClick={() => setZoomK((k) => clampZoom(k * 1.4))}>+</button>
+          <button aria-label={t.globe.zoomOut} onClick={() => setZoomK((k) => clampZoom(k / 1.4))}>−</button>
         </div>
       )}
 

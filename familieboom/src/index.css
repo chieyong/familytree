@@ -1242,7 +1242,7 @@ body {
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 6;
+  z-index: 12;
   display: flex;
   gap: 2px;
   padding: 3px;
@@ -2316,7 +2316,14 @@ body {
   text-align: left;
   background: transparent;
   cursor: pointer;
-  font: 600 0.7rem var(--font-ui);
+  font: 400 0.62rem var(--font-ui);
+  color: var(--ink-dim);
+  opacity: 0.55;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.legend-credit:hover {
+  opacity: 0.9;
   color: var(--accent);
 }
 
@@ -2422,5 +2429,40 @@ body {
   .person-card {
     bottom: calc(76px + env(safe-area-inset-bottom));
     max-width: calc(100vw - 28px);
+  }
+
+  /* Onderbalk: Legenda (links) en de verhaallaag-toggle (midden). De familie-knop
+     verhuist naar linksboven (zie hieronder), zodat de toggle de rechterhelft vrij
+     heeft en nergens achter zit. */
+  .globe-layers {
+    top: auto;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .globe-layers button {
+    padding: 6px 11px;
+    font-size: 0.66rem;
+  }
+
+  /* Familie-/datasetkeuze naar linksboven (lege hoek: titel verborgen, topbar-knoppen
+     staan rechts). Dropdown opent omlaag i.p.v. omhoog. */
+  .family-menu {
+    top: calc(env(safe-area-inset-top) + 8px);
+    left: 12px;
+    right: auto;
+    bottom: auto;
+  }
+
+  .family-pop {
+    top: calc(100% + 8px);
+    bottom: auto;
+    left: 0;
+    right: auto;
+  }
+
+  /* Zoom-knoppen iets kleiner zodat ze niet domineren op een smal scherm. */
+  .globe-zoom button {
+    width: 34px;
+    height: 34px;
   }
 }

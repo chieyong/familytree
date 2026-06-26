@@ -4,6 +4,7 @@ import { FixtureRepository } from './data/FixtureRepository';
 import { SupabaseRepository } from './data/SupabaseRepository';
 import type { FamilyRepository } from './data/FamilyRepository';
 import { demoFamily } from './data/fixtures/demoFamily';
+import { diasporaFamily } from './data/fixtures/diaspora';
 import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
 import { describeRelation } from './domain/relationNaming';
@@ -31,7 +32,7 @@ import { useT } from './ui/useT';
 import { lifespan, nativeSubline, shortName } from './ui/theme';
 
 const habsburg = habsburgJson as unknown as FamilyGraph;
-const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
+const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, diaspora: diasporaFamily, habsburg };
 
 export default function App() {
   const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, globeLayer, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setAboutOpen, setNotice, bumpData } =

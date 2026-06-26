@@ -6,7 +6,8 @@ import { useT } from './useT';
 import { ImportFamily } from './ImportFamily';
 import { CopyPersons } from './CopyPersons';
 
-const PRESET_IDS: DatasetId[] = ['demo', 'habsburg'];
+// 'demo' (oude Nederlandse familie) is verborgen maar blijft bereikbaar via ?data=demo.
+const PRESET_IDS: DatasetId[] = ['diaspora', 'habsburg'];
 
 /** Bron-keuze: demo-presets, je eigen families, of een nieuwe boom aanmaken. */
 export function FamilyMenu() {
@@ -17,7 +18,8 @@ export function FamilyMenu() {
   const setActiveFamily = useAppStore((s) => s.setActiveFamily);
   const t = useT();
   const { families, createFamily } = useFamilies();
-  const presetLabel = (id: DatasetId) => (id === 'habsburg' ? t.family.presetHabsburg : t.family.presetDemo);
+  const presetLabel = (id: DatasetId) =>
+    id === 'habsburg' ? t.family.presetHabsburg : id === 'diaspora' ? t.family.presetDiaspora : t.family.presetDemo;
 
   // Open na inloggen meteen je eigen boom i.p.v. de demo (één keer): de laatst
   // geopende, of anders de eerste. Zo hoeft een nieuwe genodigde niet zelf het
