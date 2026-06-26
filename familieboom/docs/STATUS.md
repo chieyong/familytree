@@ -53,11 +53,13 @@ opnieuw draaien, dat kan geen kwaad.
 | 22 | `20260624140000_role_contributor.sql` | enum `member_role` krijgt `contributor` (Bijdrager). **Apart** want enum-waarde moet committen vóór migratie 23 'm gebruikt | ✅ (2026-06-24) |
 | 23 | `20260624150000_change_proposals.sql` | `change_proposals`-tabel + RLS + RPC `resolve_proposal` (owner/editor keurt voorstel goed/af, past person_update toe) | ✅ (2026-06-24) |
 | 24 | `20260624160000_proposals_add.sql` | `resolve_proposal` + kinds `person_add` & `relation_add` (bijdrager stelt nieuwe persoon/koppeling voor; goedkeuren past add_relative/linkRelative-logica toe) | ✅ (2026-06-24) |
+| 25 | `20260626120000_residences_read.sql` | `_build_graph` geeft nu **`residences`** terug (place + from/to + id, geordend op from_year) i.p.v. `'[]'` → woonplaatsen/levenspaden op de Atlas voor échte families | ⏳ **NOG DRAAIEN** |
 
-**Actie voor een verse sessie:** **alle migraties t/m 24 zijn gedraaid** (12/13
-geverifieerd via de brug-test; 9, 11 en 14 zijn destijds onbevestigd maar
-idempotent — bij twijfel gewoon opnieuw draaien). Geen openstaande migraties.
-De gebruiker draait nieuwe migraties zelf in de SQL-editor.
+**Actie voor een verse sessie:** migraties t/m 24 zijn gedraaid; **migratie 25 staat
+nog open** (draaien in de Supabase SQL-editor — idempotent `create or replace`, alleen
+de residences-regel verschilt van mig 17). Zonder mig 25 worden toegevoegde
+woonplaatsen wél opgeslagen maar niet teruggelezen/getoond. De gebruiker draait
+migraties zelf in de SQL-editor.
 
 **Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
 (`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced
@@ -320,14 +322,28 @@ Den Haag→Delft; Willem: Utrecht→Parijs→Nice) zodat beide verhaallagen rijk
 **Habsburg-set** heeft van zichzelf al geboorte-/sterfteplaatsen → vol Europees
 migratieweb (nog geen residenties).
 
-**Fase 2 (nog open): plaatsinvoer + geocoding.** De invoer-UI (`EditPerson`/
-`AddRelative`) heeft nog **geen plaatsveld**, dus *echte* families krijgen pas data
-op de bol als geboorte-/sterfte-/**woonplaats** invoerbaar wordt (met lat/lon, bv. via
-een geocoder of een vaste plaatsenlijst). De `places`-tabel + `birth_place_id`/
-`death_place_id` + een `residences`-tabel bestaan al; **schrijf-RPC's + UI ontbreken**.
-Belangrijk: **`_build_graph` levert `residences` nog hardcoded als `'[]'`** — voor de
-levenspaden van échte families moet die RPC de `residences`-tabel (place + start/eind)
-gaan teruggeven. Tot dan tonen woonplaatsen alleen voor de fixtures (demo).
+### Fase 2a — geboorte- & sterfteplaats invoerbaar (sessie 2026-06-26, deel 3) ✅
+`EditPerson` heeft nu **geboorteplaats- en sterfteplaats-velden** met **type-ahead
+geocoding via OpenStreetMap Nominatim** (`src/data/geocode.ts`, client-side, CORS,
+geen API-sleutel; 450 ms debounce, vanaf 2 tekens, OSM-bronvermelding in de dropdown).
+Component `src/ui/PlaceField.tsx` (autocomplete + wissen). Opslaan: `setPersonPlace`
+in `mutations.ts` zet de plaats in de gedeelde `places`-tabel (open RLS voor ingelogd,
+dedup op naam+coords) en koppelt via `birth_place_id`/`death_place_id`. **Geen migratie
+nodig** — `_build_graph` las die kolommen al. Echte families verschijnen nu dus op de
+Atlas (stippen + migratiebogen + levensreis-begin/eind) zodra ze plaatsen invullen.
+i18n `edit.birthPlace/deathPlace/placeSearching/placeNoResults/placeClear/placeAttribution`
+in nl/en/zh/id; CSS `.place-*`. **Alleen bij direct bewerken** (owner/editor); in
+proposalMode (bijdrager) nog geen plaatsvelden.
+
+### Fase 2b — woonplaatsen (residenties) (sessie 2026-06-26, deel 4) ✅ (code)
+`EditPerson` heeft nu een **Woonplaatsen-sectie**: lijst van residenties (plaats · jaar)
+met verwijderen, plus een toevoegrij (PlaceField + vanaf-jaar → "+ Toevoegen").
+Mutaties `addResidence`/`removeResidence` in `mutations.ts` schrijven direct op de
+`residences`-tabel (RLS-write = `can_manage_person`, **geen schrijf-RPC nodig**).
+`Residence`-type kreeg `id?`; `_build_graph` geeft residenties nu mee (**migratie 25**).
+Na het draaien van mig 25 tonen de levenspaden op de Atlas (geboorte → woonplaatsen →
+overlijden) ook voor échte families. Nog open: plaatsvelden in `AddRelative` + de
+woonplaatsen-sectie ook in proposalMode (bijdrager); evt. eind-jaar (`to_year`) invoeren.
 
 ## Rollen (samenvatting)
 - **Owner (beheerder)**: alles van editor + ledenbeheer (uitnodigen, rollen wijzigen,

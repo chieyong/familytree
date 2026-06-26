@@ -20,6 +20,8 @@ export interface Place {
 }
 
 export interface Residence {
+  /** Rij-id uit de residences-tabel (aanwezig vanuit de backend; nodig om te verwijderen). */
+  id?: string;
   place: Place;
   from?: FuzzyDate;
   to?: FuzzyDate;

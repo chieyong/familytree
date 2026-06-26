@@ -1731,6 +1731,152 @@ body {
   color: var(--ink-dim);
 }
 
+/* Korte toelichting onder een veld (bv. zichtbaarheid). */
+.field-hint {
+  margin: 4px 2px 0;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: var(--ink-dim);
+}
+
+/* Plaatsveld met geocoder-autocomplete (PlaceField). */
+.place-field {
+  position: relative;
+}
+
+.place-field .place-input > input {
+  padding-right: 30px; /* ruimte voor de wis-knop */
+}
+
+.place-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.place-clear:hover {
+  color: var(--ink);
+}
+
+.place-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 70;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--bg-raised);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.place-results > li > button {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 7px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.place-results > li > button:hover {
+  background: var(--surface);
+}
+
+.place-results > li > button > strong {
+  font: 600 0.8rem var(--font-ui);
+}
+
+.place-results > li > button > span {
+  font-size: 0.68rem;
+  color: var(--ink-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.place-status,
+.place-attribution {
+  padding: 7px 9px;
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+}
+
+.place-attribution {
+  border-top: 1px solid var(--surface-border);
+  margin-top: 2px;
+  font-size: 0.62rem;
+  text-align: right;
+}
+
+/* Woonplaatsen-sectie. */
+.residences-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.residence-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 9px;
+  background: var(--surface);
+  border-radius: 8px;
+}
+
+.residence-name {
+  font-size: 0.82rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.residence-add {
+  align-items: stretch;
+}
+
+.residence-add .place-field {
+  flex: 1;
+}
+
+.residence-add .residence-year {
+  flex: 0 0 78px;
+}
+
+.residence-add-btn {
+  align-self: flex-start;
+}
+
+.residence-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Geslacht-keuze als knoppen (vervangt native <select>; zie SexPicker). */
 .seg-field {
   display: flex;

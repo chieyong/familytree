@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Person, Visibility } from '../data/types';
-import { deletePerson, removePersonPhoto, signedAvatarUrls, updatePerson, uploadPersonPhoto, type PersonEdit } from '../data/mutations';
+import { addResidence, deletePerson, removePersonPhoto, removeResidence, setPersonPlace, signedAvatarUrls, updatePerson, uploadPersonPhoto, type PersonEdit, type PlaceInput } from '../data/mutations';
 import { FloatField } from './FloatField';
+import { PlaceField } from './PlaceField';
 import { PhotoEditor } from './PhotoEditor';
 import { SexPicker } from './SexPicker';
 import { useAppStore } from './store';
@@ -44,6 +45,9 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
   const [visibility, setVisibility] = useState<Visibility>(person.visibility);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  // Woonplaats-toevoegrij (geocoder + vanaf-jaar).
+  const [newResPlace, setNewResPlace] = useState<PlaceInput | null>(null);
+  const [newResYear, setNewResYear] = useState('');
 
   // Profielfoto: huidige (ondertekende) preview + upload/verwijder.
   const [photoUrl, setPhotoUrl] = useState<string>();
@@ -100,6 +104,15 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
     }
   };
 
+  // Geboorte-/sterfteplaats: los van de naamvelden (eigen geocoder-veld). De plaats
+  // wordt direct opgeslagen bij kiezen/wissen → de persoon verschijnt op de Atlas.
+  const placeValue = (place?: Person['birth']): PlaceInput | undefined => {
+    const pl = place?.place;
+    return pl && pl.lat != null && pl.lon != null
+      ? { name: pl.name, lat: pl.lat, lon: pl.lon, wikidataId: pl.wikidataId }
+      : undefined;
+  };
+
   // Automatisch opslaan: elke veldwijziging schrijft (debounced) weg; geen
   // opslaan-knop meer. "Voornamen" is verplicht — bij een leeg veld slaan we niet
   // op (anders zou je per ongeluk de naam wissen).
@@ -153,6 +166,48 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
       setError(err instanceof Error ? err.message : t.proposal.submitFailed);
     } finally {
       setBusy(false);
+    }
+  };
+
+  const onPlace = async (kind: 'birth' | 'death', place: PlaceInput | null) => {
+    setSaveState('saving');
+    setError(undefined);
+    try {
+      await setPersonPlace(person.id, kind, place);
+      bumpData();
+      setSaveState('saved');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.edit.saveFailed);
+      setSaveState('idle');
+    }
+  };
+
+  const onAddResidence = async () => {
+    if (!newResPlace) return;
+    setSaveState('saving');
+    setError(undefined);
+    try {
+      await addResidence(person.id, newResPlace, newResYear ? Number(newResYear) : undefined);
+      setNewResPlace(null);
+      setNewResYear('');
+      bumpData();
+      setSaveState('saved');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.edit.saveFailed);
+      setSaveState('idle');
+    }
+  };
+
+  const onRemoveResidence = async (id: string) => {
+    setSaveState('saving');
+    setError(undefined);
+    try {
+      await removeResidence(id);
+      bumpData();
+      setSaveState('saved');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.edit.saveFailed);
+      setSaveState('idle');
     }
   };
 
@@ -229,6 +284,10 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
         onChange={(e) => setCallName(e.target.value)} />
       <FloatField label={t.edit.lastName} value={familyName}
         onChange={(e) => setFamilyName(e.target.value)} />
+      <FloatField label={t.edit.nativeName} value={nameNative}
+        onChange={(e) => setNameNative(e.target.value)} />
+      <FloatField label={t.edit.nickname} value={nickname}
+        onChange={(e) => setNickname(e.target.value)} />
       <SexPicker value={sex} onChange={setSex} />
       <div className="add-rel-row">
         <FloatField label={t.edit.birthAbbr} inputMode="numeric"
@@ -236,10 +295,43 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
         <FloatField label={t.edit.deathAbbr} inputMode="numeric"
           value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
       </div>
-      <FloatField label={t.edit.nativeName} value={nameNative}
-        onChange={(e) => setNameNative(e.target.value)} />
-      <FloatField label={t.edit.nickname} value={nickname}
-        onChange={(e) => setNickname(e.target.value)} />
+      {/* Geboorte-/sterfteplaats (geocoder) — direct opslaan, voedt de Atlas. */}
+      {!proposalMode && (
+        <>
+          <PlaceField label={t.edit.birthPlace} value={placeValue(person.birth)}
+            onChange={(p) => onPlace('birth', p)} />
+          <PlaceField label={t.edit.deathPlace} value={placeValue(person.death)}
+            onChange={(p) => onPlace('death', p)} />
+
+          {/* Woonplaatsen: levensreis-tussenstops op de Atlas. */}
+          <div className="residences-field">
+            <span className="edit-field-label">{t.edit.residencesLabel}</span>
+            {(person.residences ?? []).map((r, i) => (
+              <div className="residence-row" key={r.id ?? `${r.place.name}-${i}`}>
+                <span className="residence-name">
+                  {r.place.name}{r.from?.year ? ` · ${r.from.year}` : ''}
+                </span>
+                {r.id && (
+                  <button type="button" className="link-btn link-danger" aria-label={t.edit.residenceRemove}
+                    onClick={() => onRemoveResidence(r.id!)}>
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+            <div className="add-rel-row residence-add">
+              <PlaceField label={t.edit.addResidence} value={newResPlace ?? undefined}
+                onChange={setNewResPlace} />
+              <FloatField label={t.edit.fromYear} inputMode="numeric" wrapClass="residence-year"
+                value={newResYear} onChange={(e) => setNewResYear(e.target.value.replace(/\D/g, ''))} />
+            </div>
+            <button type="button" className="link-btn residence-add-btn" disabled={!newResPlace}
+              onClick={onAddResidence}>
+              {t.edit.residenceAdd}
+            </button>
+          </div>
+        </>
+      )}
       {/* Zichtbaarheid als knoppen. 'openbaar' niet meer aanbiedbaar (geen publieke
           weergave); alleen tonen als deze persoon er al op staat → terug te zetten. */}
       <div className="seg-field">
@@ -259,6 +351,7 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
             </button>
           )}
         </div>
+        <p className="field-hint">{t.edit.visibilityHint}</p>
       </div>
       {error && <p className="add-rel-error">{error}</p>}
       {proposalMode ? (

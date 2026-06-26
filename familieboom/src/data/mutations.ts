@@ -161,6 +161,70 @@ export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
   if (error) throw error;
 }
 
+export interface PlaceInput {
+  name: string;
+  lat: number;
+  lon: number;
+  wikidataId?: string;
+}
+
+/** Plaats opzoeken-of-aanmaken in de gedeelde `places`-tabel (RLS: ingelogd). */
+async function upsertPlace(place: PlaceInput): Promise<string> {
+  const { data: existing } = await supabase!
+    .from('places')
+    .select('id')
+    .eq('name', place.name)
+    .gte('lat', place.lat - 0.0015)
+    .lte('lat', place.lat + 0.0015)
+    .gte('lon', place.lon - 0.0015)
+    .lte('lon', place.lon + 0.0015)
+    .limit(1)
+    .maybeSingle();
+  if (existing?.id) return existing.id as string;
+  const { data, error } = await supabase!
+    .from('places')
+    .insert({ name: place.name, lat: place.lat, lon: place.lon, wikidata_id: place.wikidataId ?? null })
+    .select('id')
+    .single();
+  if (error) throw error;
+  return data.id as string;
+}
+
+/**
+ * Zet (of wist) de geboorte- of sterfteplaats van een persoon. Schrijft de plaats
+ * in `places` en koppelt 'm via `birth_place_id`/`death_place_id` (RLS dwingt af dat
+ * alleen beheerder/bewerker de persoon mag wijzigen). `_build_graph` leest 'm daarna
+ * mee in de graaf → de persoon verschijnt op de Atlas.
+ */
+export async function setPersonPlace(
+  personId: string,
+  kind: 'birth' | 'death',
+  place: PlaceInput | null,
+): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const placeId = place ? await upsertPlace(place) : null;
+  const column = kind === 'birth' ? 'birth_place_id' : 'death_place_id';
+  const { error } = await supabase.from('persons').update({ [column]: placeId }).eq('id', personId);
+  if (error) throw error;
+}
+
+/** Voegt een woonplaats toe (residences-tabel; RLS-write = beheerder/bewerker). */
+export async function addResidence(personId: string, place: PlaceInput, fromYear?: number): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const placeId = await upsertPlace(place);
+  const { error } = await supabase
+    .from('residences')
+    .insert({ person_id: personId, place_id: placeId, from_year: fromYear ?? null });
+  if (error) throw error;
+}
+
+/** Verwijdert een woonplaats op rij-id. */
+export async function removeResidence(id: string): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase.from('residences').delete().eq('id', id);
+  if (error) throw error;
+}
+
 export type ProposalKind = 'person_update' | 'person_add' | 'relation_add';
 
 export interface Proposal {
