@@ -1,4 +1,4 @@
-import type { FamilyGraph, Person } from '../types';
+import type { FamilyGraph, Person, Residence } from '../types';
 
 /**
  * Fictieve familie, bewust complex als stress-test voor de relatie-encoding:
@@ -9,30 +9,41 @@ import type { FamilyGraph, Person } from '../types';
  * - Sophie (Tom & Karin) is stiefzus van Lisa & Daan
  */
 
+type Spot = { name: string; lat?: number; lon?: number };
+
+/** Korte woonplaats-helper: stad + vanaf-jaar (voor de chronologische volgorde op de Atlas). */
+const live = (place: Spot, fromYear: number): Residence => ({ place, from: { year: fromYear } });
+
 const p = (
   id: string,
   givenNames: string[],
   familyName: string,
   sex: 'm' | 'f',
   birthYear: number,
-  birthPlace?: { name: string; lat?: number; lon?: number },
+  birthPlace?: Spot,
   deathYear?: number,
+  deathPlace?: Spot,
+  residences?: Residence[],
 ): Person => ({
   id,
   givenNames,
   familyName,
   sex,
   birth: { date: { year: birthYear }, place: birthPlace },
-  ...(deathYear ? { death: { date: { year: deathYear } } } : {}),
+  ...(deathYear ? { death: { date: { year: deathYear }, place: deathPlace } } : {}),
+  ...(residences ? { residences } : {}),
   visibility: 'family',
 });
 
 export const demoFamily: FamilyGraph = {
   persons: [
     // Generatie 0
-    p('hendrik', ['Hendrik'], 'de Vries', 'm', 1932, { name: 'Rotterdam', lat: 51.92, lon: 4.48 }, 2001),
-    p('johanna', ['Johanna'], 'Bakker', 'f', 1935, { name: 'Delft', lat: 52.01, lon: 4.36 }, 2020),
-    p('willem', ['Willem'], 'Jansen', 'm', 1938, { name: 'Utrecht', lat: 52.09, lon: 5.12 }, 2010),
+    p('hendrik', ['Hendrik'], 'de Vries', 'm', 1932, { name: 'Rotterdam', lat: 51.92, lon: 4.48 }, 2001, { name: 'Alicante', lat: 38.35, lon: -0.48 },
+      [live({ name: 'Amsterdam', lat: 52.37, lon: 4.9 }, 1958), live({ name: 'Barcelona', lat: 41.39, lon: 2.17 }, 1990)]),
+    p('johanna', ['Johanna'], 'Bakker', 'f', 1935, { name: 'Bandung', lat: -6.91, lon: 107.61 }, 2020, { name: 'Delft', lat: 52.01, lon: 4.36 },
+      [live({ name: 'Den Haag', lat: 52.08, lon: 4.31 }, 1955)]),
+    p('willem', ['Willem'], 'Jansen', 'm', 1938, { name: 'Utrecht', lat: 52.09, lon: 5.12 }, 2010, { name: 'Nice', lat: 43.7, lon: 7.27 },
+      [live({ name: 'Parijs', lat: 48.85, lon: 2.35 }, 1965)]),
     p('greet', ['Greet'], 'Smit', 'f', 1940, { name: 'Amersfoort', lat: 52.16, lon: 5.39 }),
     p('els', ['Els'], 'van Dam', 'f', 1945, { name: 'Zwolle', lat: 52.51, lon: 6.09 }),
     // Generatie 1
@@ -43,7 +54,7 @@ export const demoFamily: FamilyGraph = {
     p('marco', ['Marco'], 'Jansen', 'm', 1980, { name: 'Utrecht', lat: 52.09, lon: 5.12 }),
     p('tom', ['Tom'], 'Visser', 'm', 1959, { name: 'Den Haag', lat: 52.08, lon: 4.31 }),
     p('karin', ['Karin'], 'Meijer', 'f', 1962, { name: 'Leiden', lat: 52.16, lon: 4.49 }),
-    p('sandra', ['Sandra'], 'Mulder', 'f', 1970, { name: 'Arnhem', lat: 51.98, lon: 5.91 }),
+    p('sandra', ['Sandra'], 'Mulder', 'f', 1970, { name: 'Paramaribo', lat: 5.85, lon: -55.2 }),
     // Generatie 2
     p('bram', ['Bram'], 'de Vries', 'm', 1989, { name: 'Rotterdam', lat: 51.92, lon: 4.48 }),
     p('eva', ['Eva'], 'Smits', 'f', 1990, { name: 'Breda', lat: 51.59, lon: 4.78 }),
@@ -51,7 +62,7 @@ export const demoFamily: FamilyGraph = {
     p('daan', ['Daan'], 'Jansen', 'm', 1993, { name: 'Utrecht', lat: 52.09, lon: 5.12 }),
     p('sophie', ['Sophie'], 'Visser', 'f', 1992, { name: 'Den Haag', lat: 52.08, lon: 4.31 }),
     p('femke', ['Femke'], 'Jansen', 'f', 2007, { name: 'Amersfoort', lat: 52.16, lon: 5.39 }),
-    p('jesse', ['Jesse'], 'de Wit', 'm', 1988, { name: 'Amsterdam', lat: 52.37, lon: 4.9 }),
+    p('jesse', ['Jesse'], 'de Wit', 'm', 1988, { name: 'Toronto', lat: 43.65, lon: -79.38 }),
     // Generatie 3
     p('noor', ['Noor'], 'de Wit', 'f', 2019, { name: 'Amsterdam', lat: 52.37, lon: 4.9 }),
     p('mila', ['Mila'], 'de Vries', 'f', 2018, { name: 'Rotterdam', lat: 51.92, lon: 4.48 }),

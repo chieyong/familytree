@@ -3,7 +3,9 @@ import type { PersonID } from '../data/types';
 import type { ThemeName } from './theme';
 import type { Lang } from './i18n';
 
-export type ViewMode = 'artwork' | 'navigation';
+export type ViewMode = 'artwork' | 'navigation' | 'globe';
+/** Verhaallaag in de Atlas-view: migratie (ouder→kind) of levensreis (geboorte→sterfte). */
+export type GlobeLayer = 'migration' | 'life';
 export type DatasetId = 'demo' | 'habsburg';
 export type Backend = 'fixtures' | 'supabase';
 
@@ -55,6 +57,8 @@ interface AppState {
   theme: ThemeName;
   /** Interfacetaal. */
   lang: Lang;
+  /** Actieve verhaallaag in de Atlas-view. */
+  globeLayer: GlobeLayer;
   /** Profielfoto's in de boom tonen (focus + inzoomen). De detailkaart toont altijd. */
   photos: boolean;
   user: SessionUser | null;
@@ -75,6 +79,7 @@ interface AppState {
   dataVersion: number;
   setMode: (mode: ViewMode) => void;
   setLang: (lang: Lang) => void;
+  setGlobeLayer: (layer: GlobeLayer) => void;
   setDataset: (dataset: DatasetId) => void;
   setFocus: (id: PersonID) => void;
   setIk: (id: PersonID) => void;
@@ -94,7 +99,9 @@ interface AppState {
   bumpData: () => void;
 }
 
-const initialMode: ViewMode = params.get('view') === 'artwork' ? 'artwork' : 'navigation';
+const viewParam = params.get('view');
+const initialMode: ViewMode =
+  viewParam === 'artwork' ? 'artwork' : viewParam === 'globe' ? 'globe' : 'navigation';
 const initialDataset: DatasetId = params.get('data') === 'habsburg' ? 'habsburg' : 'demo';
 
 const THEME_KEY = 'familieboom-theme';
@@ -136,6 +143,7 @@ export const useAppStore = create<AppState>((set) => ({
   ikId: params.get('ik') ?? DATASET_EGO[initialDataset],
   theme: startTheme,
   lang: initialLang(),
+  globeLayer: params.get('layer') === 'life' ? 'life' : 'migration',
   photos: localStorage.getItem(PHOTOS_KEY) === 'on',
   user: null,
   activeFamily: null,
@@ -146,6 +154,7 @@ export const useAppStore = create<AppState>((set) => ({
   tourOpen: params.get('tour') === '1',
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
+  setGlobeLayer: (globeLayer) => set({ globeLayer }),
   setLang: (lang) => {
     localStorage.setItem(LANG_KEY, lang);
     set({ lang });

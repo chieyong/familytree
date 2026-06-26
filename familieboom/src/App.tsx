@@ -20,6 +20,7 @@ import { ProposalsReview } from './ui/ProposalsReview';
 import { listPendingProposals, type Proposal } from './data/mutations';
 import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas } from './ui/FamilyCanvas';
+import { GlobeCanvas } from './ui/GlobeCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
 import { ShareFamily } from './ui/ShareFamily';
 import { OverflowMenu } from './ui/OverflowMenu';
@@ -33,7 +34,7 @@ const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, habsburg };
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setAboutOpen, setNotice, bumpData } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, globeLayer, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setAboutOpen, setNotice, bumpData } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();
@@ -77,7 +78,9 @@ export default function App() {
   // Persoonskaart alleen tonen als een node is geselecteerd; klik op leeg vlak
   // deselecteert. Legenda sluit bij een klik buiten (zoals de menu's).
   const [cardOpen, setCardOpen] = useState(false);
-  const [legendOpen, setLegendOpen] = useState(false);
+  // Op desktop staat de legenda standaard open (en blijft open bij het wisselen
+  // van weergave); de gebruiker kan 'm sluiten. Op smal scherm start hij dicht.
+  const [legendOpen, setLegendOpen] = useState(() => window.innerWidth >= 900);
   const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -193,6 +196,9 @@ export default function App() {
             <button className={mode === 'artwork' ? 'active' : ''} onClick={() => setMode('artwork')}>
               {t.topbar.tableau}
             </button>
+            <button className={mode === 'globe' ? 'active' : ''} onClick={() => setMode('globe')}>
+              {t.topbar.globe}
+            </button>
           </nav>
           <OverflowMenu photosAvailable={photoByPerson.size > 0} />
           <AuthBar />
@@ -241,7 +247,18 @@ export default function App() {
       )}
 
       <main className="stage">
-        {fullGraph && (
+        {fullGraph && mode === 'globe' && (
+          <GlobeCanvas
+            key={`globe-${dataset}`}
+            fullGraph={fullGraph}
+            branches={branches}
+            focusId={focusId}
+            theme={theme}
+            onFocus={(id) => { setFocus(id); setCardOpen(true); }}
+            onDeselect={() => setCardOpen(false)}
+          />
+        )}
+        {fullGraph && mode !== 'globe' && (
           <FamilyCanvas
             key={dataset}
             mode={mode}
@@ -351,25 +368,45 @@ export default function App() {
         {legendOpen && (
           <>
             {mode === 'artwork' && <p className="legend-read">{t.legend.artworkRead}</p>}
+            {mode === 'globe' && <p className="legend-read">{t.legend.globeRead}</p>}
             <p className="legend-story">{t.legend.story}</p>
-            <ul>
-              {mode === 'artwork' ? (
-                <>
-                  <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
-                  <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
-                </>
-              ) : (
-                <>
-                  <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
-                  <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
-                </>
-              )}
-              <li><span className="swatch line ex" /> {t.legend.ended}</li>
-              <li><span className="swatch line dotted" /> {t.legend.adoption}</li>
-              <li><span className="swatch line dashed" /> {t.legend.step}</li>
-              <li><span className="swatch dot" /> {t.legend.branchSize}</li>
-              <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>
-            </ul>
+            {mode === 'globe' ? (
+              <ul>
+                <li><span className="swatch dot" /> {t.legend.globeBirth}</li>
+                {globeLayer === 'migration' ? (
+                  <>
+                    <li><span className="swatch dot hollow" /> {t.legend.globeDeceased}</li>
+                    <li><span className="swatch line solid" /> {t.legend.globeMigration}</li>
+                  </>
+                ) : (
+                  <>
+                    <li><span className="swatch dot small" /> {t.legend.globeResidence}</li>
+                    <li><span className="swatch-x">✕</span> {t.legend.globeDeath}</li>
+                    <li><span className="swatch line solid" /> {t.legend.globeLife}</li>
+                  </>
+                )}
+                <li>{t.legend.globeColor}</li>
+              </ul>
+            ) : (
+              <ul>
+                {mode === 'artwork' ? (
+                  <>
+                    <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
+                    <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
+                  </>
+                ) : (
+                  <>
+                    <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
+                    <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
+                  </>
+                )}
+                <li><span className="swatch line ex" /> {t.legend.ended}</li>
+                <li><span className="swatch line dotted" /> {t.legend.adoption}</li>
+                <li><span className="swatch line dashed" /> {t.legend.step}</li>
+                <li><span className="swatch dot" /> {t.legend.branchSize}</li>
+                <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>
+              </ul>
+            )}
             <button className="legend-credit" onClick={() => setAboutOpen(true)}>
               {t.legend.byMaker}
             </button>

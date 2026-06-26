@@ -3,7 +3,7 @@
 Korte overdracht zodat een nieuwe sessie (ook op mobiel/Termius) verder kan.
 Laatst bijgewerkt: 2026-06-24.
 
-Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation`,
+Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation|globe`,
 `?theme=light|dark`, `?lang=nl|en|zh|id`, `?focus=<id>`, `?tour=1` (opent de
 rondleiding direct), `?data=habsburg`.
 
@@ -250,6 +250,57 @@ owner/editor in `can_manage_person`), maar mag **wijzigingen voorstellen**.
 - Bestanden: `ProposalsReview.tsx`, `EditPerson.tsx` (proposalMode), `PersonPanel.tsx`
   (canPropose), `App.tsx` (banner/fetch), `mutations.ts` (submit/list/resolve),
   migraties 22+23.
+
+## Atlas-view (sessie 2026-06-26)
+Derde weergave naast **Boom | Tableau**: de **Atlas** (intern nog `mode === 'globe'`,
+topbar-knop + `?view=globe`). Draaibare **orthografische** bol (d3-geo) met
+landmassa (`world-atlas` land-110m, in de bundel) + graticule. Elke **stip** is een
+geboorteplaats (kleur = stamtak); een **schakelaar** bovenin wisselt de verhaallaag:
+- **Migratie** — grootcirkelboog van geboorteplaats ouder → geboorteplaats kind
+  (familie verspreidt zich over generaties). Stip hol = overleden.
+- **Levensreis** — het volledige geografische **levenspad** per persoon: geboorte →
+  **woonplaatsen** (chronologisch, kleine stippen) → overlijden. De sterfteplaats staat
+  als **✕** aan het eind; geboortestippen zijn hier altijd gevuld (helder startpunt).
+  Data uit `Person.residences[]` (place + `from`-jaar voor de volgorde).
+
+De actieve laag staat in de store (`globeLayer`, `setGlobeLayer`, default `migration`,
+te zetten met `?layer=migration|life`) zodat de **legenda zich per laag aanpast**
+(alleen wat op dat moment telt). Interactie: **slepen** draait, **scrollwiel** én
+**+/−-knoppen** (rechts) zoomen, **tik op een stip** selecteert de persoon (zelfde
+kaart als de boom). Auto-fit: een geklemde familie zoomt in, een intercontinentale
+toont de hele bol; bij mount een korte intro-fly-in naar het zwaartepunt (uit bij
+reduced-motion). Achterkant-stippen/✕ worden gecullt (hoekafstand); bogen worden door
+`clipAngle(90)` aan de horizon afgesneden.
+
+De **legenda** staat op desktop (≥900px) standaard open en blijft open bij het
+wisselen van weergave (sluiten via de knop); de klik-buiten-backdrop is daar uit
+zodat hij het slepen van de bol niet blokkeert. Op smal scherm: dicht, met backdrop.
+
+Bestanden: `src/layout/globeLayout.ts` (pure data-laag: punten + migratie-/
+levensbogen + centroid + spread), `src/ui/GlobeCanvas.tsx` (projectie, rotatie,
+zoom-knoppen, render), `theme.ts` (paletten kregen `globeOcean/globeLand/globeGraticule`),
+`store.ts` (`ViewMode` + `'globe'`, `GlobeLayer` + `globeLayer`/`setGlobeLayer`),
+`App.tsx` (knop + conditioneel renderen + per-laag globe-legenda + legenda-default),
+`i18n.ts` (`topbar.globe` = "Atlas", sectie `globe.*` incl. `zoomIn/zoomOut`,
+`legend.globe*` incl. `globeDeath` in nl/en/zh/id), `index.css` (`.globe-*`,
+`.swatch-x`). Deps: `d3-geo`, `topojson-client`, `world-atlas` (+ types).
+
+**Data**: leest de bestaande `birth.place`/`death.place`/`residences` mét `lat/lon`.
+De **demo-familie** kreeg intercontinentale herkomst (Bandung/Indonesië, Paramaribo/
+Suriname, Toronto/Canada) + sterfteplaatsen (Alicante, Nice, Delft) + **woonplaatsen**
+voor de levenspaden (Hendrik: Rotterdam→Amsterdam→Barcelona→Alicante; Johanna: Bandung→
+Den Haag→Delft; Willem: Utrecht→Parijs→Nice) zodat beide verhaallagen rijk zijn. De
+**Habsburg-set** heeft van zichzelf al geboorte-/sterfteplaatsen → vol Europees
+migratieweb (nog geen residenties).
+
+**Fase 2 (nog open): plaatsinvoer + geocoding.** De invoer-UI (`EditPerson`/
+`AddRelative`) heeft nog **geen plaatsveld**, dus *echte* families krijgen pas data
+op de bol als geboorte-/sterfte-/**woonplaats** invoerbaar wordt (met lat/lon, bv. via
+een geocoder of een vaste plaatsenlijst). De `places`-tabel + `birth_place_id`/
+`death_place_id` + een `residences`-tabel bestaan al; **schrijf-RPC's + UI ontbreken**.
+Belangrijk: **`_build_graph` levert `residences` nog hardcoded als `'[]'`** — voor de
+levenspaden van échte families moet die RPC de `residences`-tabel (place + start/eind)
+gaan teruggeven. Tot dan tonen woonplaatsen alleen voor de fixtures (demo).
 
 ## Rollen (samenvatting)
 - **Owner (beheerder)**: alles van editor + ledenbeheer (uitnodigen, rollen wijzigen,

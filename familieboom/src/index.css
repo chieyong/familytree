@@ -1221,6 +1221,108 @@ body {
   transition: background 0.4s ease;
 }
 
+/* Wereldbol-view */
+.globe-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.globe-viz {
+  /* Zelfde atmosfeer als de boom-views, zodat de ruimte rond de bol klopt. */
+  background: radial-gradient(120% 90% at 50% 42%, var(--viz-from) 0%, var(--viz-to) 100%);
+  cursor: grab;
+}
+
+.globe-viz:active {
+  cursor: grabbing;
+}
+
+.globe-layers {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(8px);
+}
+
+.globe-layers button {
+  border: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font: 600 0.74rem/1 var(--font-ui);
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.globe-layers button.active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.globe-layers button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.globe-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: min(280px, 80vw);
+  text-align: center;
+  color: var(--ink-dim);
+  font: 500 0.85rem/1.5 var(--font-ui);
+  pointer-events: none;
+}
+
+/* In/uit-zoomknoppen, rechts van het midden zodat ze de legenda/het familie-menu mijden. */
+.globe-zoom {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.globe-zoom button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 1.25rem/1 var(--font-ui);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.globe-zoom button:hover {
+  color: var(--accent);
+}
+
+/* ✕-markering in de legenda (sterfteplaats). */
+.swatch-x {
+  display: inline-block;
+  width: 14px;
+  text-align: center;
+  color: var(--ink-dim);
+  font-weight: 700;
+}
+
 .art-node,
 .nav-node {
   cursor: pointer;
@@ -2170,6 +2272,14 @@ body {
   z-index: 10; /* onder de legenda (11), boven het doek — vangt klikken buiten */
 }
 
+/* Op desktop is de legenda een niet-modaal paneel (standaard open, sluiten via de
+   knop). Geen klik-buiten-backdrop, anders blokkeert die het slepen van de Atlas. */
+@media (min-width: 900px) {
+  .legend-backdrop {
+    display: none;
+  }
+}
+
 .legend ul,
 .legend-read {
   position: relative;
@@ -2258,6 +2368,13 @@ body {
 .swatch.dot.hollow {
   background: transparent;
   border: 1.5px solid var(--accent);
+}
+
+.swatch.dot.small {
+  flex-basis: 6px;
+  width: 6px;
+  height: 6px;
+  margin: 0 2px;
 }
 
 @media (max-width: 600px) {

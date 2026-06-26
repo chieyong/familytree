@@ -28,6 +28,10 @@ export interface Palette {
   nodeText: string;
   /** Opacity-versterking voor lijnen op papier (donker = 1). */
   lineBoost: number;
+  /** Wereldbol: oceaan-vlak, landmassa en graticule-lijnen. */
+  globeOcean: string;
+  globeLand: string;
+  globeGraticule: string;
 }
 
 export const PALETTES: Record<ThemeName, Palette> = {
@@ -39,6 +43,9 @@ export const PALETTES: Record<ThemeName, Palette> = {
     unionEndedStroke: '#A89E8C',
     nodeText: 'rgba(11, 16, 31, 0.85)',
     lineBoost: 1,
+    globeOcean: '#101a2f',
+    globeLand: '#26344f',
+    globeGraticule: 'rgba(236, 230, 216, 0.10)',
   },
   light: {
     axis: '#3a352c',
@@ -48,6 +55,9 @@ export const PALETTES: Record<ThemeName, Palette> = {
     unionEndedStroke: '#9a917e',
     nodeText: 'rgba(250, 247, 239, 0.92)',
     lineBoost: 1.2,
+    globeOcean: '#dfe6ec',
+    globeLand: '#c2cdd6',
+    globeGraticule: 'rgba(58, 53, 44, 0.12)',
   },
 };
 
