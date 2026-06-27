@@ -925,7 +925,8 @@ body {
   top: 56px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 30;
+  /* Onder de topbar (10) en de Atlas-laagtoggle (12) zodat die klikbaar blijven. */
+  z-index: 8;
   max-width: min(92vw, 460px);
   border: 1px solid var(--surface-border);
   background: var(--surface);

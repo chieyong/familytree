@@ -27,6 +27,10 @@ export const DATASET_FAMILY_ID: Record<DatasetId, string> = {
   habsburg: '83efcaf5-dc36-5d5a-8cae-5366a940d58b',
 };
 
+/** Demo's die alleen als fixture bestaan (niet in Supabase geseed) → altijd lokaal
+ *  laden, ook met de supabase-backend, anders zien ze er leeg uit. */
+export const FIXTURES_ONLY_DATASETS: DatasetId[] = ['diaspora'];
+
 // Startpersoon per dataset; ids verschillen per datalaag (slug vs geseede uuid).
 const EGO_FIXTURES: Record<DatasetId, PersonID> = { demo: 'lisa', diaspora: 'eric', habsburg: 'Q32500' };
 const EGO_SUPABASE: Record<DatasetId, PersonID> = {

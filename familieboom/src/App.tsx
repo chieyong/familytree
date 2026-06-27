@@ -27,7 +27,7 @@ import { ShareFamily } from './ui/ShareFamily';
 import { OverflowMenu } from './ui/OverflowMenu';
 import { Leader } from './ui/Leader';
 import { Tour } from './ui/Tour';
-import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, useAppStore, type DatasetId } from './ui/store';
+import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, FIXTURES_ONLY_DATASETS, useAppStore, type DatasetId } from './ui/store';
 import { useT } from './ui/useT';
 import { lifespan, nativeSubline, shortName } from './ui/theme';
 
@@ -65,10 +65,12 @@ export default function App() {
   }, [inviteToken, user]);
 
   // Enige plek waar de concrete datalaag gekozen wordt. Een ingelogde "actieve
-  // familie" wint; anders een demo-preset (Supabase of fixtures).
+  // familie" wint; anders een demo-preset. Fixtures-only demo's (diaspora) laden
+  // altijd lokaal, ook met de supabase-backend (ze staan niet in de DB).
   const repository: FamilyRepository = useMemo(() => {
     if (activeFamily) return new SupabaseRepository(activeFamily.id);
-    return BACKEND === 'supabase'
+    const fromSupabase = BACKEND === 'supabase' && !FIXTURES_ONLY_DATASETS.includes(dataset);
+    return fromSupabase
       ? new SupabaseRepository(DATASET_FAMILY_ID[dataset])
       : new FixtureRepository(graphByDataset[dataset]);
   }, [dataset, activeFamily]);
