@@ -49,6 +49,9 @@ body,
   color: var(--ink);
   font-family: var(--font-ui);
   overscroll-behavior: none;
+  /* Vast viewport-canvas: nooit horizontaal schuiven (en geen overflow die
+     rechts-verankerde bediening buiten beeld duwt). */
+  overflow: hidden;
 }
 
 body {
@@ -1239,9 +1242,11 @@ body {
 
 .globe-layers {
   position: absolute;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
+  /* Fallback-positie (rechtsboven, onder de topbar); App meet de exacte plek onder
+     de Boom/Tableau/Atlas-toggle en zet die als inline-style. */
+  top: 56px;
+  right: 18px;
+  left: auto;
   z-index: 12;
   display: flex;
   gap: 2px;
@@ -2577,33 +2582,11 @@ body {
     max-width: calc(100vw - 28px);
   }
 
-  /* Onderbalk: Legenda (links) en de verhaallaag-toggle (midden). De familie-knop
-     verhuist naar linksboven (zie hieronder), zodat de toggle de rechterhelft vrij
-     heeft en nergens achter zit. */
-  .globe-layers {
-    top: auto;
-    bottom: calc(14px + env(safe-area-inset-bottom));
-  }
-
+  /* Verhaallaag-toggle staat onder de view-toggle (positie gemeten in App); hier
+     alleen compacter. De familie-knop blijft rechtsonder (basisregel). */
   .globe-layers button {
     padding: 6px 11px;
     font-size: 0.66rem;
-  }
-
-  /* Familie-/datasetkeuze naar linksboven (lege hoek: titel verborgen, topbar-knoppen
-     staan rechts). Dropdown opent omlaag i.p.v. omhoog. */
-  .family-menu {
-    top: calc(env(safe-area-inset-top) + 8px);
-    left: 12px;
-    right: auto;
-    bottom: auto;
-  }
-
-  .family-pop {
-    top: calc(100% + 8px);
-    bottom: auto;
-    left: 0;
-    right: auto;
   }
 
   /* Zoom-knoppen iets kleiner zodat ze niet domineren op een smal scherm. */

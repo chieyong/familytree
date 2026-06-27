@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FamilyGraph } from './data/types';
 import { FixtureRepository } from './data/FixtureRepository';
 import { SupabaseRepository } from './data/SupabaseRepository';
@@ -85,6 +85,29 @@ export default function App() {
   const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
+
+  // De Atlas-laagtoggle staat net onder de Boom/Tableau/Atlas-toggle. We meten de
+  // positie van die view-toggle (verandert bij resize/wrappen/login) en geven 'm door.
+  const modeToggleRef = useRef<HTMLElement>(null);
+  const [layerAnchor, setLayerAnchor] = useState<{ top: number; right: number }>();
+  useEffect(() => {
+    const el = modeToggleRef.current;
+    if (!el) return;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      // Aan de RECHTERrand van de view-toggle hangen (groeit naar links) zodat de
+      // toggle nooit rechts buiten beeld steekt — dat gaf horizontale overflow.
+      setLayerAnchor({ top: r.bottom + 8, right: Math.max(8, window.innerWidth - r.right) });
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    ro.observe(document.documentElement);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [mode, user, activeFamily]);
 
   // Ondertekende URL's voor de profielfoto's (privé-bucket). Eén keer per
   // graaf-versie; ze verlopen na een uur en worden bij de volgende load ververst.
@@ -190,7 +213,7 @@ export default function App() {
       <header className="topbar">
         <h1>Bloom</h1>
         <div className="topbar-right">
-          <nav className="mode-toggle" aria-label={t.topbar.viewLabel}>
+          <nav className="mode-toggle" aria-label={t.topbar.viewLabel} ref={modeToggleRef}>
             <button className={mode === 'navigation' ? 'active' : ''} onClick={() => setMode('navigation')}>
               {t.topbar.tree}
             </button>
@@ -255,6 +278,7 @@ export default function App() {
             branches={branches}
             focusId={focusId}
             theme={theme}
+            layerAnchor={layerAnchor}
             onFocus={(id) => { setFocus(id); setCardOpen(true); }}
             onDeselect={() => setCardOpen(false)}
           />

@@ -28,6 +28,8 @@ interface Props {
   branches?: Map<PersonID, number>;
   focusId: PersonID;
   theme: ThemeName;
+  /** Positie net onder de Boom/Tableau/Atlas-toggle (door App gemeten; rechts-verankerd). */
+  layerAnchor?: { top: number; right: number };
   onFocus: (id: PersonID) => void;
   onDeselect?: () => void;
 }
@@ -59,7 +61,7 @@ const lifePathLine = (path: LifePath, steps = 22): Feature<LineString> => {
  * met scrollwiel/knoppen; een tik op een stip selecteert de persoon (zelfde kaart
  * als de boom).
  */
-export function GlobeCanvas({ fullGraph, branches, focusId, theme, onFocus, onDeselect }: Props) {
+export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, onFocus, onDeselect }: Props) {
   const t = useT();
   const palette = PALETTES[theme];
   const data = useMemo(() => globeData(fullGraph, branches), [fullGraph, branches]);
@@ -302,7 +304,12 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, onFocus, onDe
   return (
     <div className="globe-wrap">
       {!empty && (hasMigration || hasLife) && (
-        <div className="globe-layers" role="group" aria-label={t.globe.layerLabel}>
+        <div
+          className="globe-layers"
+          role="group"
+          aria-label={t.globe.layerLabel}
+          style={layerAnchor ? { top: layerAnchor.top, right: layerAnchor.right, left: 'auto' } : undefined}
+        >
           <button
             className={activeLayer === 'migration' ? 'active' : ''}
             disabled={!hasMigration}
