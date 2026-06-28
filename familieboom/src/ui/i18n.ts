@@ -105,6 +105,10 @@ const nl = {
     zoomIn: 'Inzoomen',
     zoomOut: 'Uitzoomen',
     empty: 'Nog geen plaatsen bekend. Voeg geboorteplaatsen toe om de familie op de kaart te zien.',
+    people: 'Personen',
+    peopleLabel: 'Kies wiens levensreis je toont',
+    all: 'Alles',
+    none: 'Geen',
   },
   about: {
     title: 'Over deze familieboom',
@@ -457,6 +461,10 @@ const en: Messages = {
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
     empty: 'No places known yet. Add birthplaces to see the family on the map.',
+    people: 'People',
+    peopleLabel: 'Choose whose life journey to show',
+    all: 'All',
+    none: 'None',
   },
   about: {
     title: 'About this family tree',
@@ -806,6 +814,10 @@ const zh: Messages = {
     zoomIn: '放大',
     zoomOut: '缩小',
     empty: '尚无地点信息。添加出生地即可在地图上看到这个家族。',
+    people: '人物',
+    peopleLabel: '选择要显示谁的人生旅程',
+    all: '全部',
+    none: '无',
   },
   about: {
     title: '关于这棵家谱树',
@@ -1155,6 +1167,10 @@ const id: Messages = {
     zoomIn: 'Perbesar',
     zoomOut: 'Perkecil',
     empty: 'Belum ada tempat yang diketahui. Tambahkan tempat lahir untuk melihat keluarga di peta.',
+    people: 'Orang',
+    peopleLabel: 'Pilih perjalanan hidup siapa yang ditampilkan',
+    all: 'Semua',
+    none: 'Tidak ada',
   },
   about: {
     title: 'Tentang pohon keluarga ini',

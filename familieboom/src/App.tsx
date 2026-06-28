@@ -262,7 +262,7 @@ export default function App() {
 
       {user && !activeFamily && families.length > 0 && (
         <button
-          className="invite-banner"
+          className="invite-banner invite-open-tree"
           onClick={() => {
             const f = families[0];
             setActiveFamily({ id: f.id, ego: f.selfPersonId ?? '', label: f.name });

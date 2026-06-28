@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { useReducedMotion } from 'framer-motion';
-import { geoGraticule10, geoInterpolate, geoOrthographic, geoPath } from 'd3-geo';
+import { geoDistance, geoGraticule10, geoInterpolate, geoOrthographic, geoPath } from 'd3-geo';
 import type { GeoPermissibleObjects } from 'd3-geo';
 import { feature, mesh } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { Feature, FeatureCollection, LineString, MultiLineString, Position } from 'geojson';
 import worldTopo from 'world-atlas/countries-50m.json';
+import worldTopo110 from 'world-atlas/countries-110m.json';
 import type { FamilyGraph, PersonID } from '../data/types';
 import { globeData, type GlobeArc, type LifePath } from '../layout/globeLayout';
-import { branchColor, PALETTES, type ThemeName } from './theme';
+import { branchColor, PALETTES, shortName, type ThemeName } from './theme';
 import { useAppStore, type GlobeLayer } from './store';
 import { useT } from './useT';
 
@@ -22,6 +23,12 @@ const topo = worldTopo as unknown as Topology<{ land: GeometryCollection; countr
 const land = feature(topo, topo.objects.land) as unknown as FeatureCollection;
 const borders = mesh(topo, topo.objects.countries, (a, b) => a !== b) as unknown as MultiLineString;
 const graticule = geoGraticule10();
+
+/** Lichtere 110m-landmassa: tijdens het draaien/knijpen tonen we deze i.p.v. de
+ *  50m-versie, zodat het herprojecteren per frame veel minder werk is (vloeiend).
+ *  In rust schakelen we terug naar 50m voor de scherpe kustlijn. */
+const topo110 = worldTopo110 as unknown as Topology<{ land: GeometryCollection }>;
+const land110 = feature(topo110, topo110.objects.land) as unknown as FeatureCollection;
 
 interface Props {
   fullGraph: FamilyGraph;
@@ -79,6 +86,35 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
         ? 'migration'
         : 'life';
 
+  // Personen-filter (Levensreis-laag): toon alleen de gekozen levensreizen, zodat
+  // de bol niet dichtslibt met alle paden tegelijk. 'null' = iedereen (geen filter,
+  // het standaardbeeld); dit reset vanzelf netjes als de dataset wisselt. Een lege
+  // set = niemand. De checklist staat linksboven en is inklapbaar.
+  const lifePeople = useMemo(() => {
+    const byId = new Map(fullGraph.persons.map((p) => [p.id, p]));
+    return data.lifePaths
+      .map((lp) => {
+        const person = byId.get(lp.personId);
+        return { id: lp.personId, name: person ? shortName(person) : t.globe.people, branch: lp.branch };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [data.lifePaths, fullGraph.persons, t.globe.people]);
+
+  const [selected, setSelected] = useState<Set<PersonID> | null>(null);
+  const [peopleOpen, setPeopleOpen] = useState(false);
+  const isSelected = (id: PersonID) => selected === null || selected.has(id);
+  const hasFilter = activeLayer === 'life' && selected !== null;
+
+  const togglePerson = (id: PersonID) =>
+    setSelected((prev) => {
+      const full = new Set(lifePeople.map((p) => p.id));
+      const base = prev === null ? full : new Set(prev);
+      if (base.has(id)) base.delete(id);
+      else base.add(id);
+      return base.size === full.size ? null : base; // alles aangevinkt → terug naar 'iedereen'
+    });
+  const selectedCount = selected === null ? lifePeople.length : lifePeople.filter((p) => selected.has(p.id)).length;
+
   // Schermmaat opmeten (zoals FamilyCanvas).
   const svgRef = useRef<SVGSVGElement>(null);
   const [size, setSize] = useState({ cw: 1200, ch: 800 });
@@ -96,6 +132,9 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
   // Auto-fit: verre families tonen de hele bol; een geklemde familie zoomt in
   // tot de verste plaats op ~72% van het halve scherm landt. Wiel-zoom erbovenop.
   const [zoomK, setZoomK] = useState(1);
+  // Actief slepen/knijpen: tijdens beweging tekenen we de lichtere 110m-kaart
+  // (en geen landsgrenzen) zodat het herprojecteren per frame vloeiend blijft.
+  const [interacting, setInteracting] = useState(false);
   const { cw, ch } = size;
   const minHalf = Math.min(cw, ch) / 2;
   const scale = useMemo(() => {
@@ -117,26 +156,55 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
     return reducedMotion ? target : [target[0] - 65, Math.max(-60, Math.min(60, target[1] - 12))];
   });
 
-  // Intro-fly-in: éénmalig bij mount langs requestAnimationFrame (de setState zit
-  // in de frame-callback, niet synchroon in de effect-body). Uit bij reduced-motion.
+  // Vlieg de bol vanaf een schuine hoek naar een zwaartepunt toe (easeOutCubic),
+  // langs requestAnimationFrame. Bij reduced-motion zetten we 'm direct neer.
   const introRef = useRef<number>(0);
+  const animateTo = useCallback(
+    (center: [number, number]) => {
+      cancelAnimationFrame(introRef.current);
+      const target: [number, number] = [-center[0], -center[1]];
+      if (reducedMotion) {
+        setRotation(target);
+        return;
+      }
+      const start: [number, number] = [target[0] - 65, Math.max(-60, Math.min(60, target[1] - 12))];
+      const t0 = performance.now();
+      const dur = 1300;
+      const tick = (now: number) => {
+        const u = Math.min(1, (now - t0) / dur);
+        const e = 1 - Math.pow(1 - u, 3); // easeOutCubic
+        setRotation([start[0] + (target[0] - start[0]) * e, start[1] + (target[1] - start[1]) * e]);
+        if (u < 1) introRef.current = requestAnimationFrame(tick);
+      };
+      introRef.current = requestAnimationFrame(tick);
+    },
+    [reducedMotion],
+  );
+
+  // Intro-fly-in: éénmalig bij mount. animateTo neemt hier (zonder reduced-motion)
+  // het requestAnimationFrame-pad; de setState zit dus in de frame-callback.
   useEffect(() => {
-    if (reducedMotion) return;
-    const target = orient(data.center);
-    const start: [number, number] = [target[0] - 65, Math.max(-60, Math.min(60, target[1] - 12))];
-    const t0 = performance.now();
-    const dur = 1300;
-    const tick = (now: number) => {
-      const u = Math.min(1, (now - t0) / dur);
-      const e = 1 - Math.pow(1 - u, 3); // easeOutCubic
-      setRotation([start[0] + (target[0] - start[0]) * e, start[1] + (target[1] - start[1]) * e]);
-      if (u < 1) introRef.current = requestAnimationFrame(tick);
-    };
-    introRef.current = requestAnimationFrame(tick);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!reducedMotion) animateTo(data.center);
     return () => cancelAnimationFrame(introRef.current);
-    // Alleen bij mount; latere data-verversingen laten de stand van de gebruiker met rust.
+    // Alleen bij mount; de recenter hieronder vangt latere dataset-wissels.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Recenter bij een nieuwe dataset/familie. De graaf laadt async, dus de eerste
+  // mount kan nog de oude data tonen; verspringt het zwaartepunt daarna fors, dan
+  // vliegen we naar de nieuwe locatie i.p.v. op een willekeurig stuk wereld te
+  // blijven hangen. Kleine verschuivingen (bv. na een mutatie) laten de handmatige
+  // stand met rust. data.center is alleen een nieuwe referentie als de graaf wijzigt.
+  const lastCenterRef = useRef(data.center);
+  useEffect(() => {
+    if (lastCenterRef.current === data.center) return;
+    const prev = lastCenterRef.current;
+    lastCenterRef.current = data.center;
+    if (geoDistance(prev, data.center) < 0.05) return;
+    setZoomK(1); // nieuwe familie: terug naar de auto-fit-basiszoom
+    animateTo(data.center);
+  }, [data.center, animateTo]);
 
   // Wiel-zoom (niet-passief, zodat we de pagina niet laten scrollen).
   useEffect(() => {
@@ -178,30 +246,37 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
         focus: a.sourceId === focusId || a.targetId === focusId,
       }));
     }
-    return data.lifePaths.map((p) => ({
-      key: p.id,
-      feature: lifePathLine(p),
-      branch: p.branch,
-      focus: p.personId === focusId,
-    }));
-  }, [activeLayer, data.migration, data.lifePaths, focusId]);
+    return data.lifePaths
+      .filter((p) => isSelected(p.personId))
+      .map((p) => ({
+        key: p.id,
+        feature: lifePathLine(p),
+        branch: p.branch,
+        focus: p.personId === focusId,
+      }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeLayer, data.migration, data.lifePaths, focusId, selected]);
 
   // Tussenstops (woonplaatsen) en eindpunten (sterfteplaats ✕) van de levenspaden.
   const residenceStops = useMemo(
     () =>
       activeLayer === 'life'
-        ? data.lifePaths.flatMap((p) =>
-            p.stops
-              .filter((s) => s.kind === 'residence')
-              .map((s, i) => ({ key: `${p.id}-r${i}`, coord: s.coord, branch: p.branch, focus: p.personId === focusId })),
-          )
+        ? data.lifePaths
+            .filter((p) => isSelected(p.personId))
+            .flatMap((p) =>
+              p.stops
+                .filter((s) => s.kind === 'residence')
+                .map((s, i) => ({ key: `${p.id}-r${i}`, coord: s.coord, branch: p.branch, focus: p.personId === focusId })),
+            )
         : [],
-    [activeLayer, data.lifePaths, focusId],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeLayer, data.lifePaths, focusId, selected],
   );
   const deathStops = useMemo(
     () =>
       activeLayer === 'life'
         ? data.lifePaths
+            .filter((p) => isSelected(p.personId))
             .map((p) => {
               const last = p.stops[p.stops.length - 1];
               return last.kind === 'death'
@@ -210,7 +285,8 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
             })
             .filter((d): d is NonNullable<typeof d> => d !== null)
         : [],
-    [activeLayer, data.lifePaths, focusId],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeLayer, data.lifePaths, focusId, selected],
   );
 
   // Selectie: dichtstbijzijnde zichtbare stip onder de tik (drempel in pixels).
@@ -244,6 +320,7 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
   const onPointerDown = (e: ReactPointerEvent<SVGSVGElement>) => {
     cancelAnimationFrame(introRef.current);
     (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    setInteracting(true);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 1) {
       rotateRef.current = { x: e.clientX, y: e.clientY, rot: rotation };
@@ -285,6 +362,7 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
       return;
     }
     if (pointers.current.size === 0) {
+      setInteracting(false); // terug naar de scherpe 50m-kaart
       const wasRotate = rotateRef.current;
       rotateRef.current = null;
       pinchRef.current = null;
@@ -300,6 +378,22 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
 
   const sphere: GeoPermissibleObjects = { type: 'Sphere' };
   const empty = data.points.length === 0;
+
+  // Statische lagen (bol, raster, land, grenzen) maar één keer per projectie
+  // omzetten naar SVG-paden, i.p.v. bij elke render (zoals een vinkje in de
+  // personen-lijst of een focuswissel). Tijdens slepen/knijpen de lichtere
+  // 110m-landmassa en geen landsgrenzen — dat scheelt veel rekenwerk per frame.
+  const basePaths = useMemo(
+    () => ({
+      sphere: path(sphere) ?? undefined,
+      graticule: path(graticule as unknown as GeoPermissibleObjects) ?? undefined,
+      land: path(interacting ? land110 : land) ?? undefined,
+      borders: interacting ? undefined : (path(borders as unknown as GeoPermissibleObjects) ?? undefined),
+    }),
+    // 'sphere' is een constante literal; alleen de projectie (path) en interacting tellen.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [path, interacting],
+  );
 
   return (
     <div className="globe-wrap">
@@ -327,6 +421,38 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
         </div>
       )}
 
+      {!empty && activeLayer === 'life' && lifePeople.length > 1 && (
+        <div className={`globe-people${peopleOpen ? ' open' : ''}`}>
+          <button
+            className="globe-people-toggle"
+            aria-expanded={peopleOpen}
+            onClick={() => setPeopleOpen((o) => !o)}
+          >
+            <span>{t.globe.people}</span>
+            <span className="globe-people-count">{selectedCount}/{lifePeople.length}</span>
+          </button>
+          {peopleOpen && (
+            <div className="globe-people-body" role="group" aria-label={t.globe.peopleLabel}>
+              <div className="globe-people-actions">
+                <button onClick={() => setSelected(null)}>{t.globe.all}</button>
+                <button onClick={() => setSelected(new Set())}>{t.globe.none}</button>
+              </div>
+              <ul className="globe-people-list">
+                {lifePeople.map((p) => (
+                  <li key={p.id}>
+                    <label>
+                      <input type="checkbox" checked={isSelected(p.id)} onChange={() => togglePerson(p.id)} />
+                      <span className="globe-people-swatch" style={{ background: branchColor(p.branch, theme) }} />
+                      <span className="globe-people-name">{p.name}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
       <svg
         ref={svgRef}
         className="viz globe-viz"
@@ -343,10 +469,12 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
           </radialGradient>
         </defs>
 
-        <path d={path(sphere) ?? undefined} fill={palette.globeOcean} stroke="none" />
-        <path d={path(graticule as unknown as GeoPermissibleObjects) ?? undefined} fill="none" stroke={palette.globeGraticule} strokeWidth={0.5} />
-        <path d={path(land) ?? undefined} fill={palette.globeLand} stroke="none" opacity={0.92} />
-        <path d={path(borders as unknown as GeoPermissibleObjects) ?? undefined} fill="none" stroke={palette.globeOcean} strokeWidth={0.4} opacity={0.55} />
+        <path d={basePaths.sphere} fill={palette.globeOcean} stroke="none" />
+        <path d={basePaths.graticule} fill="none" stroke={palette.globeGraticule} strokeWidth={0.5} />
+        <path d={basePaths.land} fill={palette.globeLand} stroke="none" opacity={0.92} />
+        {basePaths.borders && (
+          <path d={basePaths.borders} fill="none" stroke={palette.globeOcean} strokeWidth={0.4} opacity={0.55} />
+        )}
 
         {/* Verhaallaag: lijnen (migratiebogen of levenspaden) */}
         <g style={{ pointerEvents: 'none' }}>
@@ -416,8 +544,11 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
             const isFocus = point.id === focusId;
             const r = isFocus ? 6 : 4;
             const hollow = activeLayer === 'migration' && point.deceased;
+            // In de levensreis-laag dimt een niet-gekozen persoon zodat de
+            // geselecteerde paden eruit springen; hij blijft wel aantikbaar.
+            const dimmed = hasFilter && !isSelected(point.id);
             return (
-              <g key={point.id} transform={`translate(${xy[0]}, ${xy[1]})`}>
+              <g key={point.id} transform={`translate(${xy[0]}, ${xy[1]})`} opacity={dimmed ? 0.28 : 1}>
                 {isFocus && (
                   <circle r={r + 4} fill="none" stroke={palette.focusRing} strokeWidth={1.4} opacity={0.9} />
                 )}
@@ -434,7 +565,7 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
         </g>
 
         {/* Subtiele bolschaduw bovenop */}
-        <path d={path(sphere) ?? undefined} fill="url(#globe-shade)" stroke="none" style={{ pointerEvents: 'none' }} />
+        <path d={basePaths.sphere} fill="url(#globe-shade)" stroke="none" style={{ pointerEvents: 'none' }} />
       </svg>
 
       {!empty && (
