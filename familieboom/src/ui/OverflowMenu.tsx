@@ -57,9 +57,13 @@ export function OverflowMenu({ photosAvailable }: Props) {
   const togglePhotos = useAppStore((s) => s.togglePhotos);
   const setGuideOpen = useAppStore((s) => s.setGuideOpen);
   const setAboutOpen = useAppStore((s) => s.setAboutOpen);
+  const mode = useAppStore((s) => s.mode);
   const topbarPop = useAppStore((s) => s.topbarPop);
   const setTopbarPop = useAppStore((s) => s.setTopbarPop);
   const open = topbarPop === 'more';
+  // Afdrukken alleen in de statische boom-weergaven; de draaibare Atlas leent
+  // zich niet voor papier. De print-CSS toont de héle boom (zie index.css).
+  const canPrint = mode !== 'globe';
 
   return (
     <div className="more-menu">
@@ -117,6 +121,19 @@ export function OverflowMenu({ photosAvailable }: Props) {
             {photosAvailable && (
               <button className="more-item" onClick={togglePhotos}>
                 {photos ? t.topbar.hidePhotos : t.topbar.showPhotos}
+              </button>
+            )}
+
+            {canPrint && (
+              <button
+                className="more-item"
+                onClick={() => {
+                  setTopbarPop(null);
+                  // Wacht tot het menu weg is (uit de print-uitsnede) vóór de dialoog.
+                  requestAnimationFrame(() => window.print());
+                }}
+              >
+                {t.topbar.print}
               </button>
             )}
 

@@ -37,6 +37,7 @@ const nl = {
     language: 'Taal',
     more: 'Meer',
     about: 'Over de maker',
+    print: 'Afdrukken',
   },
   viewAs: {
     title: 'Bekijk als …',
@@ -407,6 +408,7 @@ const en: Messages = {
     language: 'Language',
     more: 'More',
     about: 'About the maker',
+    print: 'Print',
   },
   viewAs: {
     title: 'View as …',
@@ -774,6 +776,7 @@ const zh: Messages = {
     language: '语言',
     more: '更多',
     about: '关于作者',
+    print: '打印',
   },
   viewAs: {
     title: '以身份查看…',
@@ -1141,6 +1144,7 @@ const id: Messages = {
     language: 'Bahasa',
     more: 'Lainnya',
     about: 'Tentang pembuat',
+    print: 'Cetak',
   },
   viewAs: {
     title: 'Lihat sebagai …',

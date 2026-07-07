@@ -2791,3 +2791,67 @@ body {
     height: 34px;
   }
 }
+
+/* ── Afdrukken (Boom/Tableau) ───────────────────────────────────────────────
+   De hele boom op papier: alle chrome weg, de tekening paginavullend, en de
+   camera-transform geneutraliseerd zodat de complete tekening past (niet de
+   toevallige zoom-uitsnede). Op wit papier forceren we donkere tekst, ook al
+   staat de app in donkere modus, zodat de labels leesbaar blijven. */
+@media print {
+  :root {
+    /* Leesbare labels op wit, onafhankelijk van de schermmodus. */
+    --ink: #2a2620;
+    --ink-dim: #6b6555;
+  }
+
+  /* Alleen de tekening; alle bediening en overlays verdwijnen. */
+  .topbar,
+  .legend,
+  .legend-backdrop,
+  .globe-controls,
+  .globe-zoom,
+  .globe-people,
+  .person-card,
+  .more-menu,
+  .more-pop,
+  .lang-backdrop,
+  .invite-banner,
+  .family-menu,
+  .leader,
+  .tour-card,
+  .tour-backdrop {
+    display: none !important;
+  }
+
+  html,
+  body,
+  #root,
+  .app {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  .stage {
+    position: static !important;
+  }
+
+  .viz {
+    width: 100% !important;
+    height: 100vh !important;
+    background: #fff !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Camera terug naar identiteit → de volledige tekening past op de pagina. */
+  .viz-content {
+    transform: none !important;
+  }
+
+  /* Bomen zijn breed: landschap past beter, met een nette marge. */
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+}

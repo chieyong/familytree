@@ -107,6 +107,21 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
   const isSelected = (id: PersonID) => selected === null || selected.has(id);
   const hasFilter = activeLayer === 'life' && selected !== null;
 
+  // Personen-checklist sluit bij een tik/klik buiten het paneel (mobiel én
+  // desktop). Pointerdown dekt touch; een tik binnen het paneel (vinkjes,
+  // Alles/Geen) laten we met rust.
+  const peopleRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!peopleOpen) return;
+    const onDown = (e: PointerEvent) => {
+      if (peopleRef.current && !peopleRef.current.contains(e.target as Node)) {
+        setPeopleOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [peopleOpen]);
+
   const togglePerson = (id: PersonID) =>
     setSelected((prev) => {
       const full = new Set(lifePeople.map((p) => p.id));
@@ -431,7 +446,7 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
           </div>
 
           {activeLayer === 'life' && lifePeople.length > 1 && (
-            <div className={`globe-people${peopleOpen ? ' open' : ''}`}>
+            <div ref={peopleRef} className={`globe-people${peopleOpen ? ' open' : ''}`}>
               <button
                 className="globe-people-toggle"
                 aria-expanded={peopleOpen}

@@ -272,7 +272,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
         </clipPath>
       </defs>
 
-      <g ref={contentRef} transform={view.toString()}>
+      <g ref={contentRef} className="viz-content" transform={view.toString()}>
         {/* Tijdas + levenslijnen: alleen in het kunstwerk */}
         <motion.g
           animate={{ opacity: isNav ? 0 : 1 }}
