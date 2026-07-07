@@ -57,12 +57,10 @@ opnieuw draaien, dat kan geen kwaad.
 | 26 | `20260704120000_privacy_leaks.sql` | security-review: `places` niet meer wereld-leesbaar/muteerbaar (anon-grant ingetrokken, update-policy weg), avatar-lezen volgt persoons-zichtbaarheid (was: elk lid, pad voorspelbaar), avatar-schrijven eist map=familie, bucket-limieten (2 MB, alleen afbeeldingen), invites: 14 dagen default-expiry + backfill, tokens alleen leesbaar voor owner/maker, editor mag alleen lezer/bijdrager-invites, display_name-terugval zonder e-maildomein + backfill. Introduceert helper `person_in_family()` | ✅ (2026-07-04) |
 | 27 | `20260704130000_write_boundaries.sql` | security-review: family_id-grens afgedwongen — `add_relative` checkt anker∈familie, `unions_write`/`plinks_write` with check eist eindpunten∈family_id, `resolve_proposal` checkt anker én gekoppelde persoon∈familie. Vereist mig 26 (`person_in_family`) | ✅ (2026-07-04) |
 | 28 | `20260704140000_privacy_consistency.sql` | security-review: privé-relaties alleen owner/betrokkene (unions/plinks-leespaden van can_manage_person → is_owner/is_self; partner ziet eigen relatie nu ook als viewer), `detail_visibility` op parent_links wordt eindelijk gemaskeerd (role→'biological' + `detailHidden`), `fully_hidden` geldt nu ook voor de owner + trigger `persons_guard` (vlag alleen door persoon zelf; family_id/created_by onveranderlijk), `copy_persons` slaat fully_hidden over, rer_update alleen aanvrager/owner. Bevat de volledige `_build_graph` incl. residences (superset van mig 25) | ✅ (2026-07-04) |
-| 29 | `20260704150000_view_as.sql` | **"Bekijk als …"** (owner-preview): basis-helpers `is_member`/`is_owner`/`role_in_family`/`is_self` worden override-bewust via transactie-lokale GUC `app.view_as` (afgeleiden `is_owner_of_person`/`can_manage_person` erven het). RPC's `get_full_graph_as`/`get_ego_graph_as` gaten op ECHTE owner (`_assert_real_owner`, langs override heen), zetten override, roepen ongewijzigd `_build_graph`. Zonder override = identiek gedrag. Verlaagt alleen rechten → geen escalatie mogelijk | ⏳ **NOG DRAAIEN** |
+| 29 | `20260704150000_view_as.sql` | **"Bekijk als …"** (owner-preview): basis-helpers `is_member`/`is_owner`/`role_in_family`/`is_self` worden override-bewust via transactie-lokale GUC `app.view_as` (afgeleiden `is_owner_of_person`/`can_manage_person` erven het). RPC's `get_full_graph_as`/`get_ego_graph_as` gaten op ECHTE owner (`_assert_real_owner`, langs override heen), zetten override, roepen ongewijzigd `_build_graph`. Zonder override = identiek gedrag. Verlaagt alleen rechten → geen escalatie mogelijk | ✅ (2026-07-04) |
 
-**Actie voor een verse sessie:** migraties t/m 28 zijn gedraaid (25–28 op 2026-07-04);
-**migratie 29 staat nog open** (draaien in de SQL-editor). Zonder 29 werkt "Bekijk
-als …" niet (RPC ontbreekt → foutmelding). De gebruiker draait migraties zelf in
-de SQL-editor.
+**Actie voor een verse sessie:** migraties t/m 29 zijn gedraaid (25–29 op 2026-07-04).
+Niets meer open.
 
 **"Bekijk als …" (2026-07-04, Opus-sessie)** — PowerBI-achtige owner-preview om de
 zojuist geharde RLS te testen. **Faithful, server-side**: de echte RLS wordt opnieuw
