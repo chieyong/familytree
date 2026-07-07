@@ -241,6 +241,63 @@ export default function App() {
     };
   }, [legendGraph, fullGraph]);
 
+  // Eén bron van waarheid voor de legenda-regels, gedeeld door het
+  // interactieve paneel (verticale lijst) en de afdrukversie (horizontale
+  // chips) — zo blijven ze vanzelf identiek en dezelfde filtering toepassen.
+  const legendItems = useMemo(() => {
+    const items: { swatch?: string; symbol?: string; label: string }[] = [];
+    if (mode === 'globe') {
+      items.push({ swatch: 'dot', label: t.legend.globeBirth });
+      if (globeLayer === 'migration') {
+        if (legendFlags.hasGlobeDeceased) items.push({ swatch: 'dot hollow', label: t.legend.globeDeceased });
+        items.push({ swatch: 'line solid', label: t.legend.globeMigration });
+      } else {
+        if (legendFlags.hasResidenceStops) items.push({ swatch: 'dot small', label: t.legend.globeResidence });
+        if (legendFlags.hasDeathStops) items.push({ symbol: '✕', label: t.legend.globeDeath });
+        items.push({ swatch: 'line solid', label: t.legend.globeLife });
+      }
+      items.push({ label: t.legend.globeColor });
+    } else {
+      if (legendFlags.hasParentChild) {
+        items.push({ swatch: 'line solid', label: mode === 'artwork' ? t.legend.artworkChild : t.legend.navParentChild });
+      }
+      if (legendFlags.hasPartnership) {
+        items.push({ swatch: 'line union', label: mode === 'artwork' ? t.legend.artworkMarriage : t.legend.navPartnership });
+      }
+      if (legendFlags.hasEnded) items.push({ swatch: 'line ex', label: t.legend.ended });
+      if (legendFlags.hasAdoption) items.push({ swatch: 'line dotted', label: t.legend.adoption });
+      if (legendFlags.hasStep) items.push({ swatch: 'line dashed', label: t.legend.step });
+      items.push({ swatch: 'dot', label: t.legend.branchSize });
+      if (legendFlags.hasDeceased) items.push({ swatch: 'dot hollow', label: t.legend.deceased });
+    }
+    return items;
+  }, [mode, globeLayer, legendFlags, t]);
+
+  // Kop + kengetallen voor de afdrukversie (Boom/Tableau): titel bij voorkeur
+  // de eigen familienaam, anders de meest voorkomende achternaam in wat er
+  // getoond wordt, anders een generieke titel (bv. Wikidata-imports zonder
+  // achternaam-veld, zoals de Habsburg-demo).
+  const printMeta = useMemo(() => {
+    if (!legendGraph) return null;
+    const persons = legendGraph.persons;
+    const gens = kinship?.generations();
+    const genValues = gens ? persons.map((p) => gens.get(p.id) ?? 0) : [];
+    const genSpan = genValues.length ? Math.max(...genValues) - Math.min(...genValues) + 1 : 1;
+    const years = persons
+      .flatMap((p) => [p.birth?.date?.year, p.death?.date?.year])
+      .filter((y): y is number => y !== undefined);
+    const yearRange = years.length ? ([Math.min(...years), Math.max(...years)] as const) : undefined;
+
+    const surnameCounts = new Map<string, number>();
+    for (const p of persons) {
+      if (p.familyName) surnameCounts.set(p.familyName, (surnameCounts.get(p.familyName) ?? 0) + 1);
+    }
+    const topSurname = [...surnameCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    const title = activeFamily?.label || (topSurname ? t.print.familyOf(topSurname) : t.print.fallbackTitle);
+
+    return { title, personCount: persons.length, genSpan, yearRange };
+  }, [legendGraph, kinship, activeFamily, t]);
+
   // Oversteken naar de gekoppelde familie: lid → meteen wisselen; geen lid →
   // toegang vragen (de owner van die boom keurt goed).
   const crossBridge = async () => {
@@ -337,6 +394,18 @@ export default function App() {
         >
           {families.length === 1 ? t.invite.openTreeNamed(families[0].name) : t.invite.openTree}
         </button>
+      )}
+
+      {/* Alleen zichtbaar bij het afdrukken (@media print) van Boom/Tableau. */}
+      {printMeta && (
+        <div className="print-header">
+          <h1>{printMeta.title}</h1>
+          <p className="print-stats">
+            {t.print.genCount(printMeta.genSpan)} · {t.print.personCount(printMeta.personCount)}
+            {printMeta.yearRange && ` · ${printMeta.yearRange[0]}–${printMeta.yearRange[1]}`}
+          </p>
+          <p className="print-intro">{t.legend.story}</p>
+        </div>
       )}
 
       <main className="stage">
@@ -481,61 +550,38 @@ export default function App() {
             {mode === 'artwork' && <p className="legend-read">{t.legend.artworkRead}</p>}
             {mode === 'globe' && <p className="legend-read">{t.legend.globeRead}</p>}
             <p className="legend-story">{t.legend.story}</p>
-            {mode === 'globe' ? (
-              <ul>
-                <li><span className="swatch dot" /> {t.legend.globeBirth}</li>
-                {globeLayer === 'migration' ? (
-                  <>
-                    {legendFlags.hasGlobeDeceased && (
-                      <li><span className="swatch dot hollow" /> {t.legend.globeDeceased}</li>
-                    )}
-                    <li><span className="swatch line solid" /> {t.legend.globeMigration}</li>
-                  </>
-                ) : (
-                  <>
-                    {legendFlags.hasResidenceStops && (
-                      <li><span className="swatch dot small" /> {t.legend.globeResidence}</li>
-                    )}
-                    {legendFlags.hasDeathStops && <li><span className="swatch-x">✕</span> {t.legend.globeDeath}</li>}
-                    <li><span className="swatch line solid" /> {t.legend.globeLife}</li>
-                  </>
-                )}
-                <li>{t.legend.globeColor}</li>
-              </ul>
-            ) : (
-              <ul>
-                {mode === 'artwork' ? (
-                  <>
-                    {legendFlags.hasParentChild && (
-                      <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
-                    )}
-                    {legendFlags.hasPartnership && (
-                      <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {legendFlags.hasParentChild && (
-                      <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
-                    )}
-                    {legendFlags.hasPartnership && (
-                      <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
-                    )}
-                  </>
-                )}
-                {legendFlags.hasEnded && <li><span className="swatch line ex" /> {t.legend.ended}</li>}
-                {legendFlags.hasAdoption && <li><span className="swatch line dotted" /> {t.legend.adoption}</li>}
-                {legendFlags.hasStep && <li><span className="swatch line dashed" /> {t.legend.step}</li>}
-                <li><span className="swatch dot" /> {t.legend.branchSize}</li>
-                {legendFlags.hasDeceased && <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>}
-              </ul>
-            )}
+            <ul>
+              {legendItems.map((item, i) => (
+                <li key={i}>
+                  {item.swatch && <span className={`swatch ${item.swatch}`} />}
+                  {item.symbol && <span className="swatch-x">{item.symbol}</span>}
+                  {' '}{item.label}
+                </li>
+              ))}
+            </ul>
             <button className="legend-credit" onClick={() => setAboutOpen(true)}>
               {t.legend.byMaker}
             </button>
           </>
         )}
       </div>
+
+      {/* Alleen zichtbaar bij het afdrukken: horizontale variant van dezelfde
+          legendItems, plus een kleine attributieregel. */}
+      {printMeta && (
+        <>
+          <div className="print-legend">
+            {legendItems.map((item, i) => (
+              <span className="print-chip" key={i}>
+                {item.swatch && <span className={`swatch ${item.swatch}`} />}
+                {item.symbol && <span className="swatch-x">{item.symbol}</span>}
+                {' '}{item.label}
+              </span>
+            ))}
+          </div>
+          <p className="print-footer">{t.print.footer}</p>
+        </>
+      )}
     </div>
   );
 }

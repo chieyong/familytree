@@ -125,6 +125,13 @@ const nl = {
     circle: 'Nabij',
     total: 'Totaal',
   },
+  print: {
+    familyOf: (name: string) => `Familie ${name}`,
+    fallbackTitle: 'Familiestamboom',
+    genCount: (n: number) => `${n} generaties`,
+    personCount: (n: number) => `${n} personen`,
+    footer: 'Gemaakt met Bloom · vizcraft.nl',
+  },
   about: {
     title: 'Over deze familieboom',
     body: [
@@ -496,6 +503,13 @@ const en: Messages = {
     circle: 'Nearby',
     total: 'All',
   },
+  print: {
+    familyOf: (name: string) => `The ${name} family`,
+    fallbackTitle: 'Family tree',
+    genCount: (n: number) => `${n} generations`,
+    personCount: (n: number) => `${n} people`,
+    footer: 'Made with Bloom · vizcraft.nl',
+  },
   about: {
     title: 'About this family tree',
     body: [
@@ -864,6 +878,13 @@ const zh: Messages = {
     circle: '附近',
     total: '全部',
   },
+  print: {
+    familyOf: (name: string) => `${name}家族`,
+    fallbackTitle: '家谱树',
+    genCount: (n: number) => `${n} 代`,
+    personCount: (n: number) => `${n} 位成员`,
+    footer: '使用 Bloom 制作 · vizcraft.nl',
+  },
   about: {
     title: '关于这棵家谱树',
     body: [
@@ -1231,6 +1252,13 @@ const id: Messages = {
     scopeLabel: 'Cakupan pohon',
     circle: 'Terdekat',
     total: 'Semua',
+  },
+  print: {
+    familyOf: (name: string) => `Keluarga ${name}`,
+    fallbackTitle: 'Pohon keluarga',
+    genCount: (n: number) => `${n} generasi`,
+    personCount: (n: number) => `${n} orang`,
+    footer: 'Dibuat dengan Bloom · vizcraft.nl',
   },
   about: {
     title: 'Tentang pohon keluarga ini',

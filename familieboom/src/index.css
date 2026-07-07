@@ -2792,19 +2792,27 @@ body {
   }
 }
 
+/* Kop, legenda-chips en voettekst van de afdrukversie — alleen zichtbaar bij
+   het printen (@media print hieronder); op scherm altijd verborgen. */
+.print-header,
+.print-legend,
+.print-footer {
+  display: none;
+}
+
 /* ── Afdrukken (Boom/Tableau) ───────────────────────────────────────────────
-   De hele boom op papier: alle chrome weg, de tekening paginavullend, en de
-   camera-transform geneutraliseerd zodat de complete tekening past (niet de
-   toevallige zoom-uitsnede). Op wit papier forceren we donkere tekst, ook al
-   staat de app in donkere modus, zodat de labels leesbaar blijven. */
+   Een infographic i.p.v. een kale plot: titel + kengetallen + leeswijzer
+   boven de tekening, de tekening zelf beeldvullend, en de legenda als
+   horizontale chips + kleine attributie eronder — alles op één pagina. Alle
+   app-chrome weg, de camera-transform geneutraliseerd zodat de complete
+   tekening past (niet de toevallige zoom-uitsnede), en op wit papier
+   forceren we donkere tekst, ook al staat de app in donkere modus. */
 @media print {
   :root {
-    /* Leesbare labels op wit, onafhankelijk van de schermmodus. */
     --ink: #2a2620;
     --ink-dim: #6b6555;
   }
 
-  /* Alleen de tekening; alle bediening en overlays verdwijnen. */
   .topbar,
   .legend,
   .legend-backdrop,
@@ -2825,28 +2833,96 @@ body {
 
   html,
   body,
-  #root,
-  .app {
-    height: auto !important;
+  #root {
+    height: 100% !important;
     overflow: visible !important;
+    background: #fff !important;
+  }
+
+  /* Vaste paginahoogte i.p.v. auto: kop en voettekst nemen hun natuurlijke
+     (kleine) hoogte, de tekening vult exact de rest — altijd één pagina,
+     ongeacht hoeveel de kop/kengetallen-tekst wrapt. */
+  .app {
+    height: 100vh !important;
+    overflow: hidden !important;
     background: #fff !important;
   }
 
   .stage {
     position: static !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
   }
 
   .viz {
     width: 100% !important;
-    height: 100vh !important;
+    height: 100% !important;
     background: #fff !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 
-  /* Camera terug naar identiteit → de volledige tekening past op de pagina. */
   .viz-content {
     transform: none !important;
+  }
+
+  .print-header {
+    display: block !important;
+    flex: 0 0 auto;
+    padding: 4mm 14mm 2mm;
+    text-align: center;
+  }
+
+  .print-header h1 {
+    margin: 0 0 2mm;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.9rem;
+    color: var(--ink);
+  }
+
+  .print-stats {
+    margin: 0 0 2mm;
+    font: 600 0.8rem var(--font-ui);
+    letter-spacing: 0.02em;
+    color: var(--ink-dim);
+  }
+
+  .print-intro {
+    margin: 0 auto;
+    max-width: 130mm;
+    font: italic 400 0.74rem/1.5 var(--font-display);
+    color: var(--ink-dim);
+  }
+
+  .print-legend {
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4mm 6mm;
+    padding: 2mm 10mm 0;
+  }
+
+  .print-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: 500 0.68rem var(--font-ui);
+    color: var(--ink-dim);
+    white-space: nowrap;
+  }
+
+  .print-footer {
+    display: block !important;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 1mm 0 3mm;
+    text-align: center;
+    font: 500 0.62rem var(--font-ui);
+    letter-spacing: 0.03em;
+    color: var(--ink-dim);
+    opacity: 0.7;
   }
 
   /* De oriëntatie wordt per weergave gezet vlak vóór het printen (Boom =
