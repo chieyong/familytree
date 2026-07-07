@@ -37,32 +37,53 @@ export function egoLayout(
   const gapFor = (count: number) => (count > 9 ? 76 : COL_WIDTH);
 
   // Ego-rij, links→rechts: oudere siblings (op geboortejaar) · ego · partner(s) ·
-  // jongere siblings · overige (aangetrouwd, neven/nichten). De ego blijft op 0
+  // jongere siblings · overige (neven/nichten e.d.). De ego blijft op 0
   // (gecentreerd); siblings staan op echte geboortejaar-volgorde.
   const egoRow = rows.get(0) ?? [];
   const egoGap = gapFor(egoRow.length);
   const birthOf = (id: PersonID): number => kinship.personById.get(id)?.birth?.date?.year ?? 0;
-  const partnerIds = [
+  const byBirth = (a: PersonID, b: PersonID) => birthOf(a) - birthOf(b);
+  const partnersOf = (id: PersonID): PersonID[] => [
     ...new Set(
       kinship
-        .unionsOf(egoId)
+        .unionsOf(id)
         .sort((a, b) => Number(a.end !== undefined) - Number(b.end !== undefined))
-        .map((u) => (u.partners[0] === egoId ? u.partners[1] : u.partners[0]))
-        .filter((id) => egoRow.includes(id)),
+        .map((u) => (u.partners[0] === id ? u.partners[1] : u.partners[0]))
+        .filter((p) => egoRow.includes(p)),
     ),
   ];
-  const isPartner = (id: PersonID) => partnerIds.includes(id);
+  const partnerIds = partnersOf(egoId);
   const siblings = egoRow.filter(
-    (id) => id !== egoId && !isPartner(id) && kinship.siblingKind(egoId, id) !== null,
+    (id) => id !== egoId && !partnerIds.includes(id) && kinship.siblingKind(egoId, id) !== null,
   );
-  const others = egoRow.filter(
-    (id) => id !== egoId && !isPartner(id) && kinship.siblingKind(egoId, id) === null,
-  );
-  const byBirth = (a: PersonID, b: PersonID) => birthOf(a) - birthOf(b);
   const olderSibs = siblings.filter((id) => birthOf(id) <= birthOf(egoId)).sort(byBirth);
   const youngerSibs = siblings.filter((id) => birthOf(id) > birthOf(egoId)).sort(byBirth);
-  others.sort(byBirth);
-  const seq = [...olderSibs, egoId, ...partnerIds, ...youngerSibs, ...others];
+  // Aangetrouwden staan direct naast hun partner, niet achteraan de rij: elke
+  // sibling (en daarna elke overige rijgenoot) vormt een eenheid met zijn/haar
+  // nog niet geplaatste partners.
+  const placed = new Set<PersonID>([egoId, ...partnerIds, ...siblings]);
+  const withPartners = (id: PersonID): PersonID[] => {
+    const unit = [id];
+    for (const p of partnersOf(id)) {
+      if (!placed.has(p)) {
+        placed.add(p);
+        unit.push(p);
+      }
+    }
+    return unit;
+  };
+  const seq = [
+    ...olderSibs.flatMap(withPartners),
+    egoId,
+    ...partnerIds,
+    ...youngerSibs.flatMap(withPartners),
+  ];
+  for (const id of [...egoRow].sort(byBirth)) {
+    if (!placed.has(id)) {
+      placed.add(id);
+      seq.push(...withPartners(id));
+    }
+  }
   const egoIndex = seq.indexOf(egoId);
   seq.forEach((id, i) => x.set(id, (i - egoIndex) * egoGap));
 

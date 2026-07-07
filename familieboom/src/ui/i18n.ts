@@ -122,7 +122,7 @@ const nl = {
   tree: {
     scopeLabel: 'Boombereik',
     circle: 'Kring',
-    gens: (n: number) => `${n} generaties`,
+    total: 'Totaal',
   },
   about: {
     title: 'Over deze familieboom',
@@ -492,7 +492,7 @@ const en: Messages = {
   tree: {
     scopeLabel: 'Tree scope',
     circle: 'Circle',
-    gens: (n: number) => `${n} generations`,
+    total: 'All',
   },
   about: {
     title: 'About this family tree',
@@ -859,7 +859,7 @@ const zh: Messages = {
   tree: {
     scopeLabel: '树的范围',
     circle: '亲友圈',
-    gens: (n: number) => `${n} 代`,
+    total: '全部',
   },
   about: {
     title: '关于这棵家谱树',
@@ -1226,7 +1226,7 @@ const id: Messages = {
   tree: {
     scopeLabel: 'Cakupan pohon',
     circle: 'Lingkaran',
-    gens: (n: number) => `${n} generasi`,
+    total: 'Semua',
   },
   about: {
     title: 'Tentang pohon keluarga ini',
