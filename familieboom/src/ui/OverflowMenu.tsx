@@ -65,6 +65,25 @@ export function OverflowMenu({ photosAvailable }: Props) {
   // zich niet voor papier. De print-CSS toont de héle boom (zie index.css).
   const canPrint = mode !== 'globe';
 
+  // Oriëntatie hangt van de weergave af (Boom liggend, het brede diagram;
+  // Tableau staand, de verticale tijdas). CSS kan @page niet op de weergave
+  // conditioneren, dus injecteren we die vlak vóór het printen en ruimen 'm
+  // daarna weer op.
+  const print = () => {
+    setTopbarPop(null);
+    const orientation = mode === 'artwork' ? 'portrait' : 'landscape';
+    const style = document.createElement('style');
+    style.textContent = `@page { size: ${orientation}; margin: 10mm; }`;
+    document.head.appendChild(style);
+    const cleanup = () => {
+      style.remove();
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    // Wacht tot het menu uit de print-uitsnede is vóór de dialoog opent.
+    requestAnimationFrame(() => window.print());
+  };
+
   return (
     <div className="more-menu">
       <button
@@ -125,14 +144,7 @@ export function OverflowMenu({ photosAvailable }: Props) {
             )}
 
             {canPrint && (
-              <button
-                className="more-item"
-                onClick={() => {
-                  setTopbarPop(null);
-                  // Wacht tot het menu weg is (uit de print-uitsnede) vóór de dialoog.
-                  requestAnimationFrame(() => window.print());
-                }}
-              >
+              <button className="more-item" onClick={print}>
                 {t.topbar.print}
               </button>
             )}

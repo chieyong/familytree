@@ -2849,9 +2849,10 @@ body {
     transform: none !important;
   }
 
-  /* Bomen zijn breed: landschap past beter, met een nette marge. */
+  /* De oriëntatie wordt per weergave gezet vlak vóór het printen (Boom =
+     liggend, Tableau = staand); zie OverflowMenu. Hier alleen de marge, ook
+     als fallback voor een browser-eigen Ctrl/Cmd+P. */
   @page {
-    size: landscape;
     margin: 10mm;
   }
 }
