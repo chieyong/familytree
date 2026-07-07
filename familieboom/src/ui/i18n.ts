@@ -122,7 +122,7 @@ const nl = {
   },
   tree: {
     scopeLabel: 'Boombereik',
-    circle: 'Kring',
+    circle: 'Nabij',
     total: 'Totaal',
   },
   about: {
@@ -493,7 +493,7 @@ const en: Messages = {
   },
   tree: {
     scopeLabel: 'Tree scope',
-    circle: 'Circle',
+    circle: 'Nearby',
     total: 'All',
   },
   about: {
@@ -861,7 +861,7 @@ const zh: Messages = {
   },
   tree: {
     scopeLabel: '树的范围',
-    circle: '亲友圈',
+    circle: '附近',
     total: '全部',
   },
   about: {
@@ -1229,7 +1229,7 @@ const id: Messages = {
   },
   tree: {
     scopeLabel: 'Cakupan pohon',
-    circle: 'Lingkaran',
+    circle: 'Terdekat',
     total: 'Semua',
   },
   about: {
