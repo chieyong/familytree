@@ -2889,10 +2889,12 @@ body {
     color: var(--ink-dim);
   }
 
+  /* Korte, gevoelsmatige regel i.p.v. de droge ontwerp-toelichting van het
+     scherm-legenda — dit hangt straks aan een muur, geen technisch label. */
   .print-intro {
-    margin: 0 auto;
-    max-width: 130mm;
-    font: italic 400 0.74rem/1.5 var(--font-display);
+    margin: 3mm auto 0;
+    max-width: 140mm;
+    font: italic 400 0.8rem/1.6 var(--font-display);
     color: var(--ink-dim);
   }
 

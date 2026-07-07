@@ -430,7 +430,7 @@ export default function App() {
             {t.print.genCount(printMeta.genSpan)} · {t.print.personCount(printMeta.personCount)}
             {printMeta.yearRange && ` · ${printMeta.yearRange[0]}–${printMeta.yearRange[1]}`}
           </p>
-          <p className="print-intro">{t.legend.story}</p>
+          <p className="print-intro">{t.print.intro}</p>
         </div>
       )}
 

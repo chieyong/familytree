@@ -130,6 +130,8 @@ const nl = {
     fallbackTitle: 'Familiestamboom',
     genCount: (n: number) => `${n} generaties`,
     personCount: (n: number) => `${n} personen`,
+    intro:
+      'Dit zegt niet wie je bent — wel waar je vandaan komt. De namen en gezichten die je meedroeg, lang voordat je ze kende.',
     footer: 'Gemaakt met Bloom · vizcraft.nl',
   },
   about: {
@@ -508,6 +510,8 @@ const en: Messages = {
     fallbackTitle: 'Family tree',
     genCount: (n: number) => `${n} generations`,
     personCount: (n: number) => `${n} people`,
+    intro:
+      "This won't tell you who you are — but it will show you where you come from. The names and faces you carried with you, long before you knew them.",
     footer: 'Made with Bloom · vizcraft.nl',
   },
   about: {
@@ -883,6 +887,7 @@ const zh: Messages = {
     fallbackTitle: '家谱树',
     genCount: (n: number) => `${n} 代`,
     personCount: (n: number) => `${n} 位成员`,
+    intro: '这说明不了你是谁,却道出你从何而来。那些名字与面孔,早在你认识他们之前,就已与你血脉相连。',
     footer: '使用 Bloom 制作 · vizcraft.nl',
   },
   about: {
@@ -1258,6 +1263,8 @@ const id: Messages = {
     fallbackTitle: 'Pohon keluarga',
     genCount: (n: number) => `${n} generasi`,
     personCount: (n: number) => `${n} orang`,
+    intro:
+      'Ini tidak menunjukkan siapa dirimu — tapi menunjukkan dari mana asalmu. Nama dan wajah yang kau bawa, jauh sebelum kau mengenalnya.',
     footer: 'Dibuat dengan Bloom · vizcraft.nl',
   },
   about: {
