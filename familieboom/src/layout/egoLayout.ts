@@ -103,26 +103,36 @@ export function egoLayout(
 
       // Anker per koppel: bij voorkeur de ouders (siblings staan zo onder hun
       // ouders, op geboortejaar), anders de kinderen (ouders staan boven hun
-      // kinderen — ook als maar één partner aan de kinderen gekoppeld is), anders tak.
+      // kinderen — ook als maar één partner aan de kinderen gekoppeld is).
       const units = [...groups.values()].map((gm) => {
         gm.sort((a, b) => birthOf(a) - birthOf(b));
         const parentXs = gm.flatMap(placedParents);
         const childXs = gm.flatMap(placedChildren);
-        const anchor = parentXs.length
+        const anchor: number | null = parentXs.length
           ? avg(parentXs)
           : childXs.length
             ? avg(childXs)
-            : (branches.get(gm[0]) ?? 0) * COL_WIDTH * 2;
-        return { gm, anchor, birth: birthOf(gm[0]) };
+            : null;
+        return { gm, anchor, branch: branches.get(gm[0]) ?? 0, birth: birthOf(gm[0]) };
       });
-      units.sort((a, b) => a.anchor - b.anchor || a.birth - b.birth);
+      // Eenheden zonder anker (bv. ooms/tantes van wie de ouders buiten het
+      // generatie-venster vallen) compact NA de verankerde eenheden zetten.
+      // Een tak-index-anker zette ze op een willekeurige, soms zeer verre plek.
+      const loose = units
+        .filter((u) => u.anchor === null)
+        .sort((a, b) => a.branch - b.branch || a.birth - b.birth);
+      const edge = Math.max(0, ...units.filter((u) => u.anchor !== null).map((u) => u.anchor!));
+      loose.forEach((u, i) => {
+        u.anchor = edge + gapFor(members.length) * (i + 1);
+      });
+      units.sort((a, b) => a.anchor! - b.anchor! || a.birth - b.birth);
 
       const seq: PersonID[] = [];
       const desired = new Map<PersonID, number>();
       for (const u of units) {
         for (const m of u.gm) {
           seq.push(m);
-          desired.set(m, u.anchor);
+          desired.set(m, u.anchor!);
         }
       }
       spaceOut(seq, desired, gapFor(seq.length)).forEach((finalX, i) => x.set(seq[i], finalX));

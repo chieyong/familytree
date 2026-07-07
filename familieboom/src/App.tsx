@@ -205,37 +205,57 @@ export default function App() {
     [kinship, ikId, focusId],
   );
 
-  // Hoeveel generatierijen er rond de focuspersoon bestaan (boven óf onder).
-  // Bepaalt welke uitgeklapte standen zinvol zijn: 5 en 7 verschijnen alleen
-  // als de familie zo diep gaat; de gekozen stand valt terug op de diepste die
-  // bestaat (afgeleid, geen extra state — zelfde patroon als de Atlas-lagen).
-  const genSpan = useMemo(() => {
-    if (!fullGraph || !kinship) return 1;
+  // Hoeveel generatierijen er boven en onder de focuspersoon bestaan. Bepaalt
+  // welke uitgeklapte standen zinvol zijn én hoe het venster verdeeld wordt.
+  const genReach = useMemo(() => {
+    if (!fullGraph || !kinship) return { up: 0, down: 0 };
     const gens = kinship.generations();
     const egoGen = gens.get(focusId) ?? 0;
-    let span = 1;
+    let up = 0;
+    let down = 0;
     for (const p of fullGraph.persons) {
-      span = Math.max(span, Math.abs((gens.get(p.id) ?? 0) - egoGen));
+      const rel = (gens.get(p.id) ?? 0) - egoGen;
+      if (rel < 0) up = Math.max(up, -rel);
+      else down = Math.max(down, rel);
     }
-    return span;
+    return { up, down };
   }, [fullGraph, kinship, focusId]);
-  const scopeOptions = ([3, 5, 7] as const).filter((n) => (n - 1) / 2 <= Math.max(genSpan, 1));
-  const activeScope =
-    treeScope === 'circle' ? 'circle' : (Math.min(treeScope, scopeOptions[scopeOptions.length - 1]) as 3 | 5 | 7);
 
-  // "N generaties" (3/5/7): de volledige familie beperkt tot de generatierij
-  // van de focuspersoon plus (N-1)/2 rijen erboven en eronder — helemaal
-  // uitgeklapt, dus óók ooms/tantes, neven/nichten en aangetrouwden in die
-  // rijen. Afgeleid uit de al geladen volledige graaf; de BFS-ego-graaf
-  // blijft de "Kring"-stand.
+  // Opties tonen wat er ÉCHT te zien valt: staat de focus onderin een familie
+  // van 4 rijen, dan zijn de standen "3" en "4" (niet 5/7 met lege rijen). Een
+  // optie verschijnt alleen als hij meer rijen toont dan de vorige; het label
+  // is het werkelijke aantal rijen (afgeleid, geen extra state).
+  const totalRows = genReach.up + genReach.down + 1;
+  const scopeOptions = ([3, 5, 7] as const)
+    .map((n) => ({ n, rows: Math.min(n, totalRows) }))
+    .filter((o, i, arr) => o.rows > (i === 0 ? 1 : arr[i - 1].rows));
+  const maxScope = scopeOptions[scopeOptions.length - 1]?.n;
+  const activeScope =
+    treeScope === 'circle' || maxScope === undefined
+      ? 'circle'
+      : (Math.min(treeScope, maxScope) as 3 | 5 | 7);
+
+  // "N generaties": de volledige familie beperkt tot een venster van N rijen
+  // rond de focuspersoon — helemaal uitgeklapt, dus óók ooms/tantes,
+  // neven/nichten en aangetrouwden. Het venster is asymmetrisch: rijen die aan
+  // de ene kant niet bestaan (focus onderin → niets eronder) schuiven door
+  // naar de andere kant, zodat "3 generaties" bij een jongste telg gewoon
+  // ouders + grootouders toont. Afgeleid uit de al geladen volledige graaf;
+  // de BFS-ego-graaf blijft de "Kring"-stand.
   const genGraph = useMemo(() => {
     if (!fullGraph || !kinship || activeScope === 'circle') return undefined;
-    const radius = (activeScope - 1) / 2;
+    const half = (activeScope - 1) / 2;
+    const { up, down } = genReach;
+    const upTake = Math.min(up, half + Math.max(0, half - down));
+    const downTake = Math.min(down, half + Math.max(0, half - up));
     const gens = kinship.generations();
     const egoGen = gens.get(focusId) ?? 0;
     const keep = new Set(
       fullGraph.persons
-        .filter((p) => Math.abs((gens.get(p.id) ?? 0) - egoGen) <= radius)
+        .filter((p) => {
+          const rel = (gens.get(p.id) ?? 0) - egoGen;
+          return rel >= -upTake && rel <= downTake;
+        })
         .map((p) => p.id),
     );
     return {
@@ -243,7 +263,7 @@ export default function App() {
       unions: fullGraph.unions.filter((u) => keep.has(u.partners[0]) && keep.has(u.partners[1])),
       parentLinks: fullGraph.parentLinks.filter((l) => keep.has(l.parent) && keep.has(l.child)),
     };
-  }, [fullGraph, kinship, activeScope, focusId]);
+  }, [fullGraph, kinship, activeScope, genReach, focusId]);
 
   // Oversteken naar de gekoppelde familie: lid → meteen wisselen; geen lid →
   // toegang vragen (de owner van die boom keurt goed).
@@ -383,15 +403,15 @@ export default function App() {
             <button className={activeScope === 'circle' ? 'active' : ''} onClick={() => setTreeScope('circle')}>
               {t.tree.circle}
             </button>
-            {scopeOptions.map((n) => (
+            {scopeOptions.map(({ n, rows }) => (
               <button
                 key={n}
                 className={activeScope === n ? 'active' : ''}
-                aria-label={t.tree.gens(n)}
-                title={t.tree.gens(n)}
+                aria-label={t.tree.gens(rows)}
+                title={t.tree.gens(rows)}
                 onClick={() => setTreeScope(n)}
               >
-                {n}
+                {rows}
               </button>
             ))}
           </div>
