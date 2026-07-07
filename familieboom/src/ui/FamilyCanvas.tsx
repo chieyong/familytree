@@ -106,6 +106,31 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
 
   const isNav = mode === 'navigation' && nav !== undefined;
 
+  // Print: detecteren via matchMedia (dekt zowel de eigen Afdrukken-knop als
+  // een systeemsneltoets als Cmd/Ctrl+P). De Boom centreert normaal op de
+  // focuspersoon (rustige navigatie bij het klikken); op papier centreren we
+  // in plaats daarvan de hele getoonde boom, ongeacht wie centraal staat —
+  // anders kan de tekening scheef of half buiten beeld vallen. Het Tableau
+  // heeft dit niet nodig: die layout is al op de hele familie gecentreerd.
+  const [isPrinting, setIsPrinting] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('print');
+    const onChange = (e: MediaQueryList | MediaQueryListEvent) => setIsPrinting(e.matches);
+    onChange(mq);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  const printViewBox = useMemo(() => {
+    if (!isPrinting || !isNav || !nav || nav.nodes.size === 0) return null;
+    const nodes = [...nav.nodes.values()];
+    const pad = 70; // ruimte voor naamlabels rond de buitenste nodes
+    const left = Math.min(...nodes.map((n) => n.x - n.r)) - pad;
+    const right = Math.max(...nodes.map((n) => n.x + n.r)) + pad;
+    const top = Math.min(...nodes.map((n) => n.y - n.r)) - pad;
+    const bottom = Math.max(...nodes.map((n) => n.y + n.r)) + pad * 1.6; // extra onder voor naam + jaartallen
+    return `${left} ${top} ${right - left} ${bottom - top}`;
+  }, [isPrinting, isNav, nav]);
+
   // Camera: pan/zoom in beide modi.
   const behaviorRef = useRef<ZoomBehavior<SVGSVGElement, unknown>>(null);
   const [view, setView] = useState<ZoomTransform>(zoomIdentity);
@@ -255,7 +280,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
     <svg
       ref={svgRef}
       className="viz"
-      viewBox={`${minX} ${minY} ${width} ${height}`}
+      viewBox={printViewBox ?? `${minX} ${minY} ${width} ${height}`}
       onClick={handleCanvasClick}
     >
       <defs>
