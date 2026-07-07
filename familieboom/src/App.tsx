@@ -20,7 +20,7 @@ import { AboutCard } from './ui/AboutCard';
 import { ProposalsReview } from './ui/ProposalsReview';
 import { listPendingProposals, type Proposal } from './data/mutations';
 import { AuthBar } from './ui/AuthBar';
-import { FamilyCanvas } from './ui/FamilyCanvas';
+import { FamilyCanvas, type FamilyCanvasHandle } from './ui/FamilyCanvas';
 import { GlobeCanvas } from './ui/GlobeCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
 import { ShareFamily } from './ui/ShareFamily';
@@ -88,6 +88,32 @@ export default function App() {
   const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
+
+  // Afdrukken (Boom/Tableau; niet Atlas — een draaibare wereldbol leent zich
+  // niet voor papier). Oriëntatie hangt van de weergave af (Boom liggend, het
+  // brede diagram; Tableau staand, de verticale tijdas); CSS kan @page niet
+  // op de weergave conditioneren, dus injecteren we die vlak vóór het
+  // printen. De Boom-camera moet bij het printen de hele boom centreren i.p.v.
+  // de focuspersoon — dat gebeurt via de ref synchroon, vlak vóór
+  // window.print(): een via state getriggerde re-render zou de blokkerende
+  // window.print()-aanroep niet altijd op tijd halen.
+  const familyCanvasRef = useRef<FamilyCanvasHandle>(null);
+  const canPrint = mode !== 'globe';
+  const handlePrint = () => {
+    const restoreViewBox = familyCanvasRef.current?.preparePrint() ?? null;
+    const orientation = mode === 'artwork' ? 'portrait' : 'landscape';
+    const style = document.createElement('style');
+    style.textContent = `@page { size: ${orientation}; margin: 10mm; }`;
+    document.head.appendChild(style);
+    const cleanup = () => {
+      style.remove();
+      restoreViewBox?.();
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    // Wacht tot het instellingenmenu uit de print-uitsnede is vóór de dialoog opent.
+    requestAnimationFrame(() => window.print());
+  };
 
   // De Atlas-laagtoggle staat net onder de Boom/Tableau/Atlas-toggle. We meten de
   // positie van die view-toggle (verandert bij resize/wrappen/login) en geven 'm door.
@@ -338,7 +364,7 @@ export default function App() {
             </button>
           </nav>
           <ViewAsControl isOwner={isOwner} focusName={focusPerson ? shortName(focusPerson) : undefined} />
-          <OverflowMenu photosAvailable={photoByPerson.size > 0} />
+          <OverflowMenu photosAvailable={photoByPerson.size > 0} onPrint={canPrint ? handlePrint : undefined} />
           <AuthBar />
           <ShareFamily />
           <HelpGuide />
@@ -423,6 +449,7 @@ export default function App() {
         )}
         {fullGraph && mode !== 'globe' && (
           <FamilyCanvas
+            ref={familyCanvasRef}
             key={dataset}
             mode={mode}
             fullGraph={fullGraph}

@@ -5,6 +5,9 @@ import { useT } from './useT';
 interface Props {
   /** Toont de foto-schakelaar alleen als er foto's in de boom zijn. */
   photosAvailable: boolean;
+  /** Start het printpad (App regelt oriëntatie + Boom-centrering); ontbreekt
+   *  in de Atlas, waar afdrukken niet aangeboden wordt. */
+  onPrint?: () => void;
 }
 
 function MoreIcon() {
@@ -47,7 +50,7 @@ function MoonIcon() {
  * open-state staat in de store (topbarPop): zo staat er maar één topbar-menu
  * tegelijk open en wijkt de zwevende bereik-/laagtoggle zolang dit menu toont.
  */
-export function OverflowMenu({ photosAvailable }: Props) {
+export function OverflowMenu({ photosAvailable, onPrint }: Props) {
   const t = useT();
   const lang = useAppStore((s) => s.lang);
   const setLang = useAppStore((s) => s.setLang);
@@ -57,32 +60,9 @@ export function OverflowMenu({ photosAvailable }: Props) {
   const togglePhotos = useAppStore((s) => s.togglePhotos);
   const setGuideOpen = useAppStore((s) => s.setGuideOpen);
   const setAboutOpen = useAppStore((s) => s.setAboutOpen);
-  const mode = useAppStore((s) => s.mode);
   const topbarPop = useAppStore((s) => s.topbarPop);
   const setTopbarPop = useAppStore((s) => s.setTopbarPop);
   const open = topbarPop === 'more';
-  // Afdrukken alleen in de statische boom-weergaven; de draaibare Atlas leent
-  // zich niet voor papier. De print-CSS toont de héle boom (zie index.css).
-  const canPrint = mode !== 'globe';
-
-  // Oriëntatie hangt van de weergave af (Boom liggend, het brede diagram;
-  // Tableau staand, de verticale tijdas). CSS kan @page niet op de weergave
-  // conditioneren, dus injecteren we die vlak vóór het printen en ruimen 'm
-  // daarna weer op.
-  const print = () => {
-    setTopbarPop(null);
-    const orientation = mode === 'artwork' ? 'portrait' : 'landscape';
-    const style = document.createElement('style');
-    style.textContent = `@page { size: ${orientation}; margin: 10mm; }`;
-    document.head.appendChild(style);
-    const cleanup = () => {
-      style.remove();
-      window.removeEventListener('afterprint', cleanup);
-    };
-    window.addEventListener('afterprint', cleanup);
-    // Wacht tot het menu uit de print-uitsnede is vóór de dialoog opent.
-    requestAnimationFrame(() => window.print());
-  };
 
   return (
     <div className="more-menu">
@@ -143,8 +123,14 @@ export function OverflowMenu({ photosAvailable }: Props) {
               </button>
             )}
 
-            {canPrint && (
-              <button className="more-item" onClick={print}>
+            {onPrint && (
+              <button
+                className="more-item"
+                onClick={() => {
+                  setTopbarPop(null);
+                  onPrint();
+                }}
+              >
                 {t.topbar.print}
               </button>
             )}

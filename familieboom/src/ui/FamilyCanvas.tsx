@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { pointer, select } from 'd3-selection';
 import 'd3-transition';
@@ -47,13 +47,26 @@ const isDeceasedStyle = (person: Person): boolean => {
   return birthYear === undefined || birthYear + 100 < CURRENT_YEAR;
 };
 
+/** Imperatieve API voor het printpad — zie de toelichting bij preparePrint. */
+export interface FamilyCanvasHandle {
+  /**
+   * Zet de viewBox synchroon op de krappe omvang van de getoonde Boom-
+   * personen (i.p.v. de focus-symmetrische bounds), vlak vóór window.print().
+   * Geeft een restore-functie terug (of null als er niets te doen was/is).
+   */
+  preparePrint: () => (() => void) | null;
+}
+
 /**
  * Eén canvas voor beide weergaven. Kunstwerk en navigatie zijn twee layouts
  * op dezelfde personen en relaties; bij het omschakelen reizen de gedeelde
  * nodes en lijnen (springs) naar hun nieuwe plek, terwijl view-exclusieve
  * elementen (levenslijnen, tijdas, de rest van de familie) in- of uitfaden.
  */
-export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, fitAll, onFocus, onDeselect }: Props) {
+export const FamilyCanvas = forwardRef<FamilyCanvasHandle, Props>(function FamilyCanvas(
+  { mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, fitAll, onFocus, onDeselect },
+  ref,
+) {
   const art = useMemo(() => flowLayout(fullGraph), [fullGraph]);
   const [minX, minY, width, height] = art.bounds;
 
@@ -106,30 +119,32 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
 
   const isNav = mode === 'navigation' && nav !== undefined;
 
-  // Print: detecteren via matchMedia (dekt zowel de eigen Afdrukken-knop als
-  // een systeemsneltoets als Cmd/Ctrl+P). De Boom centreert normaal op de
-  // focuspersoon (rustige navigatie bij het klikken); op papier centreren we
-  // in plaats daarvan de hele getoonde boom, ongeacht wie centraal staat —
-  // anders kan de tekening scheef of half buiten beeld vallen. Het Tableau
-  // heeft dit niet nodig: die layout is al op de hele familie gecentreerd.
-  const [isPrinting, setIsPrinting] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia('print');
-    const onChange = (e: MediaQueryList | MediaQueryListEvent) => setIsPrinting(e.matches);
-    onChange(mq);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
-  const printViewBox = useMemo(() => {
-    if (!isPrinting || !isNav || !nav || nav.nodes.size === 0) return null;
-    const nodes = [...nav.nodes.values()];
-    const pad = 70; // ruimte voor naamlabels rond de buitenste nodes
-    const left = Math.min(...nodes.map((n) => n.x - n.r)) - pad;
-    const right = Math.max(...nodes.map((n) => n.x + n.r)) + pad;
-    const top = Math.min(...nodes.map((n) => n.y - n.r)) - pad;
-    const bottom = Math.max(...nodes.map((n) => n.y + n.r)) + pad * 1.6; // extra onder voor naam + jaartallen
-    return `${left} ${top} ${right - left} ${bottom - top}`;
-  }, [isPrinting, isNav, nav]);
+  // Print: de Boom centreert op scherm bewust altijd de focuspersoon (rustige
+  // navigatie bij het klikken); op papier moet in plaats daarvan de hele
+  // getoonde boom gecentreerd staan, ongeacht wie centraal staat. Dit MOET
+  // synchroon/imperatief (via de ref hieronder, aangeroepen vlak vóór
+  // window.print()) i.p.v. via React-state+matchMedia: window.print() is een
+  // blokkerende aanroep en kan de pagina al vastleggen vóórdat een via state
+  // getriggerde re-render de nieuwe viewBox in de DOM heeft gezet — dat gaf
+  // in de praktijk nog steeds een scheve afdruk. Het Tableau heeft dit niet
+  // nodig: die layout is al op de hele familie gecentreerd.
+  useImperativeHandle(ref, () => ({
+    preparePrint: () => {
+      const svg = svgRef.current;
+      if (!svg || !isNav || !nav || nav.nodes.size === 0) return null;
+      const nodes = [...nav.nodes.values()];
+      const pad = 70; // ruimte voor naamlabels rond de buitenste nodes
+      const left = Math.min(...nodes.map((n) => n.x - n.r)) - pad;
+      const right = Math.max(...nodes.map((n) => n.x + n.r)) + pad;
+      const top = Math.min(...nodes.map((n) => n.y - n.r)) - pad;
+      const bottom = Math.max(...nodes.map((n) => n.y + n.r)) + pad * 1.6; // extra onder voor naam + jaartallen
+      const original = svg.getAttribute('viewBox');
+      svg.setAttribute('viewBox', `${left} ${top} ${right - left} ${bottom - top}`);
+      return () => {
+        if (original !== null) svg.setAttribute('viewBox', original);
+      };
+    },
+  }), [isNav, nav]);
 
   // Camera: pan/zoom in beide modi.
   const behaviorRef = useRef<ZoomBehavior<SVGSVGElement, unknown>>(null);
@@ -280,7 +295,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
     <svg
       ref={svgRef}
       className="viz"
-      viewBox={printViewBox ?? `${minX} ${minY} ${width} ${height}`}
+      viewBox={`${minX} ${minY} ${width} ${height}`}
       onClick={handleCanvasClick}
     >
       <defs>
@@ -567,4 +582,4 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
       </g>
     </svg>
   );
-}
+});
