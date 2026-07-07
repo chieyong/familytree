@@ -74,6 +74,8 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
   const data = useMemo(() => globeData(fullGraph, branches), [fullGraph, branches]);
   const layer = useAppStore((s) => s.globeLayer);
   const setLayer = useAppStore((s) => s.setGlobeLayer);
+  // De bedieningskolom wijkt zolang een topbar-menu open is (valt eroverheen).
+  const topbarPop = useAppStore((s) => s.topbarPop);
 
   // Welke verhaallagen er überhaupt iets te tonen hebben. De gekozen laag valt
   // terug op de gevulde laag als hij zelf leeg is (afgeleid, geen extra state).
@@ -403,57 +405,60 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
 
   return (
     <div className="globe-wrap">
-      {!empty && (hasMigration || hasLife) && (
+      {/* Bedieningskolom rechtsboven: verhaallaag-toggle met daaronder de
+          personen-checklist. Eén kolom onder de view-toggle, zodat er niets
+          met de topbar botst (mobiel) en de bediening op één plek zit. */}
+      {!empty && !topbarPop && (hasMigration || hasLife) && (
         <div
-          className="globe-layers"
-          role="group"
-          aria-label={t.globe.layerLabel}
-          style={layerAnchor ? { top: layerAnchor.top, right: layerAnchor.right, left: 'auto' } : undefined}
+          className="globe-controls"
+          style={layerAnchor ? { top: layerAnchor.top, right: layerAnchor.right } : undefined}
         >
-          <button
-            className={activeLayer === 'migration' ? 'active' : ''}
-            disabled={!hasMigration}
-            onClick={() => setLayer('migration')}
-          >
-            {t.globe.migration}
-          </button>
-          <button
-            className={activeLayer === 'life' ? 'active' : ''}
-            disabled={!hasLife}
-            onClick={() => setLayer('life')}
-          >
-            {t.globe.life}
-          </button>
-        </div>
-      )}
+          <div className="globe-layers" role="group" aria-label={t.globe.layerLabel}>
+            <button
+              className={activeLayer === 'migration' ? 'active' : ''}
+              disabled={!hasMigration}
+              onClick={() => setLayer('migration')}
+            >
+              {t.globe.migration}
+            </button>
+            <button
+              className={activeLayer === 'life' ? 'active' : ''}
+              disabled={!hasLife}
+              onClick={() => setLayer('life')}
+            >
+              {t.globe.life}
+            </button>
+          </div>
 
-      {!empty && activeLayer === 'life' && lifePeople.length > 1 && (
-        <div className={`globe-people${peopleOpen ? ' open' : ''}`}>
-          <button
-            className="globe-people-toggle"
-            aria-expanded={peopleOpen}
-            onClick={() => setPeopleOpen((o) => !o)}
-          >
-            <span>{t.globe.people}</span>
-            <span className="globe-people-count">{selectedCount}/{lifePeople.length}</span>
-          </button>
-          {peopleOpen && (
-            <div className="globe-people-body" role="group" aria-label={t.globe.peopleLabel}>
-              <div className="globe-people-actions">
-                <button onClick={() => setSelected(null)}>{t.globe.all}</button>
-                <button onClick={() => setSelected(new Set())}>{t.globe.none}</button>
-              </div>
-              <ul className="globe-people-list">
-                {lifePeople.map((p) => (
-                  <li key={p.id}>
-                    <label>
-                      <input type="checkbox" checked={isSelected(p.id)} onChange={() => togglePerson(p.id)} />
-                      <span className="globe-people-swatch" style={{ background: branchColor(p.branch, theme) }} />
-                      <span className="globe-people-name">{p.name}</span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
+          {activeLayer === 'life' && lifePeople.length > 1 && (
+            <div className={`globe-people${peopleOpen ? ' open' : ''}`}>
+              <button
+                className="globe-people-toggle"
+                aria-expanded={peopleOpen}
+                onClick={() => setPeopleOpen((o) => !o)}
+              >
+                <span>{t.globe.people}</span>
+                <span className="globe-people-count">{selectedCount}/{lifePeople.length}</span>
+              </button>
+              {peopleOpen && (
+                <div className="globe-people-body" role="group" aria-label={t.globe.peopleLabel}>
+                  <div className="globe-people-actions">
+                    <button onClick={() => setSelected(null)}>{t.globe.all}</button>
+                    <button onClick={() => setSelected(new Set())}>{t.globe.none}</button>
+                  </div>
+                  <ul className="globe-people-list">
+                    {lifePeople.map((p) => (
+                      <li key={p.id}>
+                        <label>
+                          <input type="checkbox" checked={isSelected(p.id)} onChange={() => togglePerson(p.id)} />
+                          <span className="globe-people-swatch" style={{ background: branchColor(p.branch, theme) }} />
+                          <span className="globe-people-name">{p.name}</span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         </div>

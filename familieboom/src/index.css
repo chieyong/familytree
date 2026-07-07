@@ -1390,13 +1390,26 @@ body {
   color: var(--accent);
 }
 
-/* Personen-checklist (Levensreis-laag): inklapbaar paneel linksboven, los van de
-   legenda (linksonder) en de verhaallaag-toggle (rechtsboven). */
-.globe-people {
+/* Bedieningskolom van de Atlas: verhaallaag-toggle met daaronder de
+   personen-checklist, rechts verankerd onder de view-toggle (App meet de
+   positie; fallback rechtsboven). Eén kolom → geen botsing met de topbar. */
+.globe-controls {
   position: absolute;
   top: 56px;
-  left: 14px;
+  right: 18px;
   z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.globe-controls .globe-layers {
+  position: static;
+}
+
+/* Personen-checklist (Levensreis-laag): inklapbaar paneel in de bedieningskolom. */
+.globe-people {
   width: 200px;
   max-width: calc(100vw - 28px);
   background: var(--surface);
