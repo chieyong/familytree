@@ -63,3 +63,34 @@ describe('KinshipService.generations', () => {
     expect(gen.get('overgrootouder')).toBe(0);
   });
 });
+
+describe('KinshipService.generations — divergente huwelijkscycli', () => {
+  it('laat een neergaande huwelijkslus de generaties niet wegpompen', () => {
+    // Y is ouder van X1 én getrouwd met X1's kleinkind X3: het gelijktrekken
+    // van partners duwt de kliek dan elke pass een generatie verder omhoog
+    // (zoals in de Habsburg-import). Na de rebase horen de ouder-relaties
+    // intact te zijn en blijven alle waarden binnen de echte boomdiepte.
+    const graph: FamilyGraph = {
+      persons: ['x0', 'x1', 'x2', 'x3', 'y'].map(person),
+      unions: [union('y', 'x3')],
+      parentLinks: [
+        parentLink('x0', 'x1'),
+        parentLink('x1', 'x2'),
+        parentLink('x2', 'x3'),
+        parentLink('y', 'x1'),
+      ],
+    };
+    const gen = new KinshipService(graph).generations();
+    const g = (id: PersonID) => gen.get(id) ?? 0;
+    // De hoofdlijn blijft strikt neerwaarts. (Y's twee rollen zijn onderling
+    // strijdig — daar bestaat géén geldige toewijzing voor; we eisen alleen
+    // dat de rest niet meegetrokken wordt.)
+    expect(g('x1')).toBeGreaterThan(g('x0'));
+    expect(g('x2')).toBeGreaterThan(g('x1'));
+    expect(g('x3')).toBeGreaterThan(g('x2'));
+    // Geen weggelopen offset: alles binnen de echte boomdiepte, vanaf 0.
+    const values = [...gen.values()];
+    expect(Math.min(...values)).toBe(0);
+    expect(Math.max(...values)).toBeLessThanOrEqual(4);
+  });
+});

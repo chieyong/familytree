@@ -124,41 +124,133 @@ export class KinshipService {
   generations(): Map<PersonID, number> {
     const gen = new Map<PersonID, number>();
     for (const person of this.graph.persons) gen.set(person.id, 0);
-    for (let i = 0; i < 25; i++) {
-      let changed = false;
-      // 1. Kind strikt onder elke ouder.
-      for (const link of this.graph.parentLinks) {
-        const minChild = (gen.get(link.parent) ?? 0) + 1;
-        if ((gen.get(link.child) ?? 0) < minChild) {
-          gen.set(link.child, minChild);
-          changed = true;
-        }
+    // Genoeg passes voor eerlijke data (convergentie ≤ boomdiepte); wat daarna
+    // nog beweegt is een weggelopen kliek (zie rebasePumped).
+    const maxPasses = Math.max(25, this.graph.persons.length);
+    // De laatste twee passes samen: het wegpompen kan per pass een net iets
+    // andere deelverzameling raken.
+    let prev = new Set<PersonID>();
+    let last = new Set<PersonID>();
+    let converged = false;
+    for (let i = 0; i < maxPasses; i++) {
+      const changed = this.generationPass(gen);
+      if (changed.size === 0) {
+        converged = true;
+        break;
       }
-      // 2. Ouder zakt naar z'n dichtstbijzijnde kind: exact één generatie erboven.
-      //    Houdt takken die maar één niveau diep zijn (bv. de enige ouder van je
-      //    partner) uitgelijnd met de andere (schoon)ouders i.p.v. op wortelhoogte.
-      for (const person of this.graph.persons) {
-        let lowestChild = Infinity;
-        for (const link of this.childLinksOf(person.id)) {
-          lowestChild = Math.min(lowestChild, gen.get(link.child) ?? 0);
-        }
-        if (lowestChild === Infinity) continue;
-        const hug = lowestChild - 1;
-        if ((gen.get(person.id) ?? 0) < hug) {
-          gen.set(person.id, hug);
-          changed = true;
-        }
-      }
-      // 3. Partners op gelijke hoogte.
-      for (const union of this.graph.unions) {
-        const [a, b] = union.partners;
-        const top = Math.max(gen.get(a) ?? 0, gen.get(b) ?? 0);
-        if (gen.get(a) !== top) { gen.set(a, top); changed = true; }
-        if (gen.get(b) !== top) { gen.set(b, top); changed = true; }
-      }
-      if (!changed) break;
+      prev = last;
+      last = changed;
     }
+    const pumped = new Set([...prev, ...last]);
+    if (!converged) {
+      // Niet geconvergeerd: dichte huwelijken-binnen-de-familie (royals) kunnen
+      // een positieve cyclus vormen die dezelfde kliek elke pass één generatie
+      // verder omhoog duwt. De ínterne structuur van die kliek is dan al lang
+      // stabiel — alleen de offset loopt weg, en er gaapt een gat van
+      // tientallen lege generaties. Zet elke weggelopen kliek terug op de plek
+      // waar hij via een ouder-link (of anders een huwelijk) aan de rest vastzit.
+      this.rebasePumped(gen, pumped);
+    }
+    // Normaliseer op 0: bij een gedeeltelijk meegedreven boom (alles gepompt)
+    // blijven anders absurde absolute waarden achter. Alleen relatieve
+    // afstanden doen ertoe.
+    const min = Math.min(...gen.values());
+    if (min !== 0) for (const [id, g] of gen) gen.set(id, g - min);
     return gen;
+  }
+
+  /** Eén relaxatie-pass; geeft de ids terug die deze pass nog bewogen. */
+  private generationPass(gen: Map<PersonID, number>): Set<PersonID> {
+    const changed = new Set<PersonID>();
+    // 1. Kind strikt onder elke ouder.
+    for (const link of this.graph.parentLinks) {
+      const minChild = (gen.get(link.parent) ?? 0) + 1;
+      if ((gen.get(link.child) ?? 0) < minChild) {
+        gen.set(link.child, minChild);
+        changed.add(link.child);
+      }
+    }
+    // 2. Ouder zakt naar z'n dichtstbijzijnde kind: exact één generatie erboven.
+    //    Houdt takken die maar één niveau diep zijn (bv. de enige ouder van je
+    //    partner) uitgelijnd met de andere (schoon)ouders i.p.v. op wortelhoogte.
+    for (const person of this.graph.persons) {
+      let lowestChild = Infinity;
+      for (const link of this.childLinksOf(person.id)) {
+        lowestChild = Math.min(lowestChild, gen.get(link.child) ?? 0);
+      }
+      if (lowestChild === Infinity) continue;
+      const hug = lowestChild - 1;
+      if ((gen.get(person.id) ?? 0) < hug) {
+        gen.set(person.id, hug);
+        changed.add(person.id);
+      }
+    }
+    // 3. Partners op gelijke hoogte.
+    for (const union of this.graph.unions) {
+      const [a, b] = union.partners;
+      const top = Math.max(gen.get(a) ?? 0, gen.get(b) ?? 0);
+      if (gen.get(a) !== top) { gen.set(a, top); changed.add(a); }
+      if (gen.get(b) !== top) { gen.set(b, top); changed.add(b); }
+    }
+    return changed;
+  }
+
+  /**
+   * Zet weggelopen kliekjes (personen die in de laatste pass nog bewogen)
+   * terug. Per samenhangend kliekje geldt: de strakste ouder-link vanuit de
+   * rest van de boom bepaalt de juiste hoogte (kind = ouder + 1); zonder zo'n
+   * link een huwelijk (partners gelijk); zonder beide ankert het kliekje op 0.
+   * Binnen het kliekje blijven de onderlinge afstanden intact.
+   */
+  private rebasePumped(gen: Map<PersonID, number>, pumped: Set<PersonID>): void {
+    const adj = new Map<PersonID, PersonID[]>();
+    const addEdge = (a: PersonID, b: PersonID) => {
+      if (!pumped.has(a) || !pumped.has(b)) return;
+      (adj.get(a) ?? adj.set(a, []).get(a)!).push(b);
+      (adj.get(b) ?? adj.set(b, []).get(b)!).push(a);
+    };
+    for (const link of this.graph.parentLinks) addEdge(link.parent, link.child);
+    for (const union of this.graph.unions) addEdge(union.partners[0], union.partners[1]);
+
+    const seen = new Set<PersonID>();
+    for (const start of pumped) {
+      if (seen.has(start)) continue;
+      const comp = new Set<PersonID>([start]);
+      const queue = [start];
+      seen.add(start);
+      while (queue.length) {
+        const cur = queue.pop()!;
+        for (const nb of adj.get(cur) ?? []) {
+          if (!seen.has(nb)) {
+            seen.add(nb);
+            comp.add(nb);
+            queue.push(nb);
+          }
+        }
+      }
+      let shift = Infinity;
+      for (const link of this.graph.parentLinks) {
+        if (comp.has(link.child) && !comp.has(link.parent)) {
+          shift = Math.min(shift, (gen.get(link.child) ?? 0) - (gen.get(link.parent) ?? 0) - 1);
+        }
+      }
+      if (shift === Infinity) {
+        for (const union of this.graph.unions) {
+          const [a, b] = union.partners;
+          if (comp.has(a) !== comp.has(b)) {
+            const inner = comp.has(a) ? a : b;
+            const outer = comp.has(a) ? b : a;
+            shift = Math.min(shift, (gen.get(inner) ?? 0) - (gen.get(outer) ?? 0));
+          }
+        }
+      }
+      if (shift === Infinity) {
+        shift = Math.min(...[...comp].map((id) => gen.get(id) ?? 0));
+      }
+      if (shift > 0) {
+        for (const id of comp) gen.set(id, (gen.get(id) ?? 0) - shift);
+      }
+    }
   }
 
   /**
