@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { PersonID } from '../data/types';
+import type { PersonID, ViewAs } from '../data/types';
 import type { ThemeName } from './theme';
 import type { Lang } from './i18n';
 
@@ -70,6 +70,8 @@ interface AppState {
   photos: boolean;
   user: SessionUser | null;
   activeFamily: ActiveFamily | null;
+  /** Actieve "Bekijk als …"-simulatie (owner-tool); null = normale weergave. */
+  viewAs: ViewAs | null;
   /** Familie waar je vandaan kwam bij het oversteken van een brug (kruimelpad). */
   bridgeReturn: ActiveFamily | null;
   /** Login-modal open (gedeeld, zodat o.a. een uitnodiging 'm kan openen). */
@@ -94,6 +96,8 @@ interface AppState {
   togglePhotos: () => void;
   setUser: (user: SessionUser | null) => void;
   setActiveFamily: (family: ActiveFamily | null) => void;
+  /** Zet of wis de "Bekijk als …"-simulatie. */
+  setViewAs: (viewAs: ViewAs | null) => void;
   /** Steek over naar een gekoppelde familie en onthoud waar je vandaan kwam. */
   crossTo: (family: ActiveFamily) => void;
   /** Keer terug naar de familie van vóór het oversteken. */
@@ -158,6 +162,7 @@ export const useAppStore = create<AppState>((set) => ({
   photos: localStorage.getItem(PHOTOS_KEY) === 'on',
   user: null,
   activeFamily: null,
+  viewAs: null,
   bridgeReturn: null,
   authOpen: false,
   guideOpen: false,
@@ -171,7 +176,7 @@ export const useAppStore = create<AppState>((set) => ({
     set({ lang });
   },
   setDataset: (dataset) =>
-    set({ dataset, activeFamily: null, focusId: DATASET_EGO[dataset], ikId: DATASET_EGO[dataset] }),
+    set({ dataset, activeFamily: null, viewAs: null, focusId: DATASET_EGO[dataset], ikId: DATASET_EGO[dataset] }),
   setFocus: (focusId) => set({ focusId }),
   setIk: (ikId) => set({ ikId }),
   toggleTheme: () =>
@@ -192,16 +197,18 @@ export const useAppStore = create<AppState>((set) => ({
     if (family) localStorage.setItem(LAST_FAMILY_KEY, family.id);
     set(
       family
-        ? { activeFamily: family, focusId: family.ego, ikId: family.ego, bridgeReturn: null }
-        : { activeFamily: null, bridgeReturn: null },
+        ? { activeFamily: family, viewAs: null, focusId: family.ego, ikId: family.ego, bridgeReturn: null }
+        : { activeFamily: null, viewAs: null, bridgeReturn: null },
     );
   },
+  setViewAs: (viewAs) => set({ viewAs }),
   crossTo: (family) =>
     set((state) => {
       localStorage.setItem(LAST_FAMILY_KEY, family.id);
       // Onthoud waar je vandaan kwam (alleen het eerste vertrekpunt bij meerdere sprongen).
       return {
         activeFamily: family,
+        viewAs: null,
         focusId: family.ego,
         ikId: family.ego,
         bridgeReturn: state.bridgeReturn ?? state.activeFamily,
@@ -212,7 +219,7 @@ export const useAppStore = create<AppState>((set) => ({
       const back = state.bridgeReturn;
       if (!back) return {};
       localStorage.setItem(LAST_FAMILY_KEY, back.id);
-      return { activeFamily: back, focusId: back.ego, ikId: back.ego, bridgeReturn: null };
+      return { activeFamily: back, viewAs: null, focusId: back.ego, ikId: back.ego, bridgeReturn: null };
     }),
   setAuthOpen: (authOpen) => set({ authOpen }),
   setGuideOpen: (guideOpen) => set({ guideOpen }),

@@ -951,6 +951,50 @@ body {
   cursor: default;
 }
 
+/* "Bekijk als …" — actieve simulatie: opvallende, niet-klikbare balk. */
+.view-as-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: default;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.view-as-exit,
+.view-as-stop {
+  border: 1px solid var(--surface-border);
+  background: var(--surface-hover);
+  color: var(--ink);
+  font: 600 0.76rem var(--font-ui);
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.view-as-exit:hover,
+.view-as-stop:hover { border-color: var(--ink-dim); }
+
+/* Eye-toggle licht op als er een simulatie loopt. */
+.theme-toggle.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* "vanuit deze persoon"-keuze in de Bekijk-als-popover. */
+.more-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font: 500 0.8rem var(--font-ui);
+  padding: 8px;
+  cursor: pointer;
+}
+
+.more-check input { cursor: pointer; }
+
 .invite-login {
   border: 0;
   background: var(--accent);

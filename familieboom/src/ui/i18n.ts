@@ -37,6 +37,14 @@ const nl = {
     more: 'Meer',
     about: 'Over de maker',
   },
+  viewAs: {
+    title: 'Bekijk als …',
+    heading: 'Toon de boom als',
+    asPerson: (name: string) => `vanuit ${name}`,
+    banner: (role: string) => `Voorbeeld — zo ziet een ${role} deze boom (alleen-lezen)`,
+    from: (name: string) => `vanuit ${name}`,
+    exit: 'Voorbeeld sluiten',
+  },
   tour: {
     start: 'Rondleiding',
     next: 'Volgende',
@@ -393,6 +401,14 @@ const en: Messages = {
     more: 'More',
     about: 'About the maker',
   },
+  viewAs: {
+    title: 'View as …',
+    heading: 'Show the tree as',
+    asPerson: (name: string) => `from ${name}’s view`,
+    banner: (role: string) => `Preview — how a ${role} sees this tree (read-only)`,
+    from: (name: string) => `from ${name}’s view`,
+    exit: 'Close preview',
+  },
   tour: {
     start: 'Tour',
     next: 'Next',
@@ -746,6 +762,14 @@ const zh: Messages = {
     more: '更多',
     about: '关于作者',
   },
+  viewAs: {
+    title: '以身份查看…',
+    heading: '以此身份显示家谱',
+    asPerson: (name: string) => `以 ${name} 的视角`,
+    banner: (role: string) => `预览 —— ${role}看到的家谱（只读）`,
+    from: (name: string) => `以 ${name} 的视角`,
+    exit: '关闭预览',
+  },
   tour: {
     start: '导览',
     next: '下一步',
@@ -1098,6 +1122,14 @@ const id: Messages = {
     language: 'Bahasa',
     more: 'Lainnya',
     about: 'Tentang pembuat',
+  },
+  viewAs: {
+    title: 'Lihat sebagai …',
+    heading: 'Tampilkan pohon sebagai',
+    asPerson: (name: string) => `dari sudut ${name}`,
+    banner: (role: string) => `Pratinjau — tampilan pohon bagi ${role} (hanya-baca)`,
+    from: (name: string) => `dari sudut ${name}`,
+    exit: 'Tutup pratinjau',
   },
   tour: {
     start: 'Tur',

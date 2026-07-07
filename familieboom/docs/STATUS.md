@@ -1,7 +1,7 @@
 # Status & handoff
 
 Korte overdracht zodat een nieuwe sessie (ook op mobiel/Termius) verder kan.
-Laatst bijgewerkt: 2026-06-24.
+Laatst bijgewerkt: 2026-07-04.
 
 Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation|globe`,
 `?theme=light|dark`, `?lang=nl|en|zh|id`, `?focus=<id>`, `?tour=1` (opent de
@@ -53,13 +53,38 @@ opnieuw draaien, dat kan geen kwaad.
 | 22 | `20260624140000_role_contributor.sql` | enum `member_role` krijgt `contributor` (Bijdrager). **Apart** want enum-waarde moet committen vóór migratie 23 'm gebruikt | ✅ (2026-06-24) |
 | 23 | `20260624150000_change_proposals.sql` | `change_proposals`-tabel + RLS + RPC `resolve_proposal` (owner/editor keurt voorstel goed/af, past person_update toe) | ✅ (2026-06-24) |
 | 24 | `20260624160000_proposals_add.sql` | `resolve_proposal` + kinds `person_add` & `relation_add` (bijdrager stelt nieuwe persoon/koppeling voor; goedkeuren past add_relative/linkRelative-logica toe) | ✅ (2026-06-24) |
-| 25 | `20260626120000_residences_read.sql` | `_build_graph` geeft nu **`residences`** terug (place + from/to + id, geordend op from_year) i.p.v. `'[]'` → woonplaatsen/levenspaden op de Atlas voor échte families | ⏳ **NOG DRAAIEN** |
+| 25 | `20260626120000_residences_read.sql` | `_build_graph` geeft nu **`residences`** terug (place + from/to + id, geordend op from_year) i.p.v. `'[]'` → woonplaatsen/levenspaden op de Atlas voor échte families | ✅ (2026-07-04) |
+| 26 | `20260704120000_privacy_leaks.sql` | security-review: `places` niet meer wereld-leesbaar/muteerbaar (anon-grant ingetrokken, update-policy weg), avatar-lezen volgt persoons-zichtbaarheid (was: elk lid, pad voorspelbaar), avatar-schrijven eist map=familie, bucket-limieten (2 MB, alleen afbeeldingen), invites: 14 dagen default-expiry + backfill, tokens alleen leesbaar voor owner/maker, editor mag alleen lezer/bijdrager-invites, display_name-terugval zonder e-maildomein + backfill. Introduceert helper `person_in_family()` | ✅ (2026-07-04) |
+| 27 | `20260704130000_write_boundaries.sql` | security-review: family_id-grens afgedwongen — `add_relative` checkt anker∈familie, `unions_write`/`plinks_write` with check eist eindpunten∈family_id, `resolve_proposal` checkt anker én gekoppelde persoon∈familie. Vereist mig 26 (`person_in_family`) | ✅ (2026-07-04) |
+| 28 | `20260704140000_privacy_consistency.sql` | security-review: privé-relaties alleen owner/betrokkene (unions/plinks-leespaden van can_manage_person → is_owner/is_self; partner ziet eigen relatie nu ook als viewer), `detail_visibility` op parent_links wordt eindelijk gemaskeerd (role→'biological' + `detailHidden`), `fully_hidden` geldt nu ook voor de owner + trigger `persons_guard` (vlag alleen door persoon zelf; family_id/created_by onveranderlijk), `copy_persons` slaat fully_hidden over, rer_update alleen aanvrager/owner. Bevat de volledige `_build_graph` incl. residences (superset van mig 25) | ✅ (2026-07-04) |
+| 29 | `20260704150000_view_as.sql` | **"Bekijk als …"** (owner-preview): basis-helpers `is_member`/`is_owner`/`role_in_family`/`is_self` worden override-bewust via transactie-lokale GUC `app.view_as` (afgeleiden `is_owner_of_person`/`can_manage_person` erven het). RPC's `get_full_graph_as`/`get_ego_graph_as` gaten op ECHTE owner (`_assert_real_owner`, langs override heen), zetten override, roepen ongewijzigd `_build_graph`. Zonder override = identiek gedrag. Verlaagt alleen rechten → geen escalatie mogelijk | ⏳ **NOG DRAAIEN** |
 
-**Actie voor een verse sessie:** migraties t/m 24 zijn gedraaid; **migratie 25 staat
-nog open** (draaien in de Supabase SQL-editor — idempotent `create or replace`, alleen
-de residences-regel verschilt van mig 17). Zonder mig 25 worden toegevoegde
-woonplaatsen wél opgeslagen maar niet teruggelezen/getoond. De gebruiker draait
-migraties zelf in de SQL-editor.
+**Actie voor een verse sessie:** migraties t/m 28 zijn gedraaid (25–28 op 2026-07-04);
+**migratie 29 staat nog open** (draaien in de SQL-editor). Zonder 29 werkt "Bekijk
+als …" niet (RPC ontbreekt → foutmelding). De gebruiker draait migraties zelf in
+de SQL-editor.
+
+**"Bekijk als …" (2026-07-04, Opus-sessie)** — PowerBI-achtige owner-preview om de
+zojuist geharde RLS te testen. **Faithful, server-side**: de echte RLS wordt opnieuw
+gedraaid met een gesimuleerde identiteit (rol + optioneel persoon voor `is_self`),
+géén namaak in de frontend. Frontend: `ViewAs`-type (`src/data/types.ts`), store-vlag
+`viewAs`/`setViewAs` (gewist bij elke familiewissel), `SupabaseRepository` roept de
+`_as`-RPC's aan wanneer viewAs actief is (repo-instantie gekeyd op viewAs → herlaadt),
+owner-only `ViewAsControl` (oog-knop, topbar) + banner in `App.tsx`. Tijdens view-as
+is alles **alleen-lezen** (`canEdit`/`canPropose` false) — een mutatie zou als de échte
+owner draaien. Dekt het graph-leespad (95% van wat je ziet); directe-tabel-RLS
+(avatars/places/mutaties) test je met een tweede account. i18n-sleutel `viewAs` in alle
+4 talen.
+
+**Security-review 2026-07-04** (Fable-sessie): volledige audit van RLS/RPC's/storage
+/frontend-datalaag. Gefixt in mig 26–28 (zie tabel). Bewust open gelaten:
+voorstellen-review-UI toont geen volledige diff van de payload (owner keurt deels
+blind goed — server valideert nu wél de familie-grens; UI-diff is een latere
+iteratie), BFS in `get_ego_graph` traverseert verborgen edges (inferentie, past bij
+"verbergen is best-effort"), Nominatim-geocoding loopt client-side naar OSM (hoort
+vermeld in privacy-uitleg), en `?backend=supabase`-demo blijft anon leesbaar voor
+`public`-rijen (by design). Frontend-wijziging: `Union`/`ParentChildLink` kregen
+optioneel `detailHidden?: boolean` (`src/data/types.ts`).
 
 **Bewerken slaat automatisch op** (sessie 2026-06-23): het bewerkformulier
 (`EditPerson`) heeft geen opslaan-knop meer; elke veldwijziging schrijft debounced

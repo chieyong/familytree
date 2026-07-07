@@ -24,6 +24,7 @@ import { FamilyCanvas } from './ui/FamilyCanvas';
 import { GlobeCanvas } from './ui/GlobeCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
 import { ShareFamily } from './ui/ShareFamily';
+import { ViewAsControl } from './ui/ViewAsControl';
 import { OverflowMenu } from './ui/OverflowMenu';
 import { Leader } from './ui/Leader';
 import { Tour } from './ui/Tour';
@@ -35,7 +36,7 @@ const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, diaspora: diasporaFamily, habsburg };
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, globeLayer, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setAuthOpen, setAboutOpen, setNotice, bumpData } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, viewAs, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, globeLayer, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setViewAs, setAuthOpen, setAboutOpen, setNotice, bumpData } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();
@@ -68,12 +69,12 @@ export default function App() {
   // familie" wint; anders een demo-preset. Fixtures-only demo's (diaspora) laden
   // altijd lokaal, ook met de supabase-backend (ze staan niet in de DB).
   const repository: FamilyRepository = useMemo(() => {
-    if (activeFamily) return new SupabaseRepository(activeFamily.id);
+    if (activeFamily) return new SupabaseRepository(activeFamily.id, viewAs);
     const fromSupabase = BACKEND === 'supabase' && !FIXTURES_ONLY_DATASETS.includes(dataset);
     return fromSupabase
       ? new SupabaseRepository(DATASET_FAMILY_ID[dataset])
       : new FixtureRepository(graphByDataset[dataset]);
-  }, [dataset, activeFamily]);
+  }, [dataset, activeFamily, viewAs]);
 
   const [fullGraph, setFullGraph] = useState<FamilyGraph>();
   const [egoGraph, setEgoGraph] = useState<FamilyGraph>();
@@ -161,11 +162,28 @@ export default function App() {
   const focusPerson = fullGraph?.persons.find((person) => person.id === focusId);
   const defaultEgo = activeFamily ? activeFamily.ego : DATASET_EGO[dataset];
 
+  // Labels voor de "Bekijk als …"-banner. De gesimuleerde persoon is zichtbaar
+  // in de (gesimuleerde) graaf, want is_self maakt 'm vol zichtbaar.
+  const viewAsRoleLabel = viewAs
+    ? viewAs.role === 'viewer'
+      ? t.share.roleViewer
+      : viewAs.role === 'contributor'
+        ? t.share.roleContributor
+        : t.share.roleEditor
+    : '';
+  const viewAsPerson = viewAs?.personId
+    ? fullGraph?.persons.find((p) => p.id === viewAs.personId)
+    : undefined;
+  const viewAsPersonName = viewAsPerson ? shortName(viewAsPerson) : undefined;
+
   // Alleen owner/editor mag personen bewerken; viewers krijgen een alleen-lezen
   // paneel (de RLS dwingt dit ook af, maar zo tonen we de bewerk-UI niet onnodig).
+  // Tijdens "Bekijk als …" is alles alleen-lezen: een mutatie zou als de échte
+  // owner draaien (niet als de gesimuleerde rol) en dus misleidend zijn.
   const myRole = activeFamily ? families.find((f) => f.id === activeFamily.id)?.role : undefined;
-  const canEdit = myRole === 'owner' || myRole === 'editor';
-  const canPropose = myRole === 'contributor';
+  const isOwner = myRole === 'owner';
+  const canEdit = !viewAs && (myRole === 'owner' || myRole === 'editor');
+  const canPropose = !viewAs && myRole === 'contributor';
 
   // Open voorstellen ophalen voor owner/editor (en herladen na een mutatie).
   useEffect(() => {
@@ -226,6 +244,7 @@ export default function App() {
               {t.topbar.globe}
             </button>
           </nav>
+          <ViewAsControl isOwner={isOwner} focusName={focusPerson ? shortName(focusPerson) : undefined} />
           <OverflowMenu photosAvailable={photoByPerson.size > 0} />
           <AuthBar />
           <ShareFamily />
@@ -252,6 +271,18 @@ export default function App() {
         <button className="invite-banner" onClick={() => setNotice(undefined)}>
           {notice} <span className="invite-dismiss">×</span>
         </button>
+      )}
+
+      {viewAs && (
+        <div className="invite-banner view-as-banner">
+          <span>
+            👁 {t.viewAs.banner(viewAsRoleLabel)}
+            {viewAsPersonName && <> · {t.viewAs.from(viewAsPersonName)}</>}
+          </span>
+          <button className="view-as-exit" onClick={() => setViewAs(null)}>
+            {t.viewAs.exit}
+          </button>
+        </div>
       )}
 
       {canEdit && proposals.length > 0 && (

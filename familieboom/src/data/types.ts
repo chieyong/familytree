@@ -3,6 +3,21 @@ export type RelID = string;
 
 export type Visibility = 'public' | 'family' | 'private';
 
+/** Rollen die een owner in "Bekijk als …" kan simuleren (alleen lager dan owner). */
+export type ViewAsRole = 'viewer' | 'contributor' | 'editor';
+
+/**
+ * Actieve "Bekijk als …"-simulatie: de owner ziet de boom zoals deze rol (en
+ * optioneel: vanuit deze persoon) hem ziet. De echte RLS wordt server-side
+ * opnieuw gedraaid met een gesimuleerde identiteit (RPC's *_as); de frontend
+ * doet géén eigen zichtbaarheidsfiltering.
+ */
+export interface ViewAs {
+  role: ViewAsRole;
+  /** Gesimuleerde "ik" (is_self); null = alleen rol simuleren. */
+  personId: PersonID | null;
+}
+
 /** Datum met onzekerheid — historische bronnen (Wikidata) zijn zelden dag-precies. */
 export interface FuzzyDate {
   year: number;
@@ -71,6 +86,8 @@ export interface Union {
   start?: FuzzyDate;
   end?: { date?: FuzzyDate; reason: UnionEndReason };
   visibility: Visibility;
+  /** Details (type/datums/reden) gemaskeerd door detail_visibility. */
+  detailHidden?: boolean;
 }
 
 export type ParentRole = 'biological' | 'adoptive' | 'step' | 'foster';
@@ -88,6 +105,8 @@ export interface ParentChildLink {
   unionId?: RelID;
   start?: FuzzyDate;
   visibility: Visibility;
+  /** Details gemaskeerd door detail_visibility; role is dan neutraal 'biological'. */
+  detailHidden?: boolean;
 }
 
 export interface FamilyGraph {
