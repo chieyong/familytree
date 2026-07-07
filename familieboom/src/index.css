@@ -1,5 +1,7 @@
 :root {
-  /* Donker (default) */
+  /* Donker (default). color-scheme laat native controls (select-dropdown,
+     scrollbalken) meekleuren met het thema. */
+  color-scheme: dark;
   --bg: #0b101f;
   --bg-raised: #131b30;
   --ink: #ece6d8;
@@ -20,6 +22,7 @@
 
 :root[data-theme='light'] {
   /* Licht: warm papier, editoriaal — past bij het warme donkere palet */
+  color-scheme: light;
   --bg: #efe9db;
   --bg-raised: #e3dcc9;
   --ink: #2a2620;
@@ -239,23 +242,46 @@ body {
   color: var(--ink-dim);
 }
 
-.more-flags {
+/* Rij in het instellingenmenu: label links, bediening rechts. */
+.more-row {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.more-flag {
-  flex: 1;
+.more-select {
+  border: 1px solid var(--surface-border);
+  background: var(--surface-hover);
+  color: var(--ink);
+  font: 500 0.8rem var(--font-ui);
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  max-width: 10rem;
+}
+
+/* Thema-keuze: twee icoonknoppen (zon/maan). */
+.theme-seg {
+  display: flex;
+  gap: 4px;
+}
+
+.theme-seg-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
   border: 1px solid transparent;
   background: var(--surface-hover);
+  color: var(--ink);
   border-radius: 8px;
-  padding: 6px 0;
-  font-size: 1.05rem;
   cursor: pointer;
 }
 
-.more-flag.active {
+.theme-seg-btn.active {
   border-color: var(--accent);
+  color: var(--accent);
 }
 
 .more-item {

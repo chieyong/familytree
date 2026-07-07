@@ -22,6 +22,9 @@ interface Props {
   photos: boolean;
   /** Ondertekende foto-URL per persoon-id. */
   photoUrls: Map<PersonID, string>;
+  /** "3 generaties"-stand: alles moet in één oogopslag passen, dus de
+   *  minimale nodegrootte mag verder zakken dan in de Kring-stand. */
+  fitAll?: boolean;
   onFocus: (id: PersonID) => void;
   /** Klik op leeg vlak (geen node) → selectie opheffen. */
   onDeselect?: () => void;
@@ -50,7 +53,7 @@ const isDeceasedStyle = (person: Person): boolean => {
  * nodes en lijnen (springs) naar hun nieuwe plek, terwijl view-exclusieve
  * elementen (levenslijnen, tijdas, de rest van de familie) in- of uitfaden.
  */
-export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, onFocus, onDeselect }: Props) {
+export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, fitAll, onFocus, onDeselect }: Props) {
   const art = useMemo(() => flowLayout(fullGraph), [fullGraph]);
   const [minX, minY, width, height] = art.bounds;
 
@@ -81,11 +84,13 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
     const [nx, ny, nw, nh] = raw.bounds;
     // Fit binnen het zichtbare vlak (incl. letterbox-ruimte), geklemd op een
     // leesbare nodegrootte in schérmpixels (r ≈ 13–30 px); wat niet past is
-    // bereikbaar via pannen.
+    // bereikbaar via pannen. In de "3 generaties"-stand telt het overzicht
+    // zwaarder dan leesbaarheid en zakt de ondergrens (r ≈ 6 px).
     const visW = clientSize.cw / screenScale;
     const visH = clientSize.ch / screenScale;
     const kFit = Math.min(visW / nw, visH / nh) * 0.9;
-    const k = Math.min(Math.max(kFit, 13 / (22 * screenScale)), 30 / (22 * screenScale));
+    const minR = fitAll ? 6 : 13;
+    const k = Math.min(Math.max(kFit, minR / (22 * screenScale)), 30 / (22 * screenScale));
     const tx = minX + width / 2 - (nx + nw / 2) * k;
     const ty = minY + height / 2 - (ny + nh / 2) * k;
     return {
@@ -97,7 +102,7 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
         raw.links.map((l) => [l.id, { ...l, path: affinePath(l.path, k, tx, ty) }]),
       ),
     };
-  }, [egoGraph, focusId, branches, width, height, minX, minY, clientSize, screenScale]);
+  }, [egoGraph, focusId, branches, width, height, minX, minY, clientSize, screenScale, fitAll]);
 
   const isNav = mode === 'navigation' && nav !== undefined;
 
@@ -191,8 +196,23 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
     () => new Set(heroLinks.filter((l) => l.kind === 'parent').map((l) => l.targetId)),
     [heroLinks],
   );
-  const introDelayFor = (id: PersonID): number =>
-    id === heroId ? 0.3 : heroChildren.has(id) ? 2.1 : 2.6;
+  // De intro-stagger als fasen-STATE i.p.v. transition-delays: een animatie
+  // die nog op zijn delay wacht overleeft het afbreken van de intro (snel
+  // wisselen van weergave) niet — de node bleef dan tot een remount op
+  // opacity 0 hangen. Met fasen wisselt het animatiedoel zelf (0 → 1), dus
+  // convergeert alles gegarandeerd naar zichtbaar; de choreografie is gelijk.
+  const [introPhase, setIntroPhase] = useState(0);
+  useEffect(() => {
+    if (!intro) return;
+    const timers = [
+      setTimeout(() => setIntroPhase(1), 300), // hero
+      setTimeout(() => setIntroPhase(2), 2100), // kinderen van de hero
+      setTimeout(() => setIntroPhase(3), 2600), // de rest
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [intro]);
+  const introHides = (id: PersonID): boolean =>
+    intro && !isNav && (id === heroId ? introPhase < 1 : heroChildren.has(id) ? introPhase < 2 : introPhase < 3);
 
   const showArtLabels = !isNav && view.k >= LABEL_ZOOM;
   const thin = (w: number) => w / Math.sqrt(view.k);
@@ -259,10 +279,16 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
           transition={{ duration: 0.6 }}
           style={{ pointerEvents: 'none' }}
         >
+          {/* Intro-elementen houden in élke stand een expliciet animate-doel:
+              wordt de intro afgebroken (snel wisselen van weergave), dan zou
+              een weggehaald animate-prop de opacity op de tussenstand laten
+              staan — onzichtbare nodes tot een remount. */}
           {art.decades.map((decade) => (
             <motion.g
               key={decade.year}
-              {...(intro ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { delay: 0.1, duration: 0.8 } } : {})}
+              initial={intro ? { opacity: 0 } : false}
+              animate={{ opacity: intro && introPhase < 1 ? 0 : 1 }}
+              transition={{ duration: intro ? 0.8 : 0.3 }}
             >
               <line
                 x1={minX}
@@ -289,19 +315,20 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
                 stroke={bc(line.branch)}
                 strokeWidth={thin(isHero ? 2.8 : 2.4)}
                 strokeLinecap="round"
-                opacity={isHero ? 0.85 : baseOpacity}
-                {...(isHero
-                  ? {
-                      initial: { pathLength: 0 },
-                      animate: { pathLength: 1, opacity: [0.85, 0.85, baseOpacity] },
-                      transition: {
+                initial={isHero ? { pathLength: 0 } : intro ? { opacity: 0 } : false}
+                animate={
+                  isHero
+                    ? { pathLength: 1, opacity: [0.85, 0.85, baseOpacity] }
+                    : { pathLength: 1, opacity: intro && introPhase < 3 ? 0 : baseOpacity }
+                }
+                transition={
+                  isHero
+                    ? {
                         pathLength: { delay: 0.4, duration: 1.5, ease: 'easeInOut' },
                         opacity: { delay: 2.6, duration: 1 },
-                      },
-                    }
-                  : intro
-                    ? { initial: { opacity: 0 }, animate: { opacity: baseOpacity }, transition: { delay: 2.6, duration: 0.8 } }
-                    : {})}
+                      }
+                    : { duration: intro ? 0.8 : 0.3 }
+                }
               />
             );
           })}
@@ -354,10 +381,18 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
                 : heroDelay !== undefined || (intro && !isNav)
                   ? {
                       initial: { opacity: 0 },
-                      animate: { d, opacity },
-                      transition: { delay: heroDelay ?? 2.6, duration: 0.8 },
+                      animate: {
+                        d,
+                        opacity: (heroDelay !== undefined ? introPhase < 2 : introPhase < 3) ? 0 : opacity,
+                      },
+                      transition: { duration: 0.8 },
                     }
-                  : {})}
+                  : // Na een afgebroken intro kan pathLength halverwege staan;
+                    // expliciet naar 1 sturen (alleen bij effen lijnen —
+                    // pathLength kaapt strokeDasharray van stippellijnen).
+                    !style.dash
+                    ? { animate: { d, opacity, pathLength: 1 } }
+                    : {})}
             />
           );
         })}
@@ -389,9 +424,9 @@ export function FamilyCanvas({ mode, fullGraph, egoGraph, focusId, branches, the
               style={{ pointerEvents: 'none' }}
             >
               <motion.g
-                {...(intro && !isNav
-                  ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { delay: introDelayFor(id), duration: 0.8 } }
-                  : {})}
+                initial={intro && !isNav ? { opacity: 0 } : false}
+                animate={{ opacity: introHides(id) ? 0 : 1 }}
+                transition={{ duration: intro ? 0.8 : 0.3 }}
               >
                 {isFocus && (
                   // Focusring met een minimum in schermpixels: ook op een

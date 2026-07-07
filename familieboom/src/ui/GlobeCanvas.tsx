@@ -13,10 +13,10 @@ import { branchColor, PALETTES, shortName, type ThemeName } from './theme';
 import { useAppStore, type GlobeLayer } from './store';
 import { useT } from './useT';
 
-/** Zoom-bereik (× de auto-fit-basis). Ruim genoeg om op landniveau in te zoomen. */
+/** Zoom-bereik (× de auto-fit-basis). Ruim genoeg om op stadsniveau in te zoomen;
+ *  de ondergrens wordt per familie verruimd zodat de hele bol altijd bereikbaar is. */
 const ZOOM_MIN = 0.6;
 const ZOOM_MAX = 60;
-const clampZoom = (k: number) => Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k));
 
 /** Landmassa (50m: fijnere kustlijn) + landsgrenzen, één keer uit de topologie. */
 const topo = worldTopo as unknown as Topology<{ land: GeometryCollection; countries: GeometryCollection }>;
@@ -129,23 +129,29 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
     return () => observer.disconnect();
   }, []);
 
-  // Auto-fit: verre families tonen de hele bol; een geklemde familie zoomt in
-  // tot de verste plaats op ~72% van het halve scherm landt. Wiel-zoom erbovenop.
+  // Auto-fit: inzoomen tot de dichtste cluster (zie globeLayout) op ~72% van het
+  // halve scherm past. De spreidings-vloer van 0.06 rad (≈ 400 km) laat een
+  // familie uit één stad op land-niveau starten i.p.v. op een verre wereldbol,
+  // en begrenst meteen hoe diep de auto-fit maximaal gaat. Wiel-zoom erbovenop.
   const [zoomK, setZoomK] = useState(1);
   // Actief slepen/knijpen: tijdens beweging tekenen we de lichtere 110m-kaart
   // (en geen landsgrenzen) zodat het herprojecteren per frame vloeiend blijft.
   const [interacting, setInteracting] = useState(false);
   const { cw, ch } = size;
   const minHalf = Math.min(cw, ch) / 2;
-  const scale = useMemo(() => {
-    const fitR = minHalf * 0.92;
-    const target = minHalf * 0.72;
-    const base =
-      data.spread > 0.01
-        ? Math.min(target / Math.sin(Math.min(data.spread, Math.PI / 2)), fitR * 5.5)
-        : fitR;
-    return base * zoomK;
-  }, [minHalf, data.spread, zoomK]);
+  const base = useMemo(() => {
+    if (data.points.length === 0) return minHalf * 0.92;
+    const eff = Math.max(Math.min(data.spread, Math.PI / 2), 0.06);
+    return (minHalf * 0.72) / Math.sin(eff);
+  }, [minHalf, data.spread, data.points.length]);
+  const scale = base * zoomK;
+
+  // Uitzoomen mag altijd tot de hele bol, ook als de basis diep op een land inzoomt.
+  const minK = Math.min(ZOOM_MIN, (minHalf * 0.92) / base);
+  const clampZoom = useCallback(
+    (k: number) => Math.max(minK, Math.min(ZOOM_MAX, k)),
+    [minK],
+  );
 
   // Oriëntatie van de bol: [lambda, phi]. Start op het zwaartepunt van de familie;
   // bij beweging glijdt de bol er bij mount vanaf een schuine hoek naartoe.
@@ -216,7 +222,7 @@ export function GlobeCanvas({ fullGraph, branches, focusId, theme, layerAnchor, 
     };
     svg.addEventListener('wheel', onWheel, { passive: false });
     return () => svg.removeEventListener('wheel', onWheel);
-  }, []);
+  }, [clampZoom]);
 
   const projection = useMemo(
     () => geoOrthographic().translate([cw / 2, ch / 2]).scale(scale).rotate(rotation).clipAngle(90),

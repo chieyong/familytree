@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { LANGS, type Lang } from './i18n';
 import { useAppStore } from './store';
 import { useT } from './useT';
@@ -22,9 +21,31 @@ function MoreIcon() {
   );
 }
 
+function SunIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <line x1="12" y1="2" x2="12" y2="5" /><line x1="12" y1="19" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="5" y2="12" /><line x1="19" y1="12" x2="22" y2="12" />
+      <line x1="4.9" y1="4.9" x2="7" y2="7" /><line x1="17" y1="17" x2="19.1" y2="19.1" />
+      <line x1="4.9" y1="19.1" x2="7" y2="17" /><line x1="17" y1="7" x2="19.1" y2="4.9" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+    </svg>
+  );
+}
+
 /**
  * Verzamelt de secundaire bediening (taal, thema, foto's, uitleg) onder één
- * knop, zodat de topbar — vooral op mobiel — overzichtelijk blijft.
+ * knop, zodat de topbar — vooral op mobiel — overzichtelijk blijft. De
+ * open-state staat in de store (topbarPop): zo staat er maar één topbar-menu
+ * tegelijk open en wijkt de zwevende bereik-/laagtoggle zolang dit menu toont.
  */
 export function OverflowMenu({ photosAvailable }: Props) {
   const t = useT();
@@ -36,13 +57,15 @@ export function OverflowMenu({ photosAvailable }: Props) {
   const togglePhotos = useAppStore((s) => s.togglePhotos);
   const setGuideOpen = useAppStore((s) => s.setGuideOpen);
   const setAboutOpen = useAppStore((s) => s.setAboutOpen);
-  const [open, setOpen] = useState(false);
+  const topbarPop = useAppStore((s) => s.topbarPop);
+  const setTopbarPop = useAppStore((s) => s.setTopbarPop);
+  const open = topbarPop === 'more';
 
   return (
     <div className="more-menu">
       <button
         className="theme-toggle"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setTopbarPop(open ? null : 'more')}
         aria-label={t.topbar.more}
         title={t.topbar.more}
       >
@@ -50,28 +73,46 @@ export function OverflowMenu({ photosAvailable }: Props) {
       </button>
       {open && (
         <>
-          <div className="lang-backdrop" onClick={() => setOpen(false)} />
+          <div className="lang-backdrop" onClick={() => setTopbarPop(null)} />
           <div className="more-pop">
             <div className="more-section">
-              <span className="more-label">{t.topbar.language}</span>
-              <div className="more-flags">
-                {LANGS.map((l) => (
+              <div className="more-row">
+                <span className="more-label">{t.topbar.language}</span>
+                <select
+                  className="more-select"
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value as Lang)}
+                  aria-label={t.topbar.language}
+                >
+                  {LANGS.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.flag} {l.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="more-row">
+                <span className="more-label">{t.topbar.theme}</span>
+                <div className="theme-seg" role="group" aria-label={t.topbar.theme}>
                   <button
-                    key={l.id}
-                    className={`more-flag${l.id === lang ? ' active' : ''}`}
-                    onClick={() => setLang(l.id as Lang)}
-                    title={l.label}
-                    aria-label={l.label}
+                    className={`theme-seg-btn${theme === 'light' ? ' active' : ''}`}
+                    aria-label={t.topbar.lightMode}
+                    title={t.topbar.lightMode}
+                    onClick={() => theme !== 'light' && toggleTheme()}
                   >
-                    {l.flag}
+                    <SunIcon />
                   </button>
-                ))}
+                  <button
+                    className={`theme-seg-btn${theme === 'dark' ? ' active' : ''}`}
+                    aria-label={t.topbar.darkMode}
+                    title={t.topbar.darkMode}
+                    onClick={() => theme !== 'dark' && toggleTheme()}
+                  >
+                    <MoonIcon />
+                  </button>
+                </div>
               </div>
             </div>
-
-            <button className="more-item" onClick={toggleTheme}>
-              {theme === 'dark' ? t.topbar.lightMode : t.topbar.darkMode}
-            </button>
 
             {photosAvailable && (
               <button className="more-item" onClick={togglePhotos}>
@@ -83,7 +124,7 @@ export function OverflowMenu({ photosAvailable }: Props) {
               className="more-item"
               onClick={() => {
                 setGuideOpen(true);
-                setOpen(false);
+                setTopbarPop(null);
               }}
             >
               {t.topbar.help}
@@ -93,7 +134,7 @@ export function OverflowMenu({ photosAvailable }: Props) {
               className="more-item"
               onClick={() => {
                 setAboutOpen(true);
-                setOpen(false);
+                setTopbarPop(null);
               }}
             >
               {t.topbar.about}

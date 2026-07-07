@@ -26,24 +26,26 @@ export function AuthBar() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string>();
-  const [accountOpen, setAccountOpen] = useState(false);
+  const topbarPop = useAppStore((s) => s.topbarPop);
+  const setTopbarPop = useAppStore((s) => s.setTopbarPop);
+  const accountOpen = topbarPop === 'account';
 
   if (!available) return null; // geen client (fixtures-only deploy)
 
   if (user) {
     return (
       <div className="account-menu">
-        <button className="auth-btn" onClick={() => setAccountOpen((o) => !o)}>
+        <button className="auth-btn" onClick={() => setTopbarPop(accountOpen ? null : 'account')}>
           {t.auth.loggedIn}
         </button>
-        {accountOpen && <div className="lang-backdrop" onClick={() => setAccountOpen(false)} />}
+        {accountOpen && <div className="lang-backdrop" onClick={() => setTopbarPop(null)} />}
         {accountOpen && (
           <div className="account-pop">
             {user.email && <div className="account-email">{user.email}</div>}
             <button
               className="account-logout"
               onClick={() => {
-                setAccountOpen(false);
+                setTopbarPop(null);
                 signOut();
               }}
             >

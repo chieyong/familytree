@@ -28,6 +28,7 @@ const nl = {
     tableau: 'Tableau',
     tree: 'Boom',
     globe: 'Atlas',
+    theme: 'Thema',
     lightMode: 'Lichte modus',
     darkMode: 'Donkere modus',
     showPhotos: 'Foto’s tonen',
@@ -117,6 +118,11 @@ const nl = {
     peopleLabel: 'Kies wiens levensreis je toont',
     all: 'Alles',
     none: 'Geen',
+  },
+  tree: {
+    scopeLabel: 'Boombereik',
+    circle: 'Kring',
+    gens: (n: number) => `${n} generaties`,
   },
   about: {
     title: 'Over deze familieboom',
@@ -392,6 +398,7 @@ const en: Messages = {
     tableau: 'Tableau',
     tree: 'Tree',
     globe: 'Atlas',
+    theme: 'Theme',
     lightMode: 'Light mode',
     darkMode: 'Dark mode',
     showPhotos: 'Show photos',
@@ -481,6 +488,11 @@ const en: Messages = {
     peopleLabel: 'Choose whose life journey to show',
     all: 'All',
     none: 'None',
+  },
+  tree: {
+    scopeLabel: 'Tree scope',
+    circle: 'Circle',
+    gens: (n: number) => `${n} generations`,
   },
   about: {
     title: 'About this family tree',
@@ -753,6 +765,7 @@ const zh: Messages = {
     tableau: '画卷',
     tree: '树状图',
     globe: '地图集',
+    theme: '主题',
     lightMode: '浅色模式',
     darkMode: '深色模式',
     showPhotos: '显示照片',
@@ -842,6 +855,11 @@ const zh: Messages = {
     peopleLabel: '选择要显示谁的人生旅程',
     all: '全部',
     none: '无',
+  },
+  tree: {
+    scopeLabel: '树的范围',
+    circle: '亲友圈',
+    gens: (n: number) => `${n} 代`,
   },
   about: {
     title: '关于这棵家谱树',
@@ -1114,6 +1132,7 @@ const id: Messages = {
     tableau: 'Tablo',
     tree: 'Pohon',
     globe: 'Atlas',
+    theme: 'Tema',
     lightMode: 'Mode terang',
     darkMode: 'Mode gelap',
     showPhotos: 'Tampilkan foto',
@@ -1203,6 +1222,11 @@ const id: Messages = {
     peopleLabel: 'Pilih perjalanan hidup siapa yang ditampilkan',
     all: 'Semua',
     none: 'Tidak ada',
+  },
+  tree: {
+    scopeLabel: 'Cakupan pohon',
+    circle: 'Lingkaran',
+    gens: (n: number) => `${n} generasi`,
   },
   about: {
     title: 'Tentang pohon keluarga ini',

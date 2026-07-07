@@ -52,9 +52,9 @@ export interface GlobeData {
   migration: GlobeArc[];
   /** Levenspad per persoon: geboorte → woonplaatsen → overlijden. */
   lifePaths: LifePath[];
-  /** Zwaartepunt [lon, lat] van alle geboorteplaatsen — de begin-oriëntatie van de bol. */
+  /** Zwaartepunt [lon, lat] van de dichtste cluster geboorteplaatsen — de begin-oriëntatie van de bol. */
   center: [number, number];
-  /** Grootste hoekafstand (radialen) van een punt tot het zwaartepunt — voor auto-fit zoom. */
+  /** Grootste hoekafstand (radialen) binnen die cluster tot het zwaartepunt — voor auto-fit zoom. */
   spread: number;
 }
 
@@ -143,13 +143,34 @@ export function globeData(graph: FamilyGraph, branches?: Map<PersonID, number>):
     lifePaths.push({ id: `life-${person.id}`, personId: person.id, branch: branchOf(person.id), stops: dedup });
   }
 
-  // Begin-oriëntatie + zoom uit de spreiding van de geboorteplaatsen.
+  // Begin-oriëntatie + zoom: richt op de dichtste CLUSTER geboorteplaatsen,
+  // niet op de totale spreiding. Eén emigrant of verre tak dwong anders een
+  // piepklein wereldbolletje af waarin het gros van de familie onzichtbaar
+  // samenklontert; uitschieters blijven bereikbaar door uit te zoomen.
+  // Clusterstraal ~0.32 rad (≈ 2000 km): heel Europa telt nog als één cluster,
+  // Nederland–Indonesië niet.
+  const CLUSTER_R = 0.32;
   const birthCoords = points.map((p) => birthCoord(p.person)!).filter(Boolean);
-  const center: [number, number] =
-    birthCoords.length > 0
-      ? (geoCentroid({ type: 'MultiPoint', coordinates: birthCoords }) as [number, number])
-      : [0, 20];
-  const spread = birthCoords.reduce((max, c) => Math.max(max, geoDistance(center, c)), 0);
+  let center: [number, number] = [0, 20];
+  let spread = 0;
+  if (birthCoords.length > 0) {
+    const centroidAll = geoCentroid({ type: 'MultiPoint', coordinates: birthCoords }) as [number, number];
+    let seed = birthCoords[0];
+    let bestCount = -1;
+    let bestTie = Infinity;
+    for (const c of birthCoords) {
+      const count = birthCoords.filter((o) => geoDistance(c, o) <= CLUSTER_R).length;
+      const tie = geoDistance(c, centroidAll); // gelijkspel: dichtst bij het geheel wint
+      if (count > bestCount || (count === bestCount && tie < bestTie)) {
+        seed = c;
+        bestCount = count;
+        bestTie = tie;
+      }
+    }
+    const cluster = birthCoords.filter((o) => geoDistance(seed, o) <= CLUSTER_R);
+    center = geoCentroid({ type: 'MultiPoint', coordinates: cluster }) as [number, number];
+    spread = cluster.reduce((max, c) => Math.max(max, geoDistance(center, c)), 0);
+  }
 
   return { points, migration, lifePaths, center, spread };
 }

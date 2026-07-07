@@ -30,21 +30,23 @@ export function ViewAsControl({ isOwner, focusName }: Props) {
   const viewAs = useAppStore((s) => s.viewAs);
   const setViewAs = useAppStore((s) => s.setViewAs);
   const focusId = useAppStore((s) => s.focusId);
-  const [open, setOpen] = useState(false);
+  const topbarPop = useAppStore((s) => s.topbarPop);
+  const setTopbarPop = useAppStore((s) => s.setTopbarPop);
+  const open = topbarPop === 'viewAs';
   const [asPerson, setAsPerson] = useState(true);
 
   if (!isOwner) return null;
 
   const pick = (role: ViewAsRole) => {
     setViewAs({ role, personId: asPerson && focusName ? focusId : null });
-    setOpen(false);
+    setTopbarPop(null);
   };
 
   return (
     <div className="more-menu">
       <button
         className={`theme-toggle${viewAs ? ' active' : ''}`}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setTopbarPop(open ? null : 'viewAs')}
         aria-label={t.viewAs.title}
         title={t.viewAs.title}
       >
@@ -52,7 +54,7 @@ export function ViewAsControl({ isOwner, focusName }: Props) {
       </button>
       {open && (
         <>
-          <div className="lang-backdrop" onClick={() => setOpen(false)} />
+          <div className="lang-backdrop" onClick={() => setTopbarPop(null)} />
           <div className="more-pop">
             <span className="more-label">{t.viewAs.heading}</span>
             <button className="more-item" onClick={() => pick('viewer')}>{t.share.roleViewer}</button>
@@ -65,7 +67,7 @@ export function ViewAsControl({ isOwner, focusName }: Props) {
               </label>
             )}
             {viewAs && (
-              <button className="more-item view-as-stop" onClick={() => { setViewAs(null); setOpen(false); }}>
+              <button className="more-item view-as-stop" onClick={() => { setViewAs(null); setTopbarPop(null); }}>
                 {t.viewAs.exit}
               </button>
             )}

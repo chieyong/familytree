@@ -6,6 +6,12 @@ import type { Lang } from './i18n';
 export type ViewMode = 'artwork' | 'navigation' | 'globe';
 /** Verhaallaag in de Atlas-view: migratie (ouder→kind) of levensreis (geboorte→sterfte). */
 export type GlobeLayer = 'migration' | 'life';
+/** Bereik van de Boom-view: de ego-kring (BFS-diepte) of een aantal volledige
+ *  generatierijen rond de focuspersoon (3 = ±1, 5 = ±2, 7 = ±3), uitgeklapt. */
+export type TreeScope = 'circle' | 3 | 5 | 7;
+/** Welke topbar-dropdown open staat (max één tegelijk); de zwevende
+ *  bereik-/laagtoggles wijken zolang er een menu open is. */
+export type TopbarPop = 'more' | 'viewAs' | 'account' | null;
 export type DatasetId = 'demo' | 'diaspora' | 'habsburg';
 export type Backend = 'fixtures' | 'supabase';
 
@@ -66,6 +72,10 @@ interface AppState {
   lang: Lang;
   /** Actieve verhaallaag in de Atlas-view. */
   globeLayer: GlobeLayer;
+  /** Bereik van de Boom-view (kring of 3/5/7 generaties). */
+  treeScope: TreeScope;
+  /** Open topbar-dropdown (instellingen, Bekijk-als, account); null = geen. */
+  topbarPop: TopbarPop;
   /** Profielfoto's in de boom tonen (focus + inzoomen). De detailkaart toont altijd. */
   photos: boolean;
   user: SessionUser | null;
@@ -89,6 +99,8 @@ interface AppState {
   setMode: (mode: ViewMode) => void;
   setLang: (lang: Lang) => void;
   setGlobeLayer: (layer: GlobeLayer) => void;
+  setTreeScope: (scope: TreeScope) => void;
+  setTopbarPop: (pop: TopbarPop) => void;
   setDataset: (dataset: DatasetId) => void;
   setFocus: (id: PersonID) => void;
   setIk: (id: PersonID) => void;
@@ -159,6 +171,13 @@ export const useAppStore = create<AppState>((set) => ({
   theme: startTheme,
   lang: initialLang(),
   globeLayer: params.get('layer') === 'life' ? 'life' : 'migration',
+  topbarPop: null,
+  // '?scope=3|5|7' (en het oude 'generations' = 3) opent meteen uitgeklapt.
+  treeScope: ((): TreeScope => {
+    const scope = params.get('scope');
+    if (scope === 'generations') return 3;
+    return scope === '3' || scope === '5' || scope === '7' ? (Number(scope) as TreeScope) : 'circle';
+  })(),
   photos: localStorage.getItem(PHOTOS_KEY) === 'on',
   user: null,
   activeFamily: null,
@@ -171,6 +190,8 @@ export const useAppStore = create<AppState>((set) => ({
   dataVersion: 0,
   setMode: (mode) => set({ mode }),
   setGlobeLayer: (globeLayer) => set({ globeLayer }),
+  setTreeScope: (treeScope) => set({ treeScope }),
+  setTopbarPop: (topbarPop) => set({ topbarPop }),
   setLang: (lang) => {
     localStorage.setItem(LANG_KEY, lang);
     set({ lang });

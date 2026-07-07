@@ -36,7 +36,7 @@ const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, diaspora: diasporaFamily, habsburg };
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, viewAs, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, globeLayer, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setViewAs, setAuthOpen, setAboutOpen, setNotice, bumpData } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, viewAs, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, globeLayer, treeScope, topbarPop, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setViewAs, setAuthOpen, setAboutOpen, setNotice, bumpData, setTreeScope } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();
@@ -205,6 +205,46 @@ export default function App() {
     [kinship, ikId, focusId],
   );
 
+  // Hoeveel generatierijen er rond de focuspersoon bestaan (boven óf onder).
+  // Bepaalt welke uitgeklapte standen zinvol zijn: 5 en 7 verschijnen alleen
+  // als de familie zo diep gaat; de gekozen stand valt terug op de diepste die
+  // bestaat (afgeleid, geen extra state — zelfde patroon als de Atlas-lagen).
+  const genSpan = useMemo(() => {
+    if (!fullGraph || !kinship) return 1;
+    const gens = kinship.generations();
+    const egoGen = gens.get(focusId) ?? 0;
+    let span = 1;
+    for (const p of fullGraph.persons) {
+      span = Math.max(span, Math.abs((gens.get(p.id) ?? 0) - egoGen));
+    }
+    return span;
+  }, [fullGraph, kinship, focusId]);
+  const scopeOptions = ([3, 5, 7] as const).filter((n) => (n - 1) / 2 <= Math.max(genSpan, 1));
+  const activeScope =
+    treeScope === 'circle' ? 'circle' : (Math.min(treeScope, scopeOptions[scopeOptions.length - 1]) as 3 | 5 | 7);
+
+  // "N generaties" (3/5/7): de volledige familie beperkt tot de generatierij
+  // van de focuspersoon plus (N-1)/2 rijen erboven en eronder — helemaal
+  // uitgeklapt, dus óók ooms/tantes, neven/nichten en aangetrouwden in die
+  // rijen. Afgeleid uit de al geladen volledige graaf; de BFS-ego-graaf
+  // blijft de "Kring"-stand.
+  const genGraph = useMemo(() => {
+    if (!fullGraph || !kinship || activeScope === 'circle') return undefined;
+    const radius = (activeScope - 1) / 2;
+    const gens = kinship.generations();
+    const egoGen = gens.get(focusId) ?? 0;
+    const keep = new Set(
+      fullGraph.persons
+        .filter((p) => Math.abs((gens.get(p.id) ?? 0) - egoGen) <= radius)
+        .map((p) => p.id),
+    );
+    return {
+      persons: fullGraph.persons.filter((p) => keep.has(p.id)),
+      unions: fullGraph.unions.filter((u) => keep.has(u.partners[0]) && keep.has(u.partners[1])),
+      parentLinks: fullGraph.parentLinks.filter((l) => keep.has(l.parent) && keep.has(l.child)),
+    };
+  }, [fullGraph, kinship, activeScope, focusId]);
+
   // Oversteken naar de gekoppelde familie: lid → meteen wisselen; geen lid →
   // toegang vragen (de owner van die boom keurt goed).
   const crossBridge = async () => {
@@ -321,15 +361,40 @@ export default function App() {
             key={dataset}
             mode={mode}
             fullGraph={fullGraph}
-            egoGraph={egoGraph}
+            egoGraph={genGraph ?? egoGraph}
             focusId={focusId}
             branches={branches}
             theme={theme}
             photos={photos}
             photoUrls={photoByPerson}
+            fitAll={activeScope !== 'circle'}
             onFocus={(id) => { setFocus(id); setCardOpen(true); }}
             onDeselect={() => setCardOpen(false)}
           />
+        )}
+        {/* Wijkt zolang een topbar-menu open is: de dropdown valt hier overheen. */}
+        {fullGraph && mode === 'navigation' && !topbarPop && (
+          <div
+            className="globe-layers"
+            role="group"
+            aria-label={t.tree.scopeLabel}
+            style={layerAnchor ? { top: layerAnchor.top, right: layerAnchor.right, left: 'auto' } : undefined}
+          >
+            <button className={activeScope === 'circle' ? 'active' : ''} onClick={() => setTreeScope('circle')}>
+              {t.tree.circle}
+            </button>
+            {scopeOptions.map((n) => (
+              <button
+                key={n}
+                className={activeScope === n ? 'active' : ''}
+                aria-label={t.tree.gens(n)}
+                title={t.tree.gens(n)}
+                onClick={() => setTreeScope(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
         )}
       </main>
 
