@@ -210,6 +210,37 @@ export default function App() {
   // De BFS-ego-graaf blijft de "Kring"-stand.
   const showAll = treeScope === 'all';
 
+  // Legenda toont alleen regels die ook echt voorkomen in wat je nu ziet
+  // (bv. geen "adoptie" als niemand geadopteerd is). Tableau toont altijd de
+  // hele familie (fullGraph); Boom volgt de Kring/Totaal-stand.
+  const legendGraph = mode === 'artwork' ? fullGraph : mode === 'navigation' ? (showAll ? fullGraph : egoGraph) : undefined;
+  const legendFlags = useMemo(() => {
+    const CURRENT_YEAR = 2026;
+    const isDeceasedStyle = (person: { death?: unknown; birth?: { date?: { year: number } } }): boolean => {
+      if (person.death !== undefined) return true;
+      const birthYear = person.birth?.date?.year;
+      return birthYear === undefined || birthYear + 100 < CURRENT_YEAR;
+    };
+    const hasCoords = (place?: { lat?: number; lon?: number }) => place?.lat != null && place?.lon != null;
+
+    const persons = legendGraph?.persons ?? [];
+    const parentLinks = legendGraph?.parentLinks ?? [];
+    const unions = legendGraph?.unions ?? [];
+    const fullPersons = fullGraph?.persons ?? [];
+    return {
+      hasParentChild: parentLinks.some((l) => l.role !== 'adoptive' && l.role !== 'step' && l.role !== 'foster'),
+      hasPartnership: unions.some((u) => !(u.end !== undefined && u.end.reason !== 'death')),
+      hasEnded: unions.some((u) => u.end !== undefined && u.end.reason !== 'death'),
+      hasAdoption: parentLinks.some((l) => l.role === 'adoptive'),
+      hasStep: parentLinks.some((l) => l.role === 'step' || l.role === 'foster'),
+      hasDeceased: persons.some(isDeceasedStyle),
+      // Atlas kijkt altijd naar de hele familie (net als GlobeCanvas).
+      hasGlobeDeceased: fullPersons.some((p) => hasCoords(p.birth?.place) && isDeceasedStyle(p)),
+      hasResidenceStops: fullPersons.some((p) => p.residences?.some((r) => hasCoords(r.place))),
+      hasDeathStops: fullPersons.some((p) => hasCoords(p.death?.place)),
+    };
+  }, [legendGraph, fullGraph]);
+
   // Oversteken naar de gekoppelde familie: lid → meteen wisselen; geen lid →
   // toegang vragen (de owner van die boom keurt goed).
   const crossBridge = async () => {
@@ -455,13 +486,17 @@ export default function App() {
                 <li><span className="swatch dot" /> {t.legend.globeBirth}</li>
                 {globeLayer === 'migration' ? (
                   <>
-                    <li><span className="swatch dot hollow" /> {t.legend.globeDeceased}</li>
+                    {legendFlags.hasGlobeDeceased && (
+                      <li><span className="swatch dot hollow" /> {t.legend.globeDeceased}</li>
+                    )}
                     <li><span className="swatch line solid" /> {t.legend.globeMigration}</li>
                   </>
                 ) : (
                   <>
-                    <li><span className="swatch dot small" /> {t.legend.globeResidence}</li>
-                    <li><span className="swatch-x">✕</span> {t.legend.globeDeath}</li>
+                    {legendFlags.hasResidenceStops && (
+                      <li><span className="swatch dot small" /> {t.legend.globeResidence}</li>
+                    )}
+                    {legendFlags.hasDeathStops && <li><span className="swatch-x">✕</span> {t.legend.globeDeath}</li>}
                     <li><span className="swatch line solid" /> {t.legend.globeLife}</li>
                   </>
                 )}
@@ -471,20 +506,28 @@ export default function App() {
               <ul>
                 {mode === 'artwork' ? (
                   <>
-                    <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
-                    <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
+                    {legendFlags.hasParentChild && (
+                      <li><span className="swatch line solid" /> {t.legend.artworkChild}</li>
+                    )}
+                    {legendFlags.hasPartnership && (
+                      <li><span className="swatch line union" /> {t.legend.artworkMarriage}</li>
+                    )}
                   </>
                 ) : (
                   <>
-                    <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
-                    <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
+                    {legendFlags.hasParentChild && (
+                      <li><span className="swatch line solid" /> {t.legend.navParentChild}</li>
+                    )}
+                    {legendFlags.hasPartnership && (
+                      <li><span className="swatch line union" /> {t.legend.navPartnership}</li>
+                    )}
                   </>
                 )}
-                <li><span className="swatch line ex" /> {t.legend.ended}</li>
-                <li><span className="swatch line dotted" /> {t.legend.adoption}</li>
-                <li><span className="swatch line dashed" /> {t.legend.step}</li>
+                {legendFlags.hasEnded && <li><span className="swatch line ex" /> {t.legend.ended}</li>}
+                {legendFlags.hasAdoption && <li><span className="swatch line dotted" /> {t.legend.adoption}</li>}
+                {legendFlags.hasStep && <li><span className="swatch line dashed" /> {t.legend.step}</li>}
                 <li><span className="swatch dot" /> {t.legend.branchSize}</li>
-                <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>
+                {legendFlags.hasDeceased && <li><span className="swatch dot hollow" /> {t.legend.deceased}</li>}
               </ul>
             )}
             <button className="legend-credit" onClick={() => setAboutOpen(true)}>
