@@ -47,6 +47,18 @@ const isDeceasedStyle = (person: Person): boolean => {
   return birthYear === undefined || birthYear + 100 < CURRENT_YEAR;
 };
 
+/** Krappe omvang van de werkelijke nodeposities (i.p.v. focus-symmetrisch),
+ *  met dezelfde marge als egoLayout's eigen bounds gebruikt. */
+const tightBounds = (nodes: LayoutNode[]): [number, number, number, number] => {
+  const padX = 150;
+  const padY = 95;
+  const minX = Math.min(...nodes.map((n) => n.x)) - padX;
+  const maxX = Math.max(...nodes.map((n) => n.x)) + padX;
+  const minY = Math.min(...nodes.map((n) => n.y)) - padY;
+  const maxY = Math.max(...nodes.map((n) => n.y)) + padY + 30;
+  return [minX, minY, maxX - minX, maxY - minY];
+};
+
 /** Imperatieve API voor het printpad — zie de toelichting bij preparePrint. */
 export interface FamilyCanvasHandle {
   /**
@@ -94,7 +106,13 @@ export const FamilyCanvas = forwardRef<FamilyCanvasHandle, Props>(function Famil
   const nav = useMemo(() => {
     if (!egoGraph) return undefined;
     const raw = egoLayout(egoGraph, focusId, branches);
-    const [nx, ny, nw, nh] = raw.bounds;
+    // raw.bounds is altijd symmetrisch rond de focuspersoon (x=0) — bewust,
+    // want dat houdt de camera in de Kring-stand stabiel op focus tijdens het
+    // navigeren. In de Totaal-stand toont de graaf juist de hele familie, en
+    // zou die symmetrie een lopzijdige familie (bv. veel ooms/tantes aan één
+    // kant) half leeg laten hangen. Daar centreren we in plaats daarvan op de
+    // krappe, werkelijke omvang van de getoonde personen.
+    const [nx, ny, nw, nh] = fitAll ? tightBounds(raw.nodes) : raw.bounds;
     // Fit binnen het zichtbare vlak (incl. letterbox-ruimte), geklemd op een
     // leesbare nodegrootte in schérmpixels (r ≈ 13–30 px); wat niet past is
     // bereikbaar via pannen. In de "3 generaties"-stand telt het overzicht
