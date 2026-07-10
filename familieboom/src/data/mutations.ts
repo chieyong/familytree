@@ -1,11 +1,15 @@
 import { supabase } from './supabaseClient';
-import type { ImportData } from './importTemplate';
+import type { ImportPayload } from './importGeocode';
 import type { ParentRole, UnionEndReason, UnionType } from './types';
 
 export interface ImportResult {
   persons: number;
+  /** Aantal bestaande personen dat is bijgewerkt (db_id-rijen). */
+  updated: number;
   parentLinks: number;
   unions: number;
+  /** Plaatsnamen die niet gegeocodeerd konden worden (client-side toegevoegd). */
+  unresolved?: string[];
 }
 
 /**
@@ -14,7 +18,7 @@ export interface ImportResult {
  */
 export async function importFamily(
   familyId: string,
-  data: ImportData,
+  data: ImportPayload,
   existing: Record<string, string> = {},
 ): Promise<ImportResult> {
   if (!supabase) throw new Error('Geen Supabase-client.');

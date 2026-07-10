@@ -35,10 +35,19 @@ Demo zonder DB: `?backend=fixtures`.
 ## Functies (samengevat)
 
 Eigen bomen aanmaken; personen + relaties toevoegen/bewerken (auto-opslaan);
-profielfoto's; meertalige UI; per-persoon zichtbaarheid (familie/privé);
-uitnodigen met rollen (**lezer, bijdrager, bewerker, beheerder**); een
-**bijdrager** stelt wijzigingen voor die een owner/editor goedkeurt; bomen
-koppelen (bruggen) en personen importeren uit een andere eigen boom.
+profielfoto's; meerdere bijnamen per persoon; woonplaatsen (levensreis op de
+Atlas); meertalige UI; per-persoon zichtbaarheid (familie/privé); uitnodigen met
+rollen (**lezer, bijdrager, bewerker, beheerder**); een **bijdrager** stelt
+wijzigingen voor die een owner/editor goedkeurt; bomen koppelen (bruggen) en
+personen importeren uit een andere eigen boom.
+
+**Gekoppelde bomen** — twee of meer gekoppelde families tegelijk tonen als één
+samengevoegde boom (naadloos op de brugpersonen + naam/geboortejaar-identiteit),
+met een kleuraccent per herkomst-familie.
+
+**CSV-export/-import** — de actieve boom exporteren naar CSV (opent in Excel/Google
+Sheets); bewerken en terug-importeren. Rijen met een `db_id` worden bijgewerkt,
+nieuwe rijen (lege `db_id`) toegevoegd; plaatsnamen worden bij import gegeocodeerd.
 
 ## Architectuur
 

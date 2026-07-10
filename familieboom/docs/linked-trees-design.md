@@ -1,7 +1,15 @@
 # Ontwerp — Gekoppelde bomen met poortwachter ("bruggen")
 
-Status: **voorstel** (nog niet gebouwd). Doel van dit document: het datamodel,
-de rechten (RLS) en de navigatie-/toestemmingsflow vastleggen vóórdat we bouwen.
+Status: **gebouwd** (model A, spiegel-brug). Dit document beschrijft het
+oorspronkelijke ontwerp; bruggen (`tree_links`), de toestemmingsflow en het
+oversteken zijn geïmplementeerd zoals hieronder.
+
+> **Update 2026-07-10 — samengevoegde weergave.** Bovenop het oversteken kun je nu
+> meerdere gekoppelde bomen *tegelijk* tonen als één doorlopende boom. `mergeGraphs`
+> (`src/domain/mergeGraphs.ts`) naait de bomen op de brugpersonen én op identiteit
+> (naam + geboortejaar), met een kleuraccent per herkomst-familie. Kiezer:
+> `LinkedTrees`; families zonder toegang staan grijs met "toegang vragen". Zie
+> `docs/STATUS.md`.
 
 ## 1. Wat we willen
 

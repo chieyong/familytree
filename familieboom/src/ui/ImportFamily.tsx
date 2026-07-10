@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { parseTemplate, TEMPLATE_CSV } from '../data/importTemplate';
+import { geocodeImport } from '../data/importGeocode';
 import { importFamily, type ImportResult } from '../data/mutations';
 import { supabase } from '../data/supabaseClient';
 import { useAppStore } from './store';
@@ -7,6 +8,8 @@ import { useT } from './useT';
 
 interface Props {
   familyId: string;
+  /** Naam van de doelboom — getoond in de titel zodat duidelijk is waar de import in landt. */
+  familyName: string;
   onClose: () => void;
 }
 
@@ -16,13 +19,16 @@ interface ExistingPerson {
 }
 
 /** Bulk-import: plak/upload een platte template, bekijk een preview, bevestig. */
-export function ImportFamily({ familyId, onClose }: Props) {
+export function ImportFamily({ familyId, familyName, onClose }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
+  const lang = useAppStore((s) => s.lang);
   const t = useT();
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [done, setDone] = useState<ImportResult>();
+  // Voortgang van het geocoderen van plaatsnamen (null = niet bezig).
+  const [geo, setGeo] = useState<{ done: number; total: number } | null>(null);
   const [existing, setExisting] = useState<ExistingPerson[]>([]);
   // Koppeling van externe sleutel → bestaand persoon-uuid.
   const [resolved, setResolved] = useState<Record<string, string>>({});
@@ -70,12 +76,18 @@ export function ImportFamily({ familyId, onClose }: Props) {
     setBusy(true);
     setError(undefined);
     try {
-      const res = await importFamily(familyId, parsed.data, resolved);
+      // Eerst plaatsnamen opzoeken (coördinaten), dan atomair importeren.
+      const { payload, unresolved } = await geocodeImport(parsed.data, lang, (d, total) =>
+        setGeo(total > 0 ? { done: d, total } : null),
+      );
+      setGeo(null);
+      const res = await importFamily(familyId, payload, resolved);
       bumpData();
-      setDone(res);
+      setDone(unresolved.length ? { ...res, unresolved } : res);
     } catch (err) {
       setError(err instanceof Error ? err.message : t.import.failed);
     } finally {
+      setGeo(null);
       setBusy(false);
     }
   };
@@ -84,7 +96,7 @@ export function ImportFamily({ familyId, onClose }: Props) {
     <div className="auth-overlay" onClick={onClose}>
       <div className="info-card import-card" onClick={(e) => e.stopPropagation()}>
         <div className="info-head">
-          <h2>{t.import.title}</h2>
+          <h2>{t.import.title} <span className="panel-title-target">→ {familyName}</span></h2>
           <button className="panel-close" onClick={onClose} aria-label={t.import.close}>×</button>
         </div>
 
@@ -93,9 +105,16 @@ export function ImportFamily({ familyId, onClose }: Props) {
             <p>{t.import.doneHead}</p>
             <ul>
               <li>{t.import.persons(done.persons)}</li>
+              {done.updated > 0 && <li>{t.import.updated(done.updated)}</li>}
               <li>{t.import.parentLinks(done.parentLinks)}</li>
               <li>{t.import.unions(done.unions)}</li>
             </ul>
+            {done.unresolved && done.unresolved.length > 0 && (
+              <div className="import-warnings">
+                <p>{t.import.unresolvedHead}</p>
+                <ul>{done.unresolved.map((n) => <li key={n}>{n}</li>)}</ul>
+              </div>
+            )}
             <button onClick={onClose}>{t.import.close}</button>
           </div>
         ) : (
@@ -163,9 +182,19 @@ export function ImportFamily({ familyId, onClose }: Props) {
 
             {error && <p className="import-error-msg">{error}</p>}
 
+            {geo && (
+              <p className="import-geo-progress">{t.import.geocoding} {geo.done}/{geo.total}</p>
+            )}
+
             <div className="import-actions">
               <button disabled={!canImport || busy} onClick={runImport}>
-                {busy ? t.import.importing : parsed ? t.import.importN(parsed.data.persons.length) : t.import.importBtn}
+                {geo
+                  ? `${t.import.geocoding} ${geo.done}/${geo.total}`
+                  : busy
+                    ? t.import.importing
+                    : parsed
+                      ? t.import.importN(parsed.data.persons.length)
+                      : t.import.importBtn}
               </button>
               <button className="add-rel-cancel" onClick={onClose}>{t.import.cancel}</button>
             </div>
