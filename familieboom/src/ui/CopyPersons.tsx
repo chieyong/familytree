@@ -9,6 +9,8 @@ import { useVisualViewportOverlay } from './useVisualViewportOverlay';
 interface Props {
   /** De boom waar de personen naartoe gekopieerd worden. */
   targetFamilyId: string;
+  /** Naam van de doelboom — getoond in de titel voor duidelijkheid. */
+  targetName: string;
   onClose: () => void;
 }
 
@@ -32,7 +34,7 @@ function matchKey(givenNames: string[] | null, callName: string | null, familyNa
 }
 
 /** Kopieer een selectie personen (+ onderlinge relaties) uit een andere eigen boom. */
-export function CopyPersons({ targetFamilyId, onClose }: Props) {
+export function CopyPersons({ targetFamilyId, targetName, onClose }: Props) {
   const bumpData = useAppStore((s) => s.bumpData);
   const t = useT();
   const { families } = useFamilies();
@@ -172,7 +174,7 @@ export function CopyPersons({ targetFamilyId, onClose }: Props) {
   return (
     <div className="auth-overlay" ref={overlayRef} onClick={onClose}>
       <div className="welcome-card import-card" onClick={(e) => e.stopPropagation()}>
-        <h2>{t.copy.title}</h2>
+        <h2>{t.copy.title} <span className="panel-title-target">→ {targetName}</span></h2>
 
         {doneCount != null ? (
           <>

@@ -1,7 +1,7 @@
 # Status & handoff
 
 Korte overdracht zodat een nieuwe sessie (ook op mobiel/Termius) verder kan.
-Laatst bijgewerkt: 2026-07-04.
+Laatst bijgewerkt: 2026-07-10.
 
 Handige URL-params: `?backend=fixtures|supabase`, `?view=artwork|navigation|globe`,
 `?theme=light|dark`, `?lang=nl|en|zh|id`, `?focus=<id>`, `?tour=1` (opent de
@@ -58,9 +58,39 @@ opnieuw draaien, dat kan geen kwaad.
 | 27 | `20260704130000_write_boundaries.sql` | security-review: family_id-grens afgedwongen — `add_relative` checkt anker∈familie, `unions_write`/`plinks_write` with check eist eindpunten∈family_id, `resolve_proposal` checkt anker én gekoppelde persoon∈familie. Vereist mig 26 (`person_in_family`) | ✅ (2026-07-04) |
 | 28 | `20260704140000_privacy_consistency.sql` | security-review: privé-relaties alleen owner/betrokkene (unions/plinks-leespaden van can_manage_person → is_owner/is_self; partner ziet eigen relatie nu ook als viewer), `detail_visibility` op parent_links wordt eindelijk gemaskeerd (role→'biological' + `detailHidden`), `fully_hidden` geldt nu ook voor de owner + trigger `persons_guard` (vlag alleen door persoon zelf; family_id/created_by onveranderlijk), `copy_persons` slaat fully_hidden over, rer_update alleen aanvrager/owner. Bevat de volledige `_build_graph` incl. residences (superset van mig 25) | ✅ (2026-07-04) |
 | 29 | `20260704150000_view_as.sql` | **"Bekijk als …"** (owner-preview): basis-helpers `is_member`/`is_owner`/`role_in_family`/`is_self` worden override-bewust via transactie-lokale GUC `app.view_as` (afgeleiden `is_owner_of_person`/`can_manage_person` erven het). RPC's `get_full_graph_as`/`get_ego_graph_as` gaten op ECHTE owner (`_assert_real_owner`, langs override heen), zetten override, roepen ongewijzigd `_build_graph`. Zonder override = identiek gedrag. Verlaagt alleen rechten → geen escalatie mogelijk | ✅ (2026-07-04) |
+| 30 | `20260710120000_multiple_nicknames.sql` | **meerdere bijnamen**: kolom `nicknames text[]` + backfill uit scalar `nickname`; `_build_graph` geeft nu de array `nicknames` terug (met terugval op de scalar). Additief — scalar `nickname` blijft en wordt door de frontend gesynchroniseerd op `nicknames[0]` (achterwaartse compat) | ✅ (2026-07-10) |
+| 31 | `20260710140000_import_rich.sql` | **import verrijkt + round-trip**: helper `_import_place` (server-side plaats-upsert); `import_family` schrijft nu ook roepnaam, `nicknames[]`, zichtbaarheid, geboorte-/sterfteplaats + woonplaatsen. Rij met `db_id` → bestaande **bijwerken**, zonder → nieuwe aanmaken; ouder-kind/unions worden ontdubbeld (re-import voegt alleen nieuw toe) | ✅ (2026-07-10) |
 
-**Actie voor een verse sessie:** migraties t/m 29 zijn gedraaid (25–29 op 2026-07-04).
+**Actie voor een verse sessie:** migraties t/m 31 zijn gedraaid (30–31 op 2026-07-10).
 Niets meer open.
+
+**Gekoppelde bomen — samengevoegde weergave (2026-07-10)** — meerdere gekoppelde
+familiebomen tegelijk tonen als één doorlopende boom. `mergeGraphs`
+(`src/domain/mergeGraphs.ts`) naait families op de brugpersonen (`tree_links`) én
+op identiteit (genormaliseerde naam + geboortejaar) tot één graaf; ontdubbelt
+personen/unions/parentLinks. Kiezer `LinkedTrees` (store `linkedFamilyIds` +
+`toggleLinkedFamily`, gewist bij familiewissel): vink gekoppelde families aan;
+families zonder toegang staan grijs met "toegang vragen" (gedeelde
+`askFamilyAccess`, zelfde flow als brug-oversteken). Kleuraccent per herkomst-familie
+(ring op de knopen, `originColorMap` in `theme.ts`) + mini-legenda. Alleen bij een
+echte familie, niet tijdens "Bekijk als …"; forceert de "hele boom"-scope.
+
+**Meerdere bijnamen (2026-07-10)** — `Person.nicknames?: string[]` (eerste = primair,
+boom-label bij `preferredName:'nickname'`). Bewerkscherm: lijst van bijnaam-velden
+(auto-opslaan); kaart toont primaire + teller (`'David' +3`), paneel de volledige
+lijst. Zie mig 30.
+
+**CSV-export + import round-trip (2026-07-10)** — export-knop in het familie-menu
+(`FamilyMenu`, elk lid): `exportFamilyCsv` (`src/data/importTemplate.ts`) schrijft de
+actieve boom naar CSV in (een superset van) het import-sjabloon. Kolom `db_id` =
+echte database-id (identiteit voor re-import), leesbare `id`-slug (naam-jaar) voor de
+relatie-verwijzingen. Import (`ImportFamily`, owner-only, weer aan): parser leest de
+rijke velden; `geocodeImport` (`src/data/importGeocode.ts`) zoekt plaatsnamen op via
+Nominatim (client-side, ~1/sec, met voortgang; naam gaat altijd mee, coördinaten
+optioneel → geen wis bij mislukte geocode). Rij met `db_id` → bijwerken (incl.
+woonplaatsen, autoritair vanuit CSV), zonder → nieuw; relaties ontdubbeld. Zie mig 31.
+Grens: velden buiten het platte formaat (foto, geb.-maand/-dag, notities) worden bij
+update níét aangeraakt; meerdere ouderparen/partners passen niet volledig in het CSV.
 
 **"Bekijk als …" (2026-07-04, Opus-sessie)** — PowerBI-achtige owner-preview om de
 zojuist geharde RLS te testen. **Faithful, server-side**: de echte RLS wordt opnieuw

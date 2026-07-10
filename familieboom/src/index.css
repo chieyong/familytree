@@ -2709,6 +2709,37 @@ body {
   background: var(--surface-hover);
 }
 
+/* Actieve boom in de lijst: accentkleur zodat duidelijk is welke boom actief is. */
+.family-item.active {
+  color: var(--accent);
+}
+
+/* Kopje boven de acties: normaal (niet-uppercase) zodat de familienaam leest. */
+.family-actions-head {
+  margin-top: 4px;
+  border-top: 1px solid var(--surface-border);
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.72rem;
+}
+
+.family-actions-head strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* Doelboom-suffix in een modaltitel. */
+.panel-title-target {
+  color: var(--ink-dim);
+  font-weight: 500;
+}
+
+.import-geo-progress {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}
+
 .family-role {
   font-size: 0.62rem;
   color: var(--ink-dim);

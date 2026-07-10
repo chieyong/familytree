@@ -5,6 +5,8 @@ import { useFamilies } from './useFamilies';
 import { useT } from './useT';
 import { ImportFamily } from './ImportFamily';
 import { CopyPersons } from './CopyPersons';
+import { SupabaseRepository } from '../data/SupabaseRepository';
+import { exportFamilyCsv } from '../data/importTemplate';
 
 // 'demo' (oude Nederlandse familie) is verborgen maar blijft bereikbaar via ?data=demo.
 const PRESET_IDS: DatasetId[] = ['diaspora', 'habsburg'];
@@ -46,9 +48,7 @@ export function FamilyMenu() {
 
   // Bulk-import alleen voor de eigenaar van de actieve familie (RPC dwingt dit
   // ook af, maar zo tonen we de knop alleen waar 'ie zin heeft).
-  // Tijdelijk uitgeschakeld (front-end): zet IMPORT_ENABLED weer op true om de
-  // knop terug te brengen. Back-end/RPC blijven ongemoeid.
-  const IMPORT_ENABLED = false;
+  const IMPORT_ENABLED = true;
   const canImport =
     IMPORT_ENABLED &&
     !!activeFamily &&
@@ -60,6 +60,30 @@ export function FamilyMenu() {
     !!activeFamily &&
     families.find((f) => f.id === activeFamily.id)?.role === 'owner' &&
     families.some((f) => f.role === 'owner' && f.id !== activeFamily.id);
+
+  // Elk lid mag exporteren wat het mag zien (RLS begrenst de graaf al).
+  const canExport = !!activeFamily && !!user && !!supabase;
+  const [exporting, setExporting] = useState(false);
+
+  const onExport = async () => {
+    if (!activeFamily) return;
+    setExporting(true);
+    try {
+      const graph = await new SupabaseRepository(activeFamily.id).getFullGraph();
+      const csv = exportFamilyCsv(graph);
+      // BOM zodat Excel/Sheets de UTF-8 (Chinese namen e.d.) juist leest.
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${activeFamily.label || 'familieboom'}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setOpen(false);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const choosePreset = (id: DatasetId) => {
     setDataset(id);
@@ -109,7 +133,12 @@ export function FamilyMenu() {
               <div className="family-group">{t.family.mine}</div>
               {families.length === 0 && <div className="family-empty">{t.family.noOwn}</div>}
               {families.map((f) => (
-                <button key={f.id} className="family-item" onClick={() => chooseFamily(f)}>
+                <button
+                  key={f.id}
+                  className={`family-item${activeFamily?.id === f.id ? ' active' : ''}`}
+                  aria-current={activeFamily?.id === f.id}
+                  onClick={() => chooseFamily(f)}
+                >
                   {f.name}
                   <span className="family-role">{f.role}</span>
                 </button>
@@ -132,6 +161,12 @@ export function FamilyMenu() {
                 </button>
               )}
 
+              {activeFamily && (canImport || canCopy || canExport) && (
+                <div className="family-group family-actions-head">
+                  {t.family.thisTree}: <strong>{activeFamily.label}</strong>
+                </div>
+              )}
+
               {canImport && (
                 <button
                   className="family-item family-import"
@@ -149,6 +184,16 @@ export function FamilyMenu() {
                   {t.family.copyPeople}
                 </button>
               )}
+
+              {canExport && (
+                <button
+                  className="family-item family-import"
+                  onClick={onExport}
+                  disabled={exporting}
+                >
+                  {t.family.exportCsv}
+                </button>
+              )}
             </>
           )}
 
@@ -157,11 +202,11 @@ export function FamilyMenu() {
       )}
 
       {importing && activeFamily && (
-        <ImportFamily familyId={activeFamily.id} onClose={() => setImporting(false)} />
+        <ImportFamily familyId={activeFamily.id} familyName={activeFamily.label} onClose={() => setImporting(false)} />
       )}
 
       {copying && activeFamily && (
-        <CopyPersons targetFamilyId={activeFamily.id} onClose={() => setCopying(false)} />
+        <CopyPersons targetFamilyId={activeFamily.id} targetName={activeFamily.label} onClose={() => setCopying(false)} />
       )}
     </div>
   );
