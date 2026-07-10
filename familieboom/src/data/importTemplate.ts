@@ -61,14 +61,18 @@ const COLUMNS: Record<string, string[]> = {
   partner: ['partner_id', 'partner'],
 };
 
-/** Voorbeeld-template om te downloaden (komma-gescheiden). */
+// Voorbeeld-template om te downloaden — zelfde kolommen als de export.
+// `db_id` laat je leeg bij nieuwe personen (gevuld = bestaande persoon bijwerken).
+// `id` is een vrije sleutel waar vader_id/moeder_id/partner_id naar verwijzen.
+// Meerdere bijnamen scheid je met " | "; woonplaatsen met "; " (optioneel jaar
+// tussen haakjes). Zichtbaarheid: familie of privé.
 export const TEMPLATE_CSV = [
-  'id,voornaam,achternaam,eigen_schrift,bijnaam,geslacht,geboorte,overlijden,vader_id,moeder_id,partner_id',
-  'opa,Jan,de Vries,,Jantje,m,1940,2010,,,oma',
-  'oma,Maria,Bakker,,,f,1942,,,,opa',
-  'vader,Piet,de Vries,,,m,1968,,opa,oma,moeder',
-  'moeder,Anne,Smit,,,f,1970,,,,vader',
-  'kind,Lisa,de Vries,林麗莎,Lies,f,1995,,vader,moeder,',
+  'db_id,id,voornaam,achternaam,eigen_schrift,bijnaam,roepnaam,geslacht,geboorte,geboorteplaats,overlijden,sterfteplaats,woonplaatsen,zichtbaarheid,vader_id,moeder_id,partner_id',
+  ',opa,Jan,de Vries,,Jantje,,m,1940,Utrecht,2010,Amsterdam,,familie,,,oma',
+  ',oma,Maria,Bakker,,,,f,1942,Rotterdam,,,Amsterdam,familie,,,opa',
+  ',vader,Piet,de Vries,,,Pietje,m,1968,Amsterdam,,,,familie,opa,oma,moeder',
+  ',moeder,Anne,Smit,,,,f,1970,Den Haag,,,,familie,,,vader',
+  ',kind,Lisa,de Vries,林麗莎,Lies | Liesje,,f,1995,Amsterdam,,,Utrecht (2015); Berlijn (2020),privé,vader,moeder,',
 ].join('\n');
 
 function detectDelimiter(headerLine: string): string {
