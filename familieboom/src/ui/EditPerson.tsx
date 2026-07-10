@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Person, Visibility } from '../data/types';
-import { addResidence, deletePerson, removePersonPhoto, removeResidence, setPersonPlace, signedAvatarUrls, updatePerson, uploadPersonPhoto, type PersonEdit, type PlaceInput } from '../data/mutations';
+import { addResidence, deletePerson, removePersonPhoto, removeResidence, setPersonPlace, signedAvatarUrls, updatePerson, updateResidence, uploadPersonPhoto, type PersonEdit, type PlaceInput } from '../data/mutations';
+import type { Residence } from '../data/types';
 import { FloatField } from './FloatField';
 import { PlaceField } from './PlaceField';
 import { PhotoEditor } from './PhotoEditor';
@@ -36,7 +37,7 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
   const [callName, setCallName] = useState(person.callName ?? '');
   const [familyName, setFamilyName] = useState(person.familyName ?? '');
   const [nameNative, setNameNative] = useState(person.nameNative ?? '');
-  const [nickname, setNickname] = useState(person.nickname ?? '');
+  const [nicknames, setNicknames] = useState<string[]>(person.nicknames ?? []);
   // "Toon in boom" is vervangen door de roepnaam; bewaar een eventuele oude waarde.
   const preferredName = person.preferredName;
   const [sex, setSex] = useState<'m' | 'f' | 'x' | ''>(person.sex ?? '');
@@ -45,9 +46,10 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
   const [visibility, setVisibility] = useState<Visibility>(person.visibility);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
-  // Woonplaats-toevoegrij (geocoder + vanaf-jaar).
-  const [newResPlace, setNewResPlace] = useState<PlaceInput | null>(null);
+  // Woonplaats-toevoegrij (geocoder + vanaf-jaar). resKey remount het plaatsveld
+  // na een toevoeging, zodat het weer leeg is voor de volgende woonplaats.
   const [newResYear, setNewResYear] = useState('');
+  const [resKey, setResKey] = useState(0);
 
   // Profielfoto: huidige (ondertekende) preview + upload/verwijder.
   const [photoUrl, setPhotoUrl] = useState<string>();
@@ -125,7 +127,7 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
     callName: callName.trim() || undefined,
     familyName: familyName.trim() || undefined,
     nameNative: nameNative.trim() || undefined,
-    nickname: nickname.trim() || undefined,
+    nicknames: nicknames.map((n) => n.trim()).filter(Boolean),
     preferredName,
     sex: sex || undefined,
     birthYear: birthYear ? Number(birthYear) : undefined,
@@ -154,7 +156,7 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
     }, 700);
     return () => clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [given, callName, familyName, nameNative, nickname, preferredName, sex, birthYear, deathYear, visibility]);
+  }, [given, callName, familyName, nameNative, nicknames, preferredName, sex, birthYear, deathYear, visibility]);
 
   const submitProposal = async () => {
     if (!given.trim() || !onSubmitProposal) return;
@@ -182,14 +184,17 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
     }
   };
 
-  const onAddResidence = async () => {
-    if (!newResPlace) return;
+  // Woonplaats wordt direct opgeslagen zodra je een plaats kiest (auto-opslaan,
+  // net als de geboorte-/sterfteplaats). Het optionele 'vanaf'-jaar dat op dat
+  // moment in het veld staat gaat mee; daarna wordt de rij weer leeggemaakt.
+  const onAddResidence = async (place: PlaceInput | null) => {
+    if (!place) return;
     setSaveState('saving');
     setError(undefined);
     try {
-      await addResidence(person.id, newResPlace, newResYear ? Number(newResYear) : undefined);
-      setNewResPlace(null);
+      await addResidence(person.id, place, newResYear ? Number(newResYear) : undefined);
       setNewResYear('');
+      setResKey((k) => k + 1);
       bumpData();
       setSaveState('saved');
     } catch (err) {
@@ -203,6 +208,19 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
     setError(undefined);
     try {
       await removeResidence(id);
+      bumpData();
+      setSaveState('saved');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.edit.saveFailed);
+      setSaveState('idle');
+    }
+  };
+
+  const onResidenceYear = async (id: string, fromYear?: number) => {
+    setSaveState('saving');
+    setError(undefined);
+    try {
+      await updateResidence(id, fromYear);
       bumpData();
       setSaveState('saved');
     } catch (err) {
@@ -286,8 +304,24 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
         onChange={(e) => setFamilyName(e.target.value)} />
       <FloatField label={t.edit.nativeName} value={nameNative}
         onChange={(e) => setNameNative(e.target.value)} />
-      <FloatField label={t.edit.nickname} value={nickname}
-        onChange={(e) => setNickname(e.target.value)} />
+      {/* Bijnamen: één of meer, de eerste is de primaire (boom-label). */}
+      <div className="nicknames-field">
+        <span className="edit-field-label">{t.edit.nicknamesLabel}</span>
+        {nicknames.map((n, i) => (
+          <div className="nickname-row" key={i}>
+            <FloatField label={t.edit.nickname} value={n}
+              onChange={(e) => setNicknames((nn) => nn.map((x, j) => (j === i ? e.target.value : x)))} />
+            <button type="button" className="link-btn link-danger" aria-label={t.edit.nicknameRemove}
+              onClick={() => setNicknames((nn) => nn.filter((_, j) => j !== i))}>
+              ×
+            </button>
+          </div>
+        ))}
+        <button type="button" className="link-btn nickname-add-btn"
+          onClick={() => setNicknames((nn) => [...nn, ''])}>
+          {t.edit.nicknameAdd}
+        </button>
+      </div>
       <SexPicker value={sex} onChange={setSex} />
       <div className="add-rel-row">
         <FloatField label={t.edit.birthAbbr} inputMode="numeric"
@@ -295,41 +329,36 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
         <FloatField label={t.edit.deathAbbr} inputMode="numeric"
           value={deathYear} onChange={(e) => setDeathYear(e.target.value.replace(/\D/g, ''))} />
       </div>
-      {/* Geboorte-/sterfteplaats (geocoder) — direct opslaan, voedt de Atlas. */}
+      {/* Geboorteplaats, dan woonplaatsen (levensreis), dan sterfteplaats —
+          chronologisch. Geocoder-velden slaan direct op; voeden de Atlas. */}
       {!proposalMode && (
         <>
           <PlaceField label={t.edit.birthPlace} value={placeValue(person.birth)}
             onChange={(p) => onPlace('birth', p)} />
-          <PlaceField label={t.edit.deathPlace} value={placeValue(person.death)}
-            onChange={(p) => onPlace('death', p)} />
 
           {/* Woonplaatsen: levensreis-tussenstops op de Atlas. */}
           <div className="residences-field">
             <span className="edit-field-label">{t.edit.residencesLabel}</span>
             {(person.residences ?? []).map((r, i) => (
-              <div className="residence-row" key={r.id ?? `${r.place.name}-${i}`}>
-                <span className="residence-name">
-                  {r.place.name}{r.from?.year ? ` · ${r.from.year}` : ''}
-                </span>
-                {r.id && (
-                  <button type="button" className="link-btn link-danger" aria-label={t.edit.residenceRemove}
-                    onClick={() => onRemoveResidence(r.id!)}>
-                    ×
-                  </button>
-                )}
-              </div>
+              <ResidenceRow
+                key={r.id ?? `${r.place.name}-${i}`}
+                residence={r}
+                fromYearLabel={t.edit.fromYear}
+                removeLabel={t.edit.residenceRemove}
+                onYear={(year) => r.id && onResidenceYear(r.id, year)}
+                onRemove={() => r.id && onRemoveResidence(r.id)}
+              />
             ))}
             <div className="add-rel-row residence-add">
-              <PlaceField label={t.edit.addResidence} value={newResPlace ?? undefined}
-                onChange={setNewResPlace} />
+              <PlaceField key={resKey} label={t.edit.addResidence}
+                onChange={onAddResidence} />
               <FloatField label={t.edit.fromYear} inputMode="numeric" wrapClass="residence-year"
                 value={newResYear} onChange={(e) => setNewResYear(e.target.value.replace(/\D/g, ''))} />
             </div>
-            <button type="button" className="link-btn residence-add-btn" disabled={!newResPlace}
-              onClick={onAddResidence}>
-              {t.edit.residenceAdd}
-            </button>
           </div>
+
+          <PlaceField label={t.edit.deathPlace} value={placeValue(person.death)}
+            onChange={(p) => onPlace('death', p)} />
         </>
       )}
       {/* Zichtbaarheid als knoppen. 'openbaar' niet meer aanbiedbaar (geen publieke
@@ -373,5 +402,38 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
         </div>
       )}
     </form>
+  );
+}
+
+/** Eén woonplaats-rij: plaatsnaam + bewerkbaar vanaf-jaar (opslaan bij verlaten). */
+function ResidenceRow({
+  residence, fromYearLabel, removeLabel, onYear, onRemove,
+}: {
+  residence: Residence;
+  fromYearLabel: string;
+  removeLabel: string;
+  onYear: (year?: number) => void;
+  onRemove: () => void;
+}) {
+  const [year, setYear] = useState(residence.from?.year != null ? String(residence.from.year) : '');
+  // Externe wijziging (herladen na opslaan) spiegelen.
+  useEffect(() => {
+    setYear(residence.from?.year != null ? String(residence.from.year) : '');
+  }, [residence.from?.year]);
+
+  const commit = () => {
+    const next = year ? Number(year) : undefined;
+    if (next !== residence.from?.year) onYear(next);
+  };
+
+  return (
+    <div className="residence-row">
+      <span className="residence-name">{residence.place.name}</span>
+      <FloatField label={fromYearLabel} inputMode="numeric" wrapClass="residence-year"
+        value={year} onChange={(e) => setYear(e.target.value.replace(/\D/g, ''))} onBlur={commit} />
+      <button type="button" className="link-btn link-danger" aria-label={removeLabel} onClick={onRemove}>
+        ×
+      </button>
+    </div>
   );
 }

@@ -18,6 +18,26 @@ export const branchColor = (branch: number, theme: ThemeName = 'dark'): string =
   return colors[branch % colors.length];
 };
 
+// Herkomst-accent voor gekoppelde bomen: een ring per familie. De eigen (eerste)
+// boom is neutraal; elke gekoppelde familie krijgt om de beurt een accentkleur.
+const ORIGIN_NEUTRAL = { dark: 'rgba(236, 230, 216, 0.40)', light: 'rgba(58, 53, 44, 0.35)' };
+const ORIGIN_ACCENTS_DARK = ['#6FC3E8', '#E88BC2', '#C7B454', '#8D7BD4', '#5FB7A5', '#C9705D'];
+const ORIGIN_ACCENTS_LIGHT = ['#2E86AB', '#B5468A', '#9A7B1E', '#6B57B8', '#3E9485', '#B5503C'];
+
+/**
+ * Kleur per herkomst-familie in dezelfde volgorde als aangeleverd: index 0 (de
+ * eigen boom) is neutraal, de rest cyclet door de accentkleuren. Gedeeld door de
+ * ring op de canvas-knopen en de legenda.
+ */
+export function originColorMap(orderedFamilyIds: string[], theme: ThemeName): Map<string, string> {
+  const accents = theme === 'light' ? ORIGIN_ACCENTS_LIGHT : ORIGIN_ACCENTS_DARK;
+  const map = new Map<string, string>();
+  orderedFamilyIds.forEach((id, i) => {
+    map.set(id, i === 0 ? ORIGIN_NEUTRAL[theme] : accents[(i - 1) % accents.length]);
+  });
+  return map;
+}
+
 /** Thema-afhankelijke kleuren die niet uit het tak-palet komen (voor de SVG). */
 export interface Palette {
   axis: string;
@@ -103,7 +123,7 @@ export function shortName(person: Person): string {
   // Voorkeursnaam als hoofd-label; valt terug op de volledige naam als leeg.
   let name = full;
   if (person.preferredName === 'native' && person.nameNative) name = person.nameNative;
-  else if (person.preferredName === 'nickname' && person.nickname) name = person.nickname;
+  else if (person.preferredName === 'nickname' && person.nicknames?.[0]) name = person.nicknames[0];
   // Wikidata-items zonder label leveren een ruwe QID op — toon die niet.
   return /^Q\d+$/.test(name) ? 'Naam onbekend' : name;
 }

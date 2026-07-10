@@ -25,6 +25,8 @@ interface Props {
   /** "3 generaties"-stand: alles moet in één oogopslag passen, dus de
    *  minimale nodegrootte mag verder zakken dan in de Kring-stand. */
   fitAll?: boolean;
+  /** Herkomst-familie → ringkleur (gekoppelde bomen). Leeg = geen ring. */
+  originColors?: Map<string, string>;
   onFocus: (id: PersonID) => void;
   /** Klik op leeg vlak (geen node) → selectie opheffen. */
   onDeselect?: () => void;
@@ -76,7 +78,7 @@ export interface FamilyCanvasHandle {
  * elementen (levenslijnen, tijdas, de rest van de familie) in- of uitfaden.
  */
 export const FamilyCanvas = forwardRef<FamilyCanvasHandle, Props>(function FamilyCanvas(
-  { mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, fitAll, onFocus, onDeselect },
+  { mode, fullGraph, egoGraph, focusId, branches, theme, photos, photoUrls, fitAll, originColors, onFocus, onDeselect },
   ref,
 ) {
   const art = useMemo(() => flowLayout(fullGraph), [fullGraph]);
@@ -521,6 +523,16 @@ export const FamilyCanvas = forwardRef<FamilyCanvasHandle, Props>(function Famil
                     {/* Tak-kleur blijft als ring om de foto. */}
                     <circle r={active.r} fill="none" stroke={color} strokeWidth={thin(2.5)} opacity={0.9} />
                   </g>
+                )}
+                {/* Herkomst-ring: uit welke (gekoppelde) familie deze persoon komt. */}
+                {originColors && originColors.get(artNode.person.originFamilyId ?? '') && (
+                  <circle
+                    r={active.r + thin(3.5)}
+                    fill="none"
+                    stroke={originColors.get(artNode.person.originFamilyId ?? '')}
+                    strokeWidth={thin(2)}
+                    opacity={0.9}
+                  />
                 )}
                 {/* Brug-markering: deze persoon staat ook in een andere boom. */}
                 {isNav && artNode.person.bridge && (

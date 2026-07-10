@@ -7,6 +7,7 @@ import { demoFamily } from './data/fixtures/demoFamily';
 import { diasporaFamily } from './data/fixtures/diaspora';
 import habsburgJson from './data/fixtures/habsburg.json';
 import { KinshipService } from './domain/kinship';
+import { mergeGraphs, type OriginGraph } from './domain/mergeGraphs';
 import { describeRelation } from './domain/relationNaming';
 import { acceptInvite } from './data/invites';
 import { requestFamilyAccess } from './data/bridges';
@@ -23,6 +24,7 @@ import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas, type FamilyCanvasHandle } from './ui/FamilyCanvas';
 import { GlobeCanvas } from './ui/GlobeCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
+import { LinkedTrees, type LinkedCandidate } from './ui/LinkedTrees';
 import { ShareFamily } from './ui/ShareFamily';
 import { ViewAsControl } from './ui/ViewAsControl';
 import { OverflowMenu } from './ui/OverflowMenu';
@@ -30,13 +32,13 @@ import { Leader } from './ui/Leader';
 import { Tour } from './ui/Tour';
 import { BACKEND, DATASET_EGO, DATASET_FAMILY_ID, FIXTURES_ONLY_DATASETS, useAppStore, type DatasetId } from './ui/store';
 import { useT } from './ui/useT';
-import { lifespan, nativeSubline, shortName } from './ui/theme';
+import { lifespan, nativeSubline, originColorMap, shortName } from './ui/theme';
 
 const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, diaspora: diasporaFamily, habsburg };
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, viewAs, bridgeReturn, dataVersion, user, notice, guideOpen, authOpen, globeLayer, treeScope, topbarPop, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setViewAs, setAuthOpen, setAboutOpen, setNotice, bumpData, setTreeScope } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, viewAs, bridgeReturn, linkedFamilyIds, dataVersion, user, notice, guideOpen, authOpen, globeLayer, treeScope, topbarPop, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setViewAs, setAuthOpen, setAboutOpen, setNotice, bumpData, setTreeScope, toggleLinkedFamily } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();
@@ -159,9 +161,35 @@ export default function App() {
     return map;
   }, [fullGraph, photoUrls]);
 
+  // Samengevoegde weergave alleen bij een echte (Supabase-)familie, niet tijdens
+  // een "Bekijk als …"-simulatie (die draait server-side met een andere identiteit).
+  const linkedActive = !!activeFamily && !viewAs && linkedFamilyIds.length > 0;
+
   useEffect(() => {
-    repository.getFullGraph().then(setFullGraph);
-  }, [repository, dataVersion]);
+    let cancelled = false;
+    (async () => {
+      const primary = await repository.getFullGraph();
+      if (cancelled) return;
+      if (activeFamily && !viewAs && linkedFamilyIds.length > 0) {
+        // Elke gekoppelde familie apart laden; geen toegang → stil overslaan.
+        const others: OriginGraph[] = [];
+        for (const fid of linkedFamilyIds) {
+          try {
+            const graph = await new SupabaseRepository(fid).getFullGraph();
+            if (graph.persons.length > 0) others.push({ familyId: fid, graph });
+          } catch {
+            /* geen toegang tot deze familie — overslaan */
+          }
+        }
+        if (cancelled) return;
+        setFullGraph(mergeGraphs({ familyId: activeFamily.id, graph: primary }, others));
+      } else {
+        setFullGraph(primary);
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [repository, dataVersion, linkedFamilyIds]);
 
   useEffect(() => {
     // Depth 2 is de norm; bij zeer vertakte families (royals) wordt dat te
@@ -234,7 +262,46 @@ export default function App() {
   // "Totaal": de volledige familie, alle generaties helemaal uitgeklapt in
   // één oogopslag (egoLayout op de complete graaf, rond de focuspersoon).
   // De BFS-ego-graaf blijft de "Kring"-stand.
-  const showAll = treeScope === 'all';
+  // Bij de samengevoegde weergave altijd de hele boom tonen: de "Kring" komt van
+  // een server-side BFS per familie en zou de gekoppelde boom niet meespannen.
+  const showAll = treeScope === 'all' || linkedActive;
+
+  // Gekoppelde families = de families waarnaar de brugpersonen in de huidige
+  // graaf verwijzen (zonder de actieve familie zelf). Zodra een gekoppelde boom
+  // is samengevoegd, komen díens bruggen erbij → je kunt stap voor stap verder
+  // koppelen (A→B→C).
+  const linkedCandidates = useMemo<LinkedCandidate[]>(() => {
+    if (!activeFamily || !fullGraph) return [];
+    const map = new Map<string, string>();
+    for (const p of fullGraph.persons) {
+      if (p.bridge && p.bridge.familyId !== activeFamily.id) {
+        map.set(p.bridge.familyId, p.bridge.familyName);
+      }
+    }
+    return [...map].map(([id, name]) => ({ id, name }));
+  }, [fullGraph, activeFamily]);
+
+  // Herkomst-legenda + ringkleuren: eigen boom eerst (neutraal), daarna elke
+  // gekoppelde familie die echt in de samengevoegde graaf voorkomt.
+  const originLegend = useMemo(() => {
+    if (!linkedActive || !activeFamily || !fullGraph) return [];
+    const present = new Set(
+      fullGraph.persons.map((p) => p.originFamilyId).filter((id): id is string => !!id),
+    );
+    const nameById = new Map(linkedCandidates.map((c) => [c.id, c.name]));
+    const ordered = [activeFamily.id, ...linkedFamilyIds.filter((id) => present.has(id))];
+    const colors = originColorMap(ordered, theme);
+    return ordered.map((id) => ({
+      id,
+      name: id === activeFamily.id ? activeFamily.label : nameById.get(id) ?? id,
+      color: colors.get(id)!,
+    }));
+  }, [linkedActive, activeFamily, fullGraph, linkedFamilyIds, linkedCandidates, theme]);
+
+  const originColors = useMemo(
+    () => (originLegend.length > 1 ? new Map(originLegend.map((o) => [o.id, o.color])) : undefined),
+    [originLegend],
+  );
 
   // Legenda toont alleen regels die ook echt voorkomen in wat je nu ziet
   // (bv. geen "adoptie" als niemand geadopteerd is). Tableau toont altijd de
@@ -332,16 +399,22 @@ export default function App() {
     if (families.some((f) => f.id === b.familyId)) {
       crossTo({ id: b.familyId, ego: b.personId, label: b.familyName });
     } else {
-      try {
-        const status = await requestFamilyAccess(b.familyId);
-        setNotice(
-          status === 'active'
-            ? t.bridgeCross.alreadyAccess(b.familyName)
-            : t.bridgeCross.requested(b.familyName),
-        );
-      } catch (err) {
-        setNotice(err instanceof Error ? err.message : t.bridgeCross.failed);
-      }
+      await askFamilyAccess(b.familyId, b.familyName);
+    }
+  };
+
+  // Toegang vragen tot een via een brug verbonden familie (gedeeld door het
+  // brug-oversteken en de kiezer voor gekoppelde bomen).
+  const askFamilyAccess = async (familyId: string, familyName: string) => {
+    try {
+      const status = await requestFamilyAccess(familyId);
+      setNotice(
+        status === 'active'
+          ? t.bridgeCross.alreadyAccess(familyName)
+          : t.bridgeCross.requested(familyName),
+      );
+    } catch (err) {
+      setNotice(err instanceof Error ? err.message : t.bridgeCross.failed);
     }
   };
 
@@ -460,24 +533,48 @@ export default function App() {
             photos={photos}
             photoUrls={photoByPerson}
             fitAll={showAll}
+            originColors={originColors}
             onFocus={(id) => { setFocus(id); setCardOpen(true); }}
             onDeselect={() => setCardOpen(false)}
           />
         )}
         {/* Wijkt zolang een topbar-menu open is: de dropdown valt hier overheen. */}
-        {fullGraph && mode === 'navigation' && !topbarPop && (
+        {fullGraph && mode !== 'globe' && !topbarPop && (
           <div
-            className="globe-layers"
-            role="group"
-            aria-label={t.tree.scopeLabel}
+            className="tree-controls"
             style={layerAnchor ? { top: layerAnchor.top, right: layerAnchor.right, left: 'auto' } : undefined}
           >
-            <button className={showAll ? '' : 'active'} onClick={() => setTreeScope('circle')}>
-              {t.tree.circle}
-            </button>
-            <button className={showAll ? 'active' : ''} onClick={() => setTreeScope('all')}>
-              {t.tree.total}
-            </button>
+            {mode === 'navigation' && (
+              <div className="globe-layers" role="group" aria-label={t.tree.scopeLabel}>
+                <button
+                  className={showAll ? '' : 'active'}
+                  disabled={linkedActive}
+                  onClick={() => setTreeScope('circle')}
+                >
+                  {t.tree.circle}
+                </button>
+                <button className={showAll ? 'active' : ''} onClick={() => setTreeScope('all')}>
+                  {t.tree.total}
+                </button>
+              </div>
+            )}
+            {activeFamily && !viewAs && (
+              <LinkedTrees
+                candidates={linkedCandidates}
+                accessibleIds={families.map((f) => f.id)}
+                onRequestAccess={askFamilyAccess}
+              />
+            )}
+            {originColors && originLegend.length > 1 && (
+              <div className="origin-legend" aria-label={t.tree.linkedLabel}>
+                {originLegend.map((o) => (
+                  <span key={o.id} className="origin-legend-item">
+                    <span className="origin-legend-dot" style={{ background: o.color }} />
+                    {o.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>
@@ -494,7 +591,11 @@ export default function App() {
           <div className="person-card-main">
             <strong>{shortName(focusPerson)}</strong>
             {nativeSubline(focusPerson) && <span className="name-native">{nativeSubline(focusPerson)}</span>}
-            {focusPerson.nickname && focusPerson.preferredName !== 'nickname' && <span className="name-nick">‘{focusPerson.nickname}’</span>}
+            {focusPerson.nicknames?.[0] && focusPerson.preferredName !== 'nickname' && (
+              <span className="name-nick">
+                ‘{focusPerson.nicknames[0]}’{focusPerson.nicknames.length > 1 ? ` +${focusPerson.nicknames.length - 1}` : ''}
+              </span>
+            )}
             <span>{lifespan(focusPerson)}</span>
             {focusPerson.birth?.place && <span>{focusPerson.birth.place.name}</span>}
           </div>

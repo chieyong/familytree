@@ -52,8 +52,9 @@ export interface Person {
   displayName?: string;
   /** Naam in eigen schrift (Chinees, Cyrillisch, Arabisch…); cultuur-neutraal vrij veld. */
   nameNative?: string;
-  /** Bijnaam (informeel, bv. "Joop") — los van de roepnaam. */
-  nickname?: string;
+  /** Bijnamen (informeel, bv. "Joop", "de Lange") — los van de roepnaam. De
+   *  eerste is de primaire (kan als boom-label dienen bij preferredName 'nickname'). */
+  nicknames?: string[];
   /**
    * Welke naam als hoofd-label in de boom getoond wordt. 'full' (standaard) =
    * officiële naam, 'native' = naam in eigen schrift, 'nickname' = bijnaam.
@@ -64,6 +65,12 @@ export interface Person {
   photoPath?: string;
   /** Brug naar dezelfde persoon in een andere familie-boom (gekoppelde bomen). */
   bridge?: { familyId: string; familyName: string; personId: string };
+  /**
+   * Uit welke familie-boom deze persoon oorspronkelijk komt. Alleen gezet in de
+   * samengevoegde weergave (mergeGraphs) om per herkomst een kleuraccent te
+   * geven; leeg in een enkelvoudige familie-graaf.
+   */
+  originFamilyId?: string;
   sex?: 'm' | 'f' | 'x';
   birth?: { date?: FuzzyDate; place?: Place };
   death?: { date?: FuzzyDate; place?: Place };
