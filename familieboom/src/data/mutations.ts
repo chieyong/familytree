@@ -130,7 +130,7 @@ export interface PersonEdit {
   callName?: string;
   familyName?: string;
   nameNative?: string;
-  nickname?: string;
+  nicknames?: string[];
   preferredName?: 'full' | 'native' | 'nickname';
   sex?: 'm' | 'f' | 'x';
   birthYear?: number;
@@ -145,7 +145,10 @@ function personEditColumns(e: PersonEdit) {
     call_name: e.callName?.trim() || null,
     family_name: e.familyName || null,
     name_native: e.nameNative || null,
-    nickname: e.nickname || null,
+    // Array is de bron; scalar `nickname` gesynchroniseerd op de eerste, zodat
+    // DB-functies die nog de scalar lezen (imports, voorstellen) kloppen.
+    nicknames: e.nicknames ?? [],
+    nickname: e.nicknames?.[0] || null,
     preferred_name: e.preferredName && e.preferredName !== 'full' ? e.preferredName : null,
     sex: e.sex ?? null,
     birth_year: e.birthYear ?? null,
@@ -215,6 +218,16 @@ export async function addResidence(personId: string, place: PlaceInput, fromYear
   const { error } = await supabase
     .from('residences')
     .insert({ person_id: personId, place_id: placeId, from_year: fromYear ?? null });
+  if (error) throw error;
+}
+
+/** Werkt het vanaf-jaar van een woonplaats bij (RLS-write = beheerder/bewerker). */
+export async function updateResidence(id: string, fromYear?: number): Promise<void> {
+  if (!supabase) throw new Error('Geen Supabase-client.');
+  const { error } = await supabase
+    .from('residences')
+    .update({ from_year: fromYear ?? null })
+    .eq('id', id);
   if (error) throw error;
 }
 

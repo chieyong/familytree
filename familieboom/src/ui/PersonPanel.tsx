@@ -162,11 +162,13 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, canEdit,
           </>
         ) : (
           <>
-            {(showFullNames || nativeSubline(person) || (person.nickname && person.preferredName !== 'nickname') || birthPlace || deathPlace || sexLabel || visLabel) && (
+            {(showFullNames || nativeSubline(person) || (person.nicknames?.length && person.preferredName !== 'nickname') || birthPlace || deathPlace || sexLabel || visLabel) && (
               <div className="panel-details">
                 {showFullNames && <div className="pd-fullnames">{t.edit.firstName}: {fullNames}</div>}
                 {nativeSubline(person) && <div className="pd-native">{nativeSubline(person)}</div>}
-                {person.nickname && person.preferredName !== 'nickname' && <div className="pd-nick">‘{person.nickname}’</div>}
+                {person.nicknames?.length && person.preferredName !== 'nickname' ? (
+                  <div className="pd-nick">{person.nicknames.map((n) => `‘${n}’`).join(' ')}</div>
+                ) : null}
                 {(birthPlace || deathPlace) && (
                   <div className="pd-places">
                     {birthPlace && <span>° {birthPlace}</span>}

@@ -1348,6 +1348,155 @@ body {
   cursor: not-allowed;
 }
 
+/* Verticale stack rechtsboven: scope-schakelaar + gekoppelde-bomen-kiezer.
+   Draagt de gemeten ankerpositie; de kinderen staan er statisch in. */
+.tree-controls {
+  position: absolute;
+  top: 56px;
+  right: 18px;
+  left: auto;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.tree-controls .globe-layers {
+  position: static;
+  top: auto;
+  right: auto;
+}
+
+.linked-trees {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Herkomst-legenda onder de kiezer: kleur ↔ familie in de samengevoegde boom. */
+.origin-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(8px);
+}
+
+.origin-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-dim);
+  font: 600 0.72rem/1 var(--font-ui);
+}
+
+.origin-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.linked-trees-btn {
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  color: var(--ink-dim);
+  font: 600 0.74rem/1 var(--font-ui);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.linked-trees-btn.active {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+.linked-trees-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+}
+
+.linked-trees-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 13;
+  min-width: 200px;
+  max-width: min(280px, 80vw);
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.linked-trees-hint {
+  margin: 2px 4px 8px;
+  color: var(--ink-dim);
+  font: 500 0.72rem/1.4 var(--font-ui);
+}
+
+.linked-trees-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 6px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--ink);
+  font: 500 0.82rem/1.2 var(--font-ui);
+}
+
+.linked-trees-row:hover {
+  background: var(--surface-hover, rgba(127, 127, 127, 0.12));
+}
+
+.linked-trees-row input {
+  accent-color: var(--accent);
+}
+
+.linked-trees-name {
+  flex: 1;
+  text-align: left;
+}
+
+/* Familie zonder toegang: grijs, met een 'toegang vragen'-affordance. */
+.linked-trees-row.no-access {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font: 500 0.82rem/1.2 var(--font-ui);
+}
+
+.linked-trees-row.no-access .linked-trees-name {
+  opacity: 0.65;
+}
+
+.linked-trees-request {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-hover, rgba(127, 127, 127, 0.14));
+  color: var(--accent);
+  font: 600 0.68rem/1 var(--font-ui);
+}
+
+.linked-trees-row.no-access:hover .linked-trees-request {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 .globe-empty {
   position: absolute;
   top: 50%;
@@ -2032,10 +2181,30 @@ body {
   gap: 6px;
 }
 
+/* Bijnamen: lijst van tekstvelden, elk met een verwijderknop. */
+.nicknames-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nickname-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nickname-row .float-field {
+  flex: 1;
+}
+
+.nickname-add-btn {
+  align-self: flex-start;
+}
+
 .residence-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
   padding: 5px 9px;
   background: var(--surface);
@@ -2043,11 +2212,17 @@ body {
 }
 
 .residence-name {
+  flex: 1;
+  min-width: 0;
   font-size: 0.82rem;
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.residence-row .residence-year {
+  flex: 0 0 72px;
 }
 
 .residence-add {
