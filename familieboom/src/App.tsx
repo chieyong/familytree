@@ -38,7 +38,7 @@ const habsburg = habsburgJson as unknown as FamilyGraph;
 const graphByDataset: Record<DatasetId, FamilyGraph> = { demo: demoFamily, diaspora: diasporaFamily, habsburg };
 
 export default function App() {
-  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, viewAs, bridgeReturn, linkedFamilyIds, dataVersion, user, notice, guideOpen, authOpen, globeLayer, treeScope, topbarPop, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setViewAs, setAuthOpen, setAboutOpen, setNotice, bumpData, setTreeScope, toggleLinkedFamily } =
+  const { mode, dataset, focusId, ikId, theme, photos, activeFamily, viewAs, bridgeReturn, linkedFamilyIds, dataVersion, user, notice, guideOpen, authOpen, globeLayer, treeScope, topbarPop, setMode, setFocus, setIk, crossTo, crossBack, setActiveFamily, setViewAs, setAuthOpen, setAboutOpen, setNotice, bumpData, setTreeScope } =
     useAppStore();
   const t = useT();
   const { families } = useFamilies();

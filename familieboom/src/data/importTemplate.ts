@@ -122,15 +122,14 @@ function mapVisibility(raw: string): 'public' | 'family' | 'private' | undefined
 /** "Amsterdam (2000); Rotterdam" → [{name:'Amsterdam',fromYear:2000},{name:'Rotterdam'}]. */
 function parseResidences(raw: string): { name: string; fromYear?: number }[] {
   if (!raw.trim()) return [];
-  return raw
-    .split(';')
-    .map((part) => {
-      const m = part.trim().match(/^(.*?)(?:\s*\((\d{1,4})\))?$/);
-      const name = (m?.[1] ?? part).trim();
-      const year = m?.[2] ? Number(m[2]) : undefined;
-      return name ? { name, fromYear: year } : null;
-    })
-    .filter((r): r is { name: string; fromYear?: number } => r !== null);
+  const out: { name: string; fromYear?: number }[] = [];
+  for (const part of raw.split(';')) {
+    const m = part.trim().match(/^(.*?)(?:\s*\((\d{1,4})\))?$/);
+    const name = (m?.[1] ?? part).trim();
+    if (!name) continue;
+    out.push({ name, fromYear: m?.[2] ? Number(m[2]) : undefined });
+  }
+  return out;
 }
 
 function headerIndex(header: string[]): Record<string, number> {
