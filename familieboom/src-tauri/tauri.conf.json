@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Familieboom",
+  "productName": "Bloom",
   "version": "0.1.0",
   "identifier": "nl.vizcraft.familieboom",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Familieboom",
+        "title": "Bloom",
         "width": 1200,
         "height": 800,
         "minWidth": 800,
