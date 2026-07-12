@@ -10,12 +10,21 @@ Dezelfde build werkt dus als web-app in de browser én als desktop-app.
 
 ## Status per fase
 
-- **Fase 1 (nu, deze branch):** Tauri-scaffold + backend-schakelaar. `LocalRepository`
-  is nog een **placeholder** die de demo-familie teruggeeft (bewijs dat de schil +
-  schakelaar werken). Nog geen echte lokale opslag/writes.
-- **Fase 2:** SQLite (`tauri-plugin-sql`) + client-side `_build_graph` + persistente writes.
-- **Fase 3:** multi-user-UI verbergen in lokale modus (delen/rollen/bruggen/voorstellen/"Bekijk als").
-- **Fase 4:** foto's lokaal, JSON-backup/herstel, installers + downloadknop in de web-app.
+- **Fase 1 ✅:** Tauri-scaffold + backend-schakelaar (`__TAURI_INTERNALS__` /
+  `?backend=local` → `local`).
+- **Fase 2 ✅:** lokale datalaag. **Engineering-keuze: JSON-documentopslag i.p.v.
+  SQLite** — een familieboom is kleine data, single-user, geen RLS; de `FamilyGraph`
+  is meteen het opslagformaat én de back-up. `LocalStore` (`src/data/local/store.ts`)
+  houdt de graaf in geheugen, persisteert naar **localStorage** (werkt in de browser
+  én de Tauri-webview), en spiegelt de schrijf-operaties uit `mutations.ts`. Die
+  dispatchen in lokale modus naar de store. Getest met unit-tests; te proberen in de
+  browser met `?backend=local`. Een echt bestand op schijf (Tauri fs) is later een
+  swap achter `SnapshotStore`.
+- **Fase 3 (volgende):** de app in lokale modus écht bewerkbaar maken — een
+  synthetische "eigen boom" zodat `canEdit` werkt, en de multi-user-UI verbergen
+  (delen/rollen/uitnodigen/bruggen/voorstellen/"Bekijk als").
+- **Fase 4:** foto's lokaal, JSON-backup/herstel + "nieuwe lege boom", installers +
+  downloadknop in de web-app.
 
 ## Lokaal draaien (dit kan niet in de CI-sandbox — doe dit op je eigen pc)
 

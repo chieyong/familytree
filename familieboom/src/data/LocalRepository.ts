@@ -1,33 +1,32 @@
 import type { FamilyRepository } from './FamilyRepository';
 import type { FamilyGraph, Person, PersonID } from './types';
 import { FixtureRepository } from './FixtureRepository';
-import { demoFamily } from './fixtures/demoFamily';
+import { getLocalStore } from './local/store';
 
 /**
- * Lokale datalaag voor de offline desktop-app (Tauri) — single-user, geen cloud,
- * geen RLS. De data blijft op de pc van de gebruiker.
+ * Lokale datalaag voor de offline desktop-app (Tauri) én de browser-local-modus
+ * (`?backend=local`) — single-user, geen cloud, geen RLS. De data blijft op het
+ * apparaat (localStorage; later een bestand via Tauri fs).
  *
- * FASE 1 (nu): placeholder die de demo-familie teruggeeft, zodat de desktop-schil
- * en de backend-schakelaar werken en de app in een Tauri-venster opstart.
- *
- * FASE 2 (volgende): vervang de binnenkant door SQLite (tauri-plugin-sql) met een
- * client-side `_build_graph`-equivalent en persistente writes. De UI verandert
- * niet — die kent alleen dit `FamilyRepository`-contract; de schrijfkant komt
- * achter een parallelle write-interface.
+ * Lezen loopt over de live `LocalStore`-graaf; de BFS voor de ego-weergave
+ * hergebruikt de (geteste) FixtureRepository op een momentopname. Schrijven gaat
+ * via `mutations.ts`, dat in lokale modus naar dezelfde `LocalStore` dispatcht.
  */
 export class LocalRepository implements FamilyRepository {
-  private inner = new FixtureRepository(demoFamily as FamilyGraph);
+  private snapshot(): FamilyRepository {
+    return new FixtureRepository(getLocalStore().getGraph());
+  }
 
   getPerson(id: PersonID): Promise<Person | undefined> {
-    return this.inner.getPerson(id);
+    return this.snapshot().getPerson(id);
   }
   getEgoGraph(id: PersonID, depth: number): Promise<FamilyGraph> {
-    return this.inner.getEgoGraph(id, depth);
+    return this.snapshot().getEgoGraph(id, depth);
   }
   getFullGraph(): Promise<FamilyGraph> {
-    return this.inner.getFullGraph();
+    return Promise.resolve(getLocalStore().getGraph());
   }
   search(query: string): Promise<Person[]> {
-    return this.inner.search(query);
+    return this.snapshot().search(query);
   }
 }
