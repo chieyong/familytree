@@ -75,4 +75,20 @@ describe('LocalStore', () => {
     new LocalStore(persist, seed);
     expect(persist.load()?.persons).toHaveLength(2);
   });
+
+  it('zet en wist een profielfoto (data-URL)', () => {
+    const s = store();
+    s.setPhoto('a', 'data:image/png;base64,AAA');
+    expect(s.getGraph().persons.find((p) => p.id === 'a')?.photoPath).toBe('data:image/png;base64,AAA');
+    s.setPhoto('a', null);
+    expect(s.getGraph().persons.find((p) => p.id === 'a')?.photoPath).toBeUndefined();
+  });
+
+  it('vervangt de hele boom (back-up herstellen / nieuwe boom) en persisteert', () => {
+    const persist = memoryPersistence(seed);
+    const s = new LocalStore(persist);
+    s.replace({ persons: [{ id: 'x', givenNames: ['Ik'], visibility: 'family' }], unions: [], parentLinks: [] });
+    expect(s.getGraph().persons.map((p) => p.id)).toEqual(['x']);
+    expect(persist.load()?.persons).toHaveLength(1);
+  });
 });

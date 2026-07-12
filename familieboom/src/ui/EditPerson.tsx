@@ -6,7 +6,7 @@ import { FloatField } from './FloatField';
 import { PlaceField } from './PlaceField';
 import { PhotoEditor } from './PhotoEditor';
 import { SexPicker } from './SexPicker';
-import { BACKEND, useAppStore } from './store';
+import { useAppStore } from './store';
 import { useT } from './useT';
 
 interface Props {
@@ -263,8 +263,7 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
   return (
     <form className="add-relative-form" onSubmit={(e) => e.preventDefault()}>
       {/* Foto's gaan (nog) niet via voorstellen — alleen bij direct bewerken. */}
-      {/* Foto's nog niet in de lokale (offline) modus. */}
-      {!proposalMode && BACKEND !== 'local' && (
+      {!proposalMode && (
         <>
           <div className="edit-photo">
             {photoUrl ? (

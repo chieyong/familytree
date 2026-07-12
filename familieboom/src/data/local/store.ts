@@ -72,6 +72,14 @@ export class LocalStore {
     this.commit();
   }
 
+  /** Profielfoto lokaal opslaan als data-URL (of wissen). */
+  setPhoto(id: string, dataUrl: string | null) {
+    const p = this.person(id);
+    if (!p) return;
+    p.photoPath = dataUrl ?? undefined;
+    this.commit();
+  }
+
   setPersonPlace(id: string, kind: 'birth' | 'death', place: PlaceInput | null) {
     const p = this.person(id);
     if (!p) return;

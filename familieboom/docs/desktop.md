@@ -26,8 +26,14 @@ Dezelfde build werkt dus als web-app in de browser én als desktop-app.
   inloggen (AuthBar), delen (ShareFamily), "Bekijk als" (ViewAsControl), bruggen,
   "dit ben ik", en de foto-UI (foto's komen in fase 4). Te proberen in de browser
   met `?backend=local` — bewerkingen persisteren in localStorage.
-- **Fase 4:** foto's lokaal, JSON-backup/herstel + "nieuwe lege boom", installers +
-  downloadknop in de web-app.
+- **Fase 4 (grotendeels ✅):** foto's lokaal (data-URL in de graaf), JSON-back-up/
+  herstel en "nieuwe boom" (begint met alleen jezelf) — in het ⚙-menu in lokale
+  modus. **Nog te doen (laatste mijl, vereist lokale Tauri-build):** de installers
+  bouwen (`npm run tauri:build`) + hosten, en een downloadknop in de web-app.
+
+> **Let op — foto-opslag.** Lokale foto's staan als data-URL in dezelfde JSON in
+> localStorage (limiet ~5–10 MB). Prima voor een handvol foto's; bij veel/grote
+> foto's is IndexedDB of Tauri-fs-opslag een latere verbetering.
 
 ## Lokaal draaien (dit kan niet in de CI-sandbox — doe dit op je eigen pc)
 

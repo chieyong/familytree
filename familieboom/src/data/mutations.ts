@@ -349,8 +349,18 @@ const AVATAR_BUCKET = 'avatars';
 const avatarPath = (familyId: string, personId: string) => `${familyId}/${personId}`;
 
 /** Upload/vervang een profielfoto en zet photo_path op de persoon. */
+/** File → data-URL (voor de lokale foto-opslag). */
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function uploadPersonPhoto(familyId: string, personId: string, file: File): Promise<void> {
-  if (isLocal()) throw new Error('Foto’s zijn nog niet beschikbaar in de lokale modus.');
+  if (isLocal()) { getLocalStore().setPhoto(personId, await fileToDataUrl(file)); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const path = avatarPath(familyId, personId);
   const up = await supabase.storage
@@ -363,7 +373,7 @@ export async function uploadPersonPhoto(familyId: string, personId: string, file
 
 /** Verwijdert de profielfoto (storage + photo_path). */
 export async function removePersonPhoto(familyId: string, personId: string): Promise<void> {
-  if (isLocal()) return;
+  if (isLocal()) { getLocalStore().setPhoto(personId, null); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   await supabase.storage.from(AVATAR_BUCKET).remove([avatarPath(familyId, personId)]);
   const { error } = await supabase.from('persons').update({ photo_path: null }).eq('id', personId);
@@ -373,7 +383,9 @@ export async function removePersonPhoto(familyId: string, personId: string): Pro
 /** Ondertekende (tijdelijke) URL's voor een lijst foto-paden → map pad→url. */
 export async function signedAvatarUrls(paths: string[]): Promise<Map<string, string>> {
   const map = new Map<string, string>();
-  if (isLocal() || !supabase || paths.length === 0) return map;
+  // Lokaal is het pad zélf de data-URL → identiteitsmap.
+  if (isLocal()) { for (const p of paths) map.set(p, p); return map; }
+  if (!supabase || paths.length === 0) return map;
   const { data, error } = await supabase.storage.from(AVATAR_BUCKET).createSignedUrls(paths, 3600);
   if (error || !data) return map;
   for (const item of data) {

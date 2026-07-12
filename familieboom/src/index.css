@@ -297,6 +297,12 @@ body {
 
 .more-item:hover { background: var(--surface-hover); }
 
+.more-sep {
+  height: 1px;
+  margin: 5px 4px;
+  background: var(--surface-border);
+}
+
 .info-card {
   width: min(94vw, 460px);
   max-height: min(86dvh, 720px);

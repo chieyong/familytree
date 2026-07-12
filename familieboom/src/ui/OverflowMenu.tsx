@@ -1,6 +1,8 @@
 import { LANGS, type Lang } from './i18n';
-import { useAppStore } from './store';
+import { BACKEND, useAppStore } from './store';
 import { useT } from './useT';
+import { getLocalStore } from '../data/local/store';
+import type { FamilyGraph } from '../data/types';
 
 interface Props {
   /** Toont de foto-schakelaar alleen als er foto's in de boom zijn. */
@@ -62,7 +64,57 @@ export function OverflowMenu({ photosAvailable, onPrint }: Props) {
   const setAboutOpen = useAppStore((s) => s.setAboutOpen);
   const topbarPop = useAppStore((s) => s.topbarPop);
   const setTopbarPop = useAppStore((s) => s.setTopbarPop);
+  const bumpData = useAppStore((s) => s.bumpData);
+  const setActiveFamily = useAppStore((s) => s.setActiveFamily);
   const open = topbarPop === 'more';
+  const isLocal = BACKEND === 'local';
+
+  // Lokale back-up: de hele boom als JSON-bestand downloaden.
+  const onBackup = () => {
+    const blob = new Blob([JSON.stringify(getLocalStore().getGraph(), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'familieboom.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    setTopbarPop(null);
+  };
+
+  // Back-up laden (vervangt de huidige boom).
+  const onRestore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!confirm(t.local.replaceWarn)) return;
+    try {
+      const g = JSON.parse(await file.text()) as FamilyGraph;
+      if (!g || !Array.isArray(g.persons) || !Array.isArray(g.unions) || !Array.isArray(g.parentLinks)) {
+        throw new Error('bad');
+      }
+      getLocalStore().replace(g);
+      setActiveFamily({ id: 'local', ego: g.persons[0]?.id ?? '', label: 'Mijn boom' });
+      bumpData();
+      setTopbarPop(null);
+    } catch {
+      alert(t.local.restoreFailed);
+    }
+  };
+
+  // Nieuwe boom: begint met alleen jezelf (één persoon), rest wordt gewist.
+  const onNewTree = () => {
+    const name = window.prompt(t.local.newTreePrompt)?.trim();
+    if (!name) return;
+    const id = crypto.randomUUID();
+    getLocalStore().replace({
+      persons: [{ id, givenNames: [name], visibility: 'family' }],
+      unions: [],
+      parentLinks: [],
+    });
+    setActiveFamily({ id: 'local', ego: id, label: 'Mijn boom' });
+    bumpData();
+    setTopbarPop(null);
+  };
 
   return (
     <div className="more-menu">
@@ -133,6 +185,19 @@ export function OverflowMenu({ photosAvailable, onPrint }: Props) {
               >
                 {t.topbar.print}
               </button>
+            )}
+
+            {isLocal && (
+              <>
+                <div className="more-sep" />
+                <button className="more-item" onClick={onBackup}>{t.local.backup}</button>
+                <label className="more-item file-label">
+                  {t.local.restore}
+                  <input type="file" accept=".json,application/json" onChange={onRestore} hidden />
+                </label>
+                <button className="more-item" onClick={onNewTree}>{t.local.newTree}</button>
+                <div className="more-sep" />
+              </>
             )}
 
             <button
