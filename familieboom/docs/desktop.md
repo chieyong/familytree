@@ -45,11 +45,13 @@ Dezelfde build werkt dus als web-app in de browser én als desktop-app.
    - **macOS:** Xcode Command Line Tools (`xcode-select --install`).
    - **Linux:** `webkit2gtk` + build-essentials (zie Tauri-docs).
 3. In `familieboom/`: `npm install` (haalt o.a. `@tauri-apps/cli` op).
-4. **Icons genereren** (nodig vóór de eerste build) uit een vierkante PNG:
+4. **Icons genereren** (nodig vóór de eerste build) uit de Bloom-logo (dezelfde
+   als de PWA):
    ```bash
-   npm run tauri icon pad/naar/logo.png
+   npm run tauri icon public/pwa-512.png
    ```
-   Dit vult `src-tauri/icons/` met alle vereiste formaten.
+   Dit vult `src-tauri/icons/` met alle vereiste formaten. (Een eigen logo kan ook —
+   geef dan dat pad mee; vierkante PNG, bij voorkeur ≥1024×1024.)
 
 **Ontwikkelen:**
 ```bash
