@@ -1,0 +1,21 @@
+[package]
+name = "familieboom"
+version = "0.1.0"
+description = "Familieboom — offline desktop-app"
+authors = ["VizCraft"]
+edition = "2021"
+
+# De frontend (React/Vite) wordt door Tauri geladen; deze crate is de native schil.
+[lib]
+name = "familieboom_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+# SQLite als lokale opslag (fase 2). De migraties worden in Rust geregistreerd.
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FamilyGraph } from './data/types';
 import { FixtureRepository } from './data/FixtureRepository';
 import { SupabaseRepository } from './data/SupabaseRepository';
+import { LocalRepository } from './data/LocalRepository';
 import type { FamilyRepository } from './data/FamilyRepository';
 import { demoFamily } from './data/fixtures/demoFamily';
 import { diasporaFamily } from './data/fixtures/diaspora';
@@ -71,6 +72,7 @@ export default function App() {
   // familie" wint; anders een demo-preset. Fixtures-only demo's (diaspora) laden
   // altijd lokaal, ook met de supabase-backend (ze staan niet in de DB).
   const repository: FamilyRepository = useMemo(() => {
+    if (BACKEND === 'local') return new LocalRepository();
     if (activeFamily) return new SupabaseRepository(activeFamily.id, viewAs);
     const fromSupabase = BACKEND === 'supabase' && !FIXTURES_ONLY_DATASETS.includes(dataset);
     return fromSupabase

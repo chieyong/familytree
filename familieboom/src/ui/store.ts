@@ -13,17 +13,26 @@ export type TreeScope = 'circle' | 'all';
  *  bereik-/laagtoggles wijken zolang er een menu open is. */
 export type TopbarPop = 'more' | 'viewAs' | 'account' | null;
 export type DatasetId = 'demo' | 'diaspora' | 'habsburg';
-export type Backend = 'fixtures' | 'supabase';
+export type Backend = 'fixtures' | 'supabase' | 'local';
 
 const params = new URLSearchParams(window.location.search);
 
-/** Datalaag: fixtures (lokaal) of supabase. URL-param wint van env-default. */
+/** Draait de app binnen de Tauri-desktopschil? Dan is de datalaag altijd lokaal
+ *  (geen cloud, geen netwerk). Dezelfde frontend-build werkt zo als web-app in de
+ *  browser én als offline desktop-app. `?backend=local` laat je de lokale modus
+ *  ook in de browser testen. */
+const IS_TAURI = '__TAURI_INTERNALS__' in window || '__TAURI__' in window;
+
+/** Datalaag: fixtures (lokaal-demo), supabase (cloud) of local (desktop, offline).
+ *  Tauri → altijd local; anders wint de URL-param van de env-default. */
 export const BACKEND: Backend =
-  params.get('backend') === 'supabase'
-    ? 'supabase'
-    : params.get('backend') === 'fixtures'
-      ? 'fixtures'
-      : ((import.meta.env.VITE_BACKEND as Backend) ?? 'fixtures');
+  IS_TAURI || params.get('backend') === 'local' || import.meta.env.VITE_BACKEND === 'local'
+    ? 'local'
+    : params.get('backend') === 'supabase'
+      ? 'supabase'
+      : params.get('backend') === 'fixtures'
+        ? 'fixtures'
+        : ((import.meta.env.VITE_BACKEND as Backend) ?? 'fixtures');
 
 /** Geseede familie-UUID's (zie supabase/seed.sql), voor de Supabase-repository.
  *  'diaspora' is een fixtures-only demo (niet geseed) → placeholder-UUID. */
