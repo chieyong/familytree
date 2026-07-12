@@ -139,6 +139,10 @@ const nl = {
     replaceWarn: 'Dit vervangt je huidige boom. Doorgaan?',
     restoreFailed: 'Kon het back-upbestand niet lezen.',
   },
+  dialog: {
+    ok: 'Oké',
+    cancel: 'Annuleer',
+  },
   print: {
     familyOf: (name: string) => `Familie ${name}`,
     fallbackTitle: 'Familiestamboom',
@@ -541,6 +545,10 @@ const en: Messages = {
     replaceWarn: 'This replaces your current tree. Continue?',
     restoreFailed: 'Could not read the backup file.',
   },
+  dialog: {
+    ok: 'OK',
+    cancel: 'Cancel',
+  },
   print: {
     familyOf: (name: string) => `The ${name} family`,
     fallbackTitle: 'Family tree',
@@ -940,6 +948,10 @@ const zh: Messages = {
     replaceWarn: '这将替换你当前的家谱树。继续吗？',
     restoreFailed: '无法读取备份文件。',
   },
+  dialog: {
+    ok: '确定',
+    cancel: '取消',
+  },
   print: {
     familyOf: (name: string) => `${name}家族`,
     fallbackTitle: '家谱树',
@@ -1337,6 +1349,10 @@ const id: Messages = {
     newTreePrompt: 'Nama orang pertama (Anda):',
     replaceWarn: 'Ini akan mengganti pohon Anda saat ini. Lanjutkan?',
     restoreFailed: 'Tidak dapat membaca berkas cadangan.',
+  },
+  dialog: {
+    ok: 'Oke',
+    cancel: 'Batal',
   },
   print: {
     familyOf: (name: string) => `Keluarga ${name}`,

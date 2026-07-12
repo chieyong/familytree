@@ -303,6 +303,69 @@ body {
   background: var(--surface-border);
 }
 
+/* In-app dialoog (bevestigen/invoer) — vervangt window.confirm/prompt. */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.dialog-box {
+  width: min(360px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+
+.dialog-msg {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font: 500 0.9rem/1.5 var(--font-ui);
+}
+
+.dialog-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 0.9rem var(--font-ui);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.dialog-actions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font: 600 0.82rem var(--font-ui);
+  cursor: pointer;
+}
+
+.dialog-cancel {
+  background: var(--surface-hover);
+  color: var(--ink-dim);
+}
+
+.dialog-ok {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 .info-card {
   width: min(94vw, 460px);
   max-height: min(86dvh, 720px);

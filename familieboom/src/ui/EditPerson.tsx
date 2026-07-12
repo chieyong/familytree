@@ -6,7 +6,7 @@ import { FloatField } from './FloatField';
 import { PlaceField } from './PlaceField';
 import { PhotoEditor } from './PhotoEditor';
 import { SexPicker } from './SexPicker';
-import { useAppStore } from './store';
+import { askConfirm, useAppStore } from './store';
 import { useT } from './useT';
 
 interface Props {
@@ -237,7 +237,7 @@ export function EditPerson({ person, egoId, embedded, proposalMode, onSubmitProp
   }, [saveState]);
 
   const remove = async () => {
-    if (!confirm(t.edit.confirmDelete(person.givenNames[0] ?? '?'))) return;
+    if (!(await askConfirm(t.edit.confirmDelete(person.givenNames[0] ?? '?')))) return;
     setBusy(true);
     setError(undefined);
     try {
