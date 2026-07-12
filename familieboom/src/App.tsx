@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FamilyGraph } from './data/types';
 import { FixtureRepository } from './data/FixtureRepository';
 import { SupabaseRepository } from './data/SupabaseRepository';
+import { LocalRepository } from './data/LocalRepository';
 import type { FamilyRepository } from './data/FamilyRepository';
 import { demoFamily } from './data/fixtures/demoFamily';
 import { diasporaFamily } from './data/fixtures/diaspora';
@@ -71,6 +72,7 @@ export default function App() {
   // familie" wint; anders een demo-preset. Fixtures-only demo's (diaspora) laden
   // altijd lokaal, ook met de supabase-backend (ze staan niet in de DB).
   const repository: FamilyRepository = useMemo(() => {
+    if (BACKEND === 'local') return new LocalRepository();
     if (activeFamily) return new SupabaseRepository(activeFamily.id, viewAs);
     const fromSupabase = BACKEND === 'supabase' && !FIXTURES_ONLY_DATASETS.includes(dataset);
     return fromSupabase
@@ -234,10 +236,13 @@ export default function App() {
   // paneel (de RLS dwingt dit ook af, maar zo tonen we de bewerk-UI niet onnodig).
   // Tijdens "Bekijk als …" is alles alleen-lezen: een mutatie zou als de échte
   // owner draaien (niet als de gesimuleerde rol) en dus misleidend zijn.
+  // Lokale (offline) modus: single-user, jij bent altijd de eigenaar van je eigen
+  // boom; de multi-user-onderdelen (delen/rollen/uitnodigen/"Bekijk als") vervallen.
+  const isLocalMode = BACKEND === 'local';
   const myRole = activeFamily ? families.find((f) => f.id === activeFamily.id)?.role : undefined;
-  const isOwner = myRole === 'owner';
-  const canEdit = !viewAs && (myRole === 'owner' || myRole === 'editor');
-  const canPropose = !viewAs && myRole === 'contributor';
+  const isOwner = isLocalMode || myRole === 'owner';
+  const canEdit = isLocalMode || (!viewAs && (myRole === 'owner' || myRole === 'editor'));
+  const canPropose = !isLocalMode && !viewAs && myRole === 'contributor';
 
   // Open voorstellen ophalen voor owner/editor (en herladen na een mutatie).
   useEffect(() => {
@@ -436,10 +441,10 @@ export default function App() {
               {t.topbar.globe}
             </button>
           </nav>
-          <ViewAsControl isOwner={isOwner} focusName={focusPerson ? shortName(focusPerson) : undefined} />
+          {!isLocalMode && <ViewAsControl isOwner={isOwner} focusName={focusPerson ? shortName(focusPerson) : undefined} />}
           <OverflowMenu photosAvailable={photoByPerson.size > 0} onPrint={canPrint ? handlePrint : undefined} />
-          <AuthBar />
-          <ShareFamily />
+          {!isLocalMode && <AuthBar />}
+          {!isLocalMode && <ShareFamily />}
           <HelpGuide />
         </div>
       </header>
@@ -656,7 +661,7 @@ export default function App() {
         />
       )}
 
-      <FamilyMenu />
+      {!isLocalMode && <FamilyMenu />}
       <WelcomeCard />
       <AboutCard />
 

@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
@@ -29,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tauri-apps/cli": "^2",
     "@types/d3-geo": "^3.1.0",
     "@types/d3-interpolate": "^3.0.4",
     "@types/d3-scale": "^4.0.9",

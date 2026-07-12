@@ -131,6 +131,14 @@ const nl = {
     linkedRequest: 'Toegang vragen',
     linkedNoAccess: 'Geen toegang',
   },
+  local: {
+    backup: '↓ Back-up opslaan (.json)',
+    restore: '↑ Back-up laden…',
+    newTree: '＋ Nieuwe boom',
+    newTreePrompt: 'Naam van de eerste persoon (jij):',
+    replaceWarn: 'Dit vervangt je huidige boom. Doorgaan?',
+    restoreFailed: 'Kon het back-upbestand niet lezen.',
+  },
   print: {
     familyOf: (name: string) => `Familie ${name}`,
     fallbackTitle: 'Familiestamboom',
@@ -525,6 +533,14 @@ const en: Messages = {
     linkedRequest: 'Request access',
     linkedNoAccess: 'No access',
   },
+  local: {
+    backup: '↓ Save backup (.json)',
+    restore: '↑ Load backup…',
+    newTree: '＋ New tree',
+    newTreePrompt: 'Name of the first person (you):',
+    replaceWarn: 'This replaces your current tree. Continue?',
+    restoreFailed: 'Could not read the backup file.',
+  },
   print: {
     familyOf: (name: string) => `The ${name} family`,
     fallbackTitle: 'Family tree',
@@ -916,6 +932,14 @@ const zh: Messages = {
     linkedRequest: '申请访问',
     linkedNoAccess: '无访问权限',
   },
+  local: {
+    backup: '↓ 保存备份 (.json)',
+    restore: '↑ 加载备份…',
+    newTree: '＋ 新建家谱树',
+    newTreePrompt: '第一个人的姓名（你自己）：',
+    replaceWarn: '这将替换你当前的家谱树。继续吗？',
+    restoreFailed: '无法读取备份文件。',
+  },
   print: {
     familyOf: (name: string) => `${name}家族`,
     fallbackTitle: '家谱树',
@@ -1305,6 +1329,14 @@ const id: Messages = {
     linkedNone: 'Tidak ada pohon tertaut.',
     linkedRequest: 'Minta akses',
     linkedNoAccess: 'Tanpa akses',
+  },
+  local: {
+    backup: '↓ Simpan cadangan (.json)',
+    restore: '↑ Muat cadangan…',
+    newTree: '＋ Pohon baru',
+    newTreePrompt: 'Nama orang pertama (Anda):',
+    replaceWarn: 'Ini akan mengganti pohon Anda saat ini. Lanjutkan?',
+    restoreFailed: 'Tidak dapat membaca berkas cadangan.',
   },
   print: {
     familyOf: (name: string) => `Keluarga ${name}`,

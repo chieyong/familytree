@@ -1,6 +1,11 @@
 import { supabase } from './supabaseClient';
 import type { ImportPayload } from './importGeocode';
 import type { ParentRole, UnionEndReason, UnionType } from './types';
+import { BACKEND } from '../ui/store';
+import { getLocalStore } from './local/store';
+
+/** True als de app op de lokale (offline) datalaag draait i.p.v. Supabase. */
+const isLocal = () => BACKEND === 'local';
 
 export interface ImportResult {
   persons: number;
@@ -21,6 +26,7 @@ export async function importFamily(
   data: ImportPayload,
   existing: Record<string, string> = {},
 ): Promise<ImportResult> {
+  if (isLocal()) throw new Error('Import is nog niet beschikbaar in de lokale modus.');
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { data: res, error } = await supabase.rpc('import_family', {
     p_family: familyId,
@@ -42,6 +48,7 @@ export async function copyPersons(
   /** Map bron-persoon-id → bestaand doel-persoon-id om relaties aan te knopen. */
   anchors: Record<string, string> = {},
 ): Promise<number> {
+  if (isLocal()) throw new Error('Kopiëren tussen bomen is niet beschikbaar in de lokale modus.');
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { data, error } = await supabase.rpc('copy_persons', {
     p_source: sourceFamilyId,
@@ -73,6 +80,7 @@ export async function addRelative(
   anchorId: string,
   rel: NewRelative,
 ): Promise<string> {
+  if (isLocal()) return getLocalStore().addRelative(relation, anchorId, rel);
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { data, error } = await supabase.rpc('add_relative', {
     p_family: familyId,
@@ -105,6 +113,7 @@ export async function linkRelative(
   anchorId: string,
   otherId: string,
 ): Promise<void> {
+  if (isLocal()) { getLocalStore().linkRelative(relation, anchorId, otherId); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   if (relation === 'partner') {
     const { error } = await supabase.from('unions').insert({
@@ -163,6 +172,7 @@ function personEditColumns(e: PersonEdit) {
 
 /** Wijzigt een persoon (RLS: beheerder/owner, of jezelf strenger zetten). */
 export async function updatePerson(id: string, e: PersonEdit): Promise<void> {
+  if (isLocal()) { getLocalStore().updatePerson(id, e); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('persons').update(personEditColumns(e)).eq('id', id);
   if (error) throw error;
@@ -208,6 +218,7 @@ export async function setPersonPlace(
   kind: 'birth' | 'death',
   place: PlaceInput | null,
 ): Promise<void> {
+  if (isLocal()) { getLocalStore().setPersonPlace(personId, kind, place); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const placeId = place ? await upsertPlace(place) : null;
   const column = kind === 'birth' ? 'birth_place_id' : 'death_place_id';
@@ -217,6 +228,7 @@ export async function setPersonPlace(
 
 /** Voegt een woonplaats toe (residences-tabel; RLS-write = beheerder/bewerker). */
 export async function addResidence(personId: string, place: PlaceInput, fromYear?: number): Promise<void> {
+  if (isLocal()) { getLocalStore().addResidence(personId, place, fromYear); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const placeId = await upsertPlace(place);
   const { error } = await supabase
@@ -227,6 +239,7 @@ export async function addResidence(personId: string, place: PlaceInput, fromYear
 
 /** Werkt het vanaf-jaar van een woonplaats bij (RLS-write = beheerder/bewerker). */
 export async function updateResidence(id: string, fromYear?: number): Promise<void> {
+  if (isLocal()) { getLocalStore().updateResidence(id, fromYear); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase
     .from('residences')
@@ -237,6 +250,7 @@ export async function updateResidence(id: string, fromYear?: number): Promise<vo
 
 /** Verwijdert een woonplaats op rij-id. */
 export async function removeResidence(id: string): Promise<void> {
+  if (isLocal()) { getLocalStore().removeResidence(id); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('residences').delete().eq('id', id);
   if (error) throw error;
@@ -302,7 +316,7 @@ export async function submitRelativeProposal(
 
 /** Open voorstellen voor een familie (RLS: owner/editor ziet alles). */
 export async function listPendingProposals(familyId: string): Promise<Proposal[]> {
-  if (!supabase) return [];
+  if (isLocal() || !supabase) return [];
   const { data, error } = await supabase
     .from('change_proposals')
     .select('id, family_id, author_label, kind, target_person_id, payload, summary, created_at')
@@ -335,7 +349,18 @@ const AVATAR_BUCKET = 'avatars';
 const avatarPath = (familyId: string, personId: string) => `${familyId}/${personId}`;
 
 /** Upload/vervang een profielfoto en zet photo_path op de persoon. */
+/** File → data-URL (voor de lokale foto-opslag). */
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function uploadPersonPhoto(familyId: string, personId: string, file: File): Promise<void> {
+  if (isLocal()) { getLocalStore().setPhoto(personId, await fileToDataUrl(file)); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const path = avatarPath(familyId, personId);
   const up = await supabase.storage
@@ -348,6 +373,7 @@ export async function uploadPersonPhoto(familyId: string, personId: string, file
 
 /** Verwijdert de profielfoto (storage + photo_path). */
 export async function removePersonPhoto(familyId: string, personId: string): Promise<void> {
+  if (isLocal()) { getLocalStore().setPhoto(personId, null); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   await supabase.storage.from(AVATAR_BUCKET).remove([avatarPath(familyId, personId)]);
   const { error } = await supabase.from('persons').update({ photo_path: null }).eq('id', personId);
@@ -357,6 +383,8 @@ export async function removePersonPhoto(familyId: string, personId: string): Pro
 /** Ondertekende (tijdelijke) URL's voor een lijst foto-paden → map pad→url. */
 export async function signedAvatarUrls(paths: string[]): Promise<Map<string, string>> {
   const map = new Map<string, string>();
+  // Lokaal is het pad zélf de data-URL → identiteitsmap.
+  if (isLocal()) { for (const p of paths) map.set(p, p); return map; }
   if (!supabase || paths.length === 0) return map;
   const { data, error } = await supabase.storage.from(AVATAR_BUCKET).createSignedUrls(paths, 3600);
   if (error || !data) return map;
@@ -368,6 +396,7 @@ export async function signedAvatarUrls(paths: string[]): Promise<Map<string, str
 
 /** Verwijdert een persoon; relaties vervallen via FK-cascade (RLS: beheerder/owner). */
 export async function deletePerson(id: string): Promise<void> {
+  if (isLocal()) { getLocalStore().deletePerson(id); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('persons').delete().eq('id', id);
   if (error) throw error;
@@ -376,6 +405,7 @@ export async function deletePerson(id: string): Promise<void> {
 // ── Relaties bewerken/ontkoppelen (RLS: beheer over ≥1 eindpunt) ───────────
 
 export async function setUnionType(id: string, type: UnionType): Promise<void> {
+  if (isLocal()) { getLocalStore().setUnionType(id, type); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('unions').update({ type }).eq('id', id);
   if (error) throw error;
@@ -383,6 +413,7 @@ export async function setUnionType(id: string, type: UnionType): Promise<void> {
 
 /** Zet (of wist) het startjaar van een verbintenis, bv. het huwelijksjaar. */
 export async function setUnionStart(id: string, year?: number): Promise<void> {
+  if (isLocal()) { getLocalStore().setUnionStart(id, year); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const fields = year
     ? { start_year: year }
@@ -397,6 +428,7 @@ export async function setUnionEnd(
   reason: UnionEndReason | null,
   year?: number,
 ): Promise<void> {
+  if (isLocal()) { getLocalStore().setUnionEnd(id, reason, year); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const fields = reason
     ? { end_reason: reason, end_year: year ?? null }
@@ -406,18 +438,21 @@ export async function setUnionEnd(
 }
 
 export async function deleteUnion(id: string): Promise<void> {
+  if (isLocal()) { getLocalStore().deleteUnion(id); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('unions').delete().eq('id', id);
   if (error) throw error;
 }
 
 export async function setParentRole(id: string, role: ParentRole): Promise<void> {
+  if (isLocal()) { getLocalStore().setParentRole(id, role); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('parent_links').update({ role }).eq('id', id);
   if (error) throw error;
 }
 
 export async function deleteParentLink(id: string): Promise<void> {
+  if (isLocal()) { getLocalStore().deleteParentLink(id); return; }
   if (!supabase) throw new Error('Geen Supabase-client.');
   const { error } = await supabase.from('parent_links').delete().eq('id', id);
   if (error) throw error;
