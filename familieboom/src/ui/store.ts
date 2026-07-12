@@ -145,8 +145,12 @@ const initialMode: ViewMode =
 // Default-demo is de internationale familie (toont de Atlas op z'n best); de oude
 // 'demo' blijft bestaan en is bereikbaar via ?data=demo, maar niet meer de default.
 const dataParam = params.get('data');
+// Lokale (desktop) modus heeft geen presets — de placeholder-repo geeft de demo
+// terug, dus mik op 'demo' (ego 'lisa' bestaat daar; anders is de Boom-view leeg).
 const initialDataset: DatasetId =
-  dataParam === 'habsburg' ? 'habsburg' : dataParam === 'demo' ? 'demo' : 'diaspora';
+  BACKEND === 'local'
+    ? 'demo'
+    : dataParam === 'habsburg' ? 'habsburg' : dataParam === 'demo' ? 'demo' : 'diaspora';
 
 const THEME_KEY = 'familieboom-theme';
 const PHOTOS_KEY = 'familieboom-photos';
@@ -196,7 +200,11 @@ export const useAppStore = create<AppState>((set) => ({
   })(),
   photos: localStorage.getItem(PHOTOS_KEY) === 'on',
   user: null,
-  activeFamily: null,
+  // Lokale (desktop) modus: één synthetische "eigen boom" zodat de bewerk-UI (die
+  // op een actieve familie + owner-rol gate't) werkt. Geen cloud, geen wisselen.
+  activeFamily: BACKEND === 'local'
+    ? { id: 'local', ego: DATASET_EGO[initialDataset], label: 'Mijn boom' }
+    : null,
   viewAs: null,
   bridgeReturn: null,
   linkedFamilyIds: [],

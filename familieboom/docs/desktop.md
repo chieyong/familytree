@@ -20,9 +20,12 @@ Dezelfde build werkt dus als web-app in de browser én als desktop-app.
   dispatchen in lokale modus naar de store. Getest met unit-tests; te proberen in de
   browser met `?backend=local`. Een echt bestand op schijf (Tauri fs) is later een
   swap achter `SnapshotStore`.
-- **Fase 3 (volgende):** de app in lokale modus écht bewerkbaar maken — een
-  synthetische "eigen boom" zodat `canEdit` werkt, en de multi-user-UI verbergen
-  (delen/rollen/uitnodigen/bruggen/voorstellen/"Bekijk als").
+- **Fase 3 ✅:** lokale modus is bewerkbaar. Een synthetische "eigen boom"
+  (`activeFamily = {id:'local', …}`) laat de bewerk-UI werken; `canEdit`/`isOwner`
+  zijn geforceerd. De multi-user-UI is verborgen in lokale modus: familie-menu,
+  inloggen (AuthBar), delen (ShareFamily), "Bekijk als" (ViewAsControl), bruggen,
+  "dit ben ik", en de foto-UI (foto's komen in fase 4). Te proberen in de browser
+  met `?backend=local` — bewerkingen persisteren in localStorage.
 - **Fase 4:** foto's lokaal, JSON-backup/herstel + "nieuwe lege boom", installers +
   downloadknop in de web-app.
 

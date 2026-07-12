@@ -7,7 +7,7 @@ import { AddRelative } from './AddRelative';
 import { BridgeSection } from './BridgeSection';
 import { EditPerson } from './EditPerson';
 import { RelationsEditor } from './RelationsEditor';
-import { useAppStore } from './store';
+import { BACKEND, useAppStore } from './store';
 import { useT } from './useT';
 import { lifespan, nativeSubline, shortName } from './theme';
 
@@ -99,7 +99,7 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, canEdit,
           </button>
         </div>
 
-        {!isSelf && !person.hidden && (
+        {!isSelf && !person.hidden && BACKEND !== 'local' && (
           <button className="claim-self" onClick={claimSelf} title={t.panel.thisIsMeTitle}>
             {t.panel.thisIsMe}
           </button>
@@ -154,7 +154,7 @@ export function PersonPanel({ person, familyId, egoId, graph, photoUrl, canEdit,
               />
             </section>
 
-            {!adding && <BridgeSection person={person} familyId={familyId} />}
+            {!adding && BACKEND !== 'local' && <BridgeSection person={person} familyId={familyId} />}
 
             {!adding && (
               <button className="panel-done" onClick={() => setEditing(false)}>{t.panel.done}</button>
