@@ -64,6 +64,15 @@ export interface SessionUser {
 }
 
 /** Een echte (ingelogde) familie die de gebruiker bekijkt, los van de demo-presets. */
+/** In-app dialoog-verzoek (bevestigen of tekstinvoer). resolve krijgt de ingevoerde
+ *  string bij OK, of null bij annuleren. */
+export interface DialogRequest {
+  kind: 'confirm' | 'prompt';
+  message: string;
+  defaultValue?: string;
+  resolve: (value: string | null) => void;
+}
+
 export interface ActiveFamily {
   id: string;
   ego: PersonID;
@@ -109,6 +118,10 @@ interface AppState {
   tourOpen: boolean;
   /** Vluchtige melding (bv. 'uitgelogd'); App toont 'm als banner. */
   notice?: string;
+  /** Actieve in-app dialoog (bevestigen/invoer). Vervangt window.confirm/prompt —
+   *  die werken niet in de Tauri-webview. Null = geen dialoog. */
+  dialog: DialogRequest | null;
+  setDialog: (dialog: DialogRequest | null) => void;
   /** Verhoogt na een mutatie zodat de graaf opnieuw geladen wordt. */
   dataVersion: number;
   setMode: (mode: ViewMode) => void;
@@ -279,5 +292,21 @@ export const useAppStore = create<AppState>((set) => ({
   setAboutOpen: (aboutOpen) => set({ aboutOpen }),
   setTourOpen: (tourOpen) => set({ tourOpen }),
   setNotice: (notice) => set({ notice }),
+  dialog: null,
+  setDialog: (dialog) => set({ dialog }),
   bumpData: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 }));
+
+/** In-app bevestiging (vervangt window.confirm; werkt ook in de Tauri-webview). */
+export function askConfirm(message: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    useAppStore.getState().setDialog({ kind: 'confirm', message, resolve: (v) => resolve(v !== null) });
+  });
+}
+
+/** In-app tekstinvoer (vervangt window.prompt). Geeft de string of null (annuleer). */
+export function askPrompt(message: string, defaultValue = ''): Promise<string | null> {
+  return new Promise((resolve) => {
+    useAppStore.getState().setDialog({ kind: 'prompt', message, defaultValue, resolve });
+  });
+}

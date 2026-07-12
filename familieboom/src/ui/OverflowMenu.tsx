@@ -1,5 +1,5 @@
 import { LANGS, type Lang } from './i18n';
-import { BACKEND, useAppStore } from './store';
+import { askConfirm, askPrompt, BACKEND, useAppStore } from './store';
 import { useT } from './useT';
 import { getLocalStore } from '../data/local/store';
 import type { FamilyGraph } from '../data/types';
@@ -66,6 +66,7 @@ export function OverflowMenu({ photosAvailable, onPrint }: Props) {
   const setTopbarPop = useAppStore((s) => s.setTopbarPop);
   const bumpData = useAppStore((s) => s.bumpData);
   const setActiveFamily = useAppStore((s) => s.setActiveFamily);
+  const setNotice = useAppStore((s) => s.setNotice);
   const open = topbarPop === 'more';
   const isLocal = BACKEND === 'local';
 
@@ -86,7 +87,7 @@ export function OverflowMenu({ photosAvailable, onPrint }: Props) {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    if (!confirm(t.local.replaceWarn)) return;
+    if (!(await askConfirm(t.local.replaceWarn))) return;
     try {
       const g = JSON.parse(await file.text()) as FamilyGraph;
       if (!g || !Array.isArray(g.persons) || !Array.isArray(g.unions) || !Array.isArray(g.parentLinks)) {
@@ -97,13 +98,13 @@ export function OverflowMenu({ photosAvailable, onPrint }: Props) {
       bumpData();
       setTopbarPop(null);
     } catch {
-      alert(t.local.restoreFailed);
+      setNotice(t.local.restoreFailed);
     }
   };
 
   // Nieuwe boom: begint met alleen jezelf (één persoon), rest wordt gewist.
-  const onNewTree = () => {
-    const name = window.prompt(t.local.newTreePrompt)?.trim();
+  const onNewTree = async () => {
+    const name = (await askPrompt(t.local.newTreePrompt))?.trim();
     if (!name) return;
     const id = crypto.randomUUID();
     getLocalStore().replace({

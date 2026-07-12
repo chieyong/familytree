@@ -25,6 +25,7 @@ import { AuthBar } from './ui/AuthBar';
 import { FamilyCanvas, type FamilyCanvasHandle } from './ui/FamilyCanvas';
 import { GlobeCanvas } from './ui/GlobeCanvas';
 import { FamilyMenu } from './ui/FamilyMenu';
+import { DialogHost } from './ui/DialogHost';
 import { LinkedTrees, type LinkedCandidate } from './ui/LinkedTrees';
 import { ShareFamily } from './ui/ShareFamily';
 import { ViewAsControl } from './ui/ViewAsControl';
@@ -662,6 +663,7 @@ export default function App() {
       )}
 
       {!isLocalMode && <FamilyMenu />}
+      <DialogHost />
       <WelcomeCard />
       <AboutCard />
 
