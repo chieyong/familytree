@@ -15,6 +15,10 @@ dev-dist
 
 # Tauri (Rust build output)
 src-tauri/target
+# App-icons worden gegenereerd uit public/pwa-512.png (lokaal + in de CI)
+src-tauri/icons
+# Tauri gegenereerde bestanden (schemas e.d.)
+src-tauri/gen
 
 # Editor directories and files
 .vscode/*
