@@ -587,6 +587,33 @@ body {
   color: var(--on-accent);
 }
 
+.about-download {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.about-download h4 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font: 700 0.9rem var(--font-ui);
+}
+
+.about-download-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.about-download-buttons .about-link {
+  flex: 1 1 0;
+}
+
+.about-download-note {
+  margin: 8px 0 0;
+  color: var(--ink-dim);
+  font: 500 0.72rem/1.5 var(--font-ui);
+}
+
 /* ── Import-modal ──────────────────────────────────────────────────────── */
 .import-card {
   width: min(94vw, 560px);

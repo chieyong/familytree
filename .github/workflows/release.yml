@@ -1,0 +1,70 @@
+name: Release desktop app
+
+# Bouwt de Bloom desktop-app (Tauri) voor macOS én Windows en publiceert de
+# installers als GitHub Release. Trigger: een versie-tag pushen (v0.1.0), of
+# handmatig via de Actions-tab.
+#
+# De app-code staat in de submap `familieboom/`. Icons worden in de CI gegenereerd
+# uit de PWA-logo (public/pwa-512.png), dus die hoeven niet in git.
+#
+# Onondertekend: gebruikers klikken één keer langs de Gatekeeper/SmartScreen-
+# waarschuwing. Ondertekenen/notariseren kan later met secrets.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest      # universeel: Intel + Apple Silicon
+            args: '--target universal-apple-darwin'
+            rust-targets: 'aarch64-apple-darwin,x86_64-apple-darwin'
+          - platform: windows-latest
+            args: ''
+            rust-targets: ''
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node opzetten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rust opzetten
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-targets }}
+
+      - name: Rust-cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: familieboom/src-tauri
+
+      - name: Frontend-dependencies
+        working-directory: familieboom
+        run: npm ci
+
+      - name: App-icons genereren uit de PWA-logo
+        working-directory: familieboom
+        run: npm run tauri icon public/pwa-512.png
+
+      - name: Bouwen + Release publiceren
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: familieboom
+          tagName: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', github.run_number) }}
+          releaseName: 'Bloom ${{ github.ref_type == ''tag'' && github.ref_name || github.run_number }}'
+          releaseBody: 'Bloom desktop-app (offline). Kies je installer: macOS (.dmg) of Windows (.msi/.exe). Onondertekend — op macOS rechtsklik → Openen; op Windows "Meer info → Toch uitvoeren".'
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
