@@ -25,13 +25,23 @@ export function HelpGuide() {
   const t = useT();
   const { title, intro, sections: allSections, localPrivacy } = useGuide().guide;
 
-  // Lokale (offline) modus: geen rollen (single-user), en de privacy-uitleg gaat
-  // over "alles blijft op je apparaat" i.p.v. cloud-zichtbaarheid.
+  // Lokale (offline) modus: multi-user-inhoud vervalt. Hele cloudOnly-secties
+  // eruit; de privacy-sectie wordt vervangen door "alles blijft op je apparaat";
+  // en binnen de overige secties vervallen cloudOnly-blokken/-items.
   const sections =
     BACKEND === 'local'
-      ? allSections.flatMap((s) =>
-          s.id === 'roles' ? [] : s.id === 'privacy' ? [localPrivacy] : [s],
-        )
+      ? allSections.flatMap((s) => {
+          if (s.cloudOnly) return [];
+          if (s.id === 'privacy') return [localPrivacy];
+          return [{
+            ...s,
+            items: s.items?.filter((i) => !i.cloudOnly),
+            blocks: s.blocks?.filter((b) => !b.cloudOnly).map((b) => ({
+              ...b,
+              items: b.items?.filter((i) => !i.cloudOnly),
+            })),
+          }];
+        })
       : allSections;
 
   return (
