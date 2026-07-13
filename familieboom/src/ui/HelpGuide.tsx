@@ -1,5 +1,5 @@
 import { type GuideItem } from './guideContent';
-import { useAppStore } from './store';
+import { BACKEND, useAppStore } from './store';
 import { useGuide, useT } from './useT';
 
 function ItemList({ items }: { items?: GuideItem[] }) {
@@ -23,7 +23,16 @@ export function HelpGuide() {
   const setOpen = useAppStore((s) => s.setGuideOpen);
   const setTourOpen = useAppStore((s) => s.setTourOpen);
   const t = useT();
-  const { title, intro, sections } = useGuide().guide;
+  const { title, intro, sections: allSections, localPrivacy } = useGuide().guide;
+
+  // Lokale (offline) modus: geen rollen (single-user), en de privacy-uitleg gaat
+  // over "alles blijft op je apparaat" i.p.v. cloud-zichtbaarheid.
+  const sections =
+    BACKEND === 'local'
+      ? allSections.flatMap((s) =>
+          s.id === 'roles' ? [] : s.id === 'privacy' ? [localPrivacy] : [s],
+        )
+      : allSections;
 
   return (
     <>

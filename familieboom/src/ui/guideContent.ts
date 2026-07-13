@@ -24,6 +24,9 @@ export interface GuideBlock {
 }
 
 export interface GuideSection {
+  /** Stabiele sleutel (taal-onafhankelijk) om secties te filteren, bv. in de
+   *  lokale modus. */
+  id?: string;
   /** Titel in de samenvouwbare kop. */
   q: string;
   /** Alinea's. */
@@ -48,6 +51,8 @@ export interface GuideContent {
   guide: {
     title: string;
     intro: string;
+    /** Vervangt de "Privacy & zichtbaarheid"-sectie in de lokale (offline) modus. */
+    localPrivacy: GuideSection;
     sections: GuideSection[];
   };
 }
@@ -72,16 +77,26 @@ const nl: GuideContent = {
     title: 'Hoe werkt Bloom?',
     intro:
       'Bloom is een familieboom die meedenkt vanuit perspectief: je ziet je familie als een web rond één persoon, met de relaties benoemd zoals jíj ze kent.',
+    localPrivacy: {
+      q: 'Privacy: alles blijft lokaal',
+      p: [
+        'Dit is de offline versie. Al je gegevens staan alleen op deze computer — er is geen account, geen internet en geen server. Niets gaat naar de cloud.',
+        'De beveiliging hangt dus van je apparaat af: gebruik schijfversleuteling (FileVault) en maak af en toe een back-up via het ⚙-menu → “Back-up opslaan”.',
+        'De “familie/privé”-instelling per persoon heeft hier geen effect — er is maar één gebruiker: jij.',
+      ],
+    },
     sections: [
       {
-        q: 'De twee weergaven',
-        p: ['Wissel rechtsboven tussen de twee manieren om je familie te bekijken.'],
+        q: 'De drie weergaven',
+        p: ['Wissel rechtsboven tussen de drie manieren om je familie te bekijken.'],
         items: [
           { label: 'Boom', text: 'de werkweergave. Hier navigeer je, bewerk je personen en bekijk je foto’s. Klik op iemand om in te zoomen.' },
           { label: 'Tableau', text: 'een rustig, artistiek overzicht van de hele familie. Mooi om naar te kijken of te delen, niet om in te werken.' },
+          { label: 'Atlas', text: 'een draaibare wereldbol: waar je familie vandaan komt en heen trok — geboorte- en woonplaatsen, met migratie- en levensreis-lagen op de kaart.' },
         ],
       },
       {
+        id: 'privacy',
         q: 'Privacy & zichtbaarheid',
         p: ['Een familieboom is privé. Jij beslist wie wat ziet — per persoon én per relatie.'],
         blocks: [
@@ -125,6 +140,7 @@ const nl: GuideContent = {
         ],
       },
       {
+        id: 'roles',
         q: 'Rollen: wie mag wat',
         p: ['Nodig familie uit via Delen. Je kiest per persoon een rol; een beheerder kan rollen later wijzigen — en een ander lid ook tot beheerder maken.'],
         blocks: [
@@ -218,16 +234,26 @@ const en: GuideContent = {
     title: 'How does Bloom work?',
     intro:
       'Bloom is a family tree that thinks in perspective: you see your family as a web around one person, with relationships named the way you know them.',
+    localPrivacy: {
+      q: 'Privacy: everything stays local',
+      p: [
+        'This is the offline version. All your data lives only on this computer — no account, no internet, no server. Nothing goes to the cloud.',
+        'Security therefore depends on your device: use disk encryption (FileVault) and make a backup now and then via the ⚙ menu → “Save backup”.',
+        'The per-person “family/private” setting has no effect here — there is only one user: you.',
+      ],
+    },
     sections: [
       {
-        q: 'The two views',
-        p: ['Switch top right between the two ways to view your family.'],
+        q: 'The three views',
+        p: ['Switch top right between the three ways to view your family.'],
         items: [
           { label: 'Tree', text: 'the working view. Here you navigate, edit people and see photos. Click someone to zoom in.' },
           { label: 'Tableau', text: 'a calm, artistic overview of the whole family. Nice to look at or share, not to work in.' },
+          { label: 'Atlas', text: 'a rotatable globe: where your family came from and moved to — birth and residence places, with migration and life-journey layers on the map.' },
         ],
       },
       {
+        id: 'privacy',
         q: 'Privacy & visibility',
         p: ['A family tree is private. You decide who sees what — per person and per relationship.'],
         blocks: [
@@ -271,6 +297,7 @@ const en: GuideContent = {
         ],
       },
       {
+        id: 'roles',
         q: 'Roles: who can do what',
         p: ['Invite family via Share. You pick a role per person; an admin can change roles later — and also make another member an admin.'],
         blocks: [
@@ -363,16 +390,26 @@ const zh: GuideContent = {
   guide: {
     title: 'Bloom 怎么用？',
     intro: 'Bloom 是一棵以视角思考的家谱树：您把家庭看作围绕一个人的网络，关系以您熟悉的方式命名。',
+    localPrivacy: {
+      q: '隐私：一切都在本地',
+      p: [
+        '这是离线版本。您的所有数据仅保存在这台电脑上——没有账户、没有联网、没有服务器，什么都不会上传到云端。',
+        '因此安全性取决于您的设备：请使用磁盘加密（FileVault），并不时通过 ⚙ 菜单 →“保存备份”做一次备份。',
+        '此处每个人的“家庭/私密”设置没有作用——因为只有一个用户：您。',
+      ],
+    },
     sections: [
       {
-        q: '两种视图',
-        p: ['在右上角切换两种查看家庭的方式。'],
+        q: '三种视图',
+        p: ['在右上角切换三种查看家庭的方式。'],
         items: [
           { label: '树状图', text: '工作视图。在此导航、编辑人物并查看照片。点击某人即可放大。' },
           { label: '画卷', text: '整个家庭的宁静、艺术化概览。适合观赏或分享，而非编辑。' },
+          { label: '地图集', text: '可旋转的地球：您的家族从何而来、迁往何处——出生地与居住地，并在地图上叠加迁徙与人生旅程图层。' },
         ],
       },
       {
+        id: 'privacy',
         q: '隐私与可见性',
         p: ['家谱树是私密的。您决定谁能看到什么 — 可精确到每个人和每段关系。'],
         blocks: [
@@ -416,6 +453,7 @@ const zh: GuideContent = {
         ],
       },
       {
+        id: 'roles',
         q: '角色：谁能做什么',
         p: ['通过"分享"邀请家人。可为每个人选择角色；管理员之后可更改角色——也可把另一位成员设为管理员。'],
         blocks: [
@@ -509,16 +547,26 @@ const id: GuideContent = {
     title: 'Bagaimana cara kerja Bloom?',
     intro:
       'Bloom adalah pohon keluarga yang berpikir dari sudut pandang: Anda melihat keluarga sebagai jaring di sekitar satu orang, dengan hubungan dinamai sebagaimana Anda mengenalnya.',
+    localPrivacy: {
+      q: 'Privasi: semua tetap lokal',
+      p: [
+        'Ini versi offline. Semua data Anda hanya ada di komputer ini — tanpa akun, tanpa internet, tanpa server. Tidak ada yang dikirim ke cloud.',
+        'Karena itu keamanan bergantung pada perangkat Anda: gunakan enkripsi disk (FileVault) dan buat cadangan sesekali via menu ⚙ → “Simpan cadangan”.',
+        'Pengaturan “keluarga/pribadi” per orang tidak berpengaruh di sini — hanya ada satu pengguna: Anda.',
+      ],
+    },
     sections: [
       {
-        q: 'Dua tampilan',
-        p: ['Beralih di kanan atas antara dua cara melihat keluarga Anda.'],
+        q: 'Tiga tampilan',
+        p: ['Beralih di kanan atas antara tiga cara melihat keluarga Anda.'],
         items: [
           { label: 'Pohon', text: 'tampilan kerja. Di sini Anda menelusuri, mengubah orang, dan melihat foto. Klik seseorang untuk memperbesar.' },
           { label: 'Tablo', text: 'gambaran tenang dan artistik dari seluruh keluarga. Enak dilihat atau dibagikan, bukan untuk diedit.' },
+          { label: 'Atlas', text: 'bola dunia yang dapat diputar: dari mana keluarga Anda berasal dan ke mana mereka pindah — tempat lahir dan tempat tinggal, dengan lapisan migrasi dan perjalanan hidup di peta.' },
         ],
       },
       {
+        id: 'privacy',
         q: 'Privasi & visibilitas',
         p: ['Pohon keluarga bersifat pribadi. Anda menentukan siapa melihat apa — per orang dan per hubungan.'],
         blocks: [
@@ -562,6 +610,7 @@ const id: GuideContent = {
         ],
       },
       {
+        id: 'roles',
         q: 'Peran: siapa boleh apa',
         p: ['Undang keluarga lewat Bagikan. Anda memilih peran per orang; admin dapat mengubah peran nanti — dan juga menjadikan anggota lain admin.'],
         blocks: [
