@@ -12,6 +12,8 @@ export interface GuideItem {
   /** Vetgedrukt kopje vóór de tekst, bv. "Tree". */
   label?: string;
   text: string;
+  /** Alleen in de cloud-versie tonen (weg in de lokale/offline modus). */
+  cloudOnly?: boolean;
 }
 
 /** Een rijk sub-onderdeel binnen een sectie, met een eigen kopje. */
@@ -21,6 +23,8 @@ export interface GuideBlock {
   p?: string[];
   items?: GuideItem[];
   note?: string;
+  /** Alleen in de cloud-versie tonen. */
+  cloudOnly?: boolean;
 }
 
 export interface GuideSection {
@@ -37,6 +41,8 @@ export interface GuideSection {
   note?: string;
   /** Meerdelige inhoud met subkopjes (bv. privacy). */
   blocks?: GuideBlock[];
+  /** Hele sectie alleen in de cloud-versie tonen (bv. rollen). */
+  cloudOnly?: boolean;
 }
 
 export interface GuideContent {
@@ -128,7 +134,7 @@ const nl: GuideContent = {
         q: '"Dit ben ik" en perspectief',
         p: ['Relaties krijgen pas betekenis vanuit iemand: "moeder van Anna", "neef van Tom". Daarom kies je een ik.'],
         items: [
-          { label: 'Dit ben ik', text: 'koppelt je account aan een persoon — dat wordt je vaste vertrekpunt.' },
+          { label: 'Dit ben ik', text: 'koppelt je account aan een persoon — dat wordt je vaste vertrekpunt.', cloudOnly: true },
           { label: 'Bekijk vanuit …', text: 'laat je tijdelijk door andermans ogen kijken. Met "terug naar standaard" sta je weer bij jezelf.' },
         ],
       },
@@ -136,11 +142,14 @@ const nl: GuideContent = {
         q: 'Personen en relaties toevoegen',
         p: [
           'Klik op een persoon en kies + ouder, + partner of + kind. Je maakt een nieuw persoon aan, of koppelt iemand die al in de familie staat.',
-          'In Gegevens vul je voornamen, roepnaam (die in de boom komt), achternaam, jaren en een foto in — en ook bijnaam, naam in eigen schrift, en de zichtbaarheid (familie of privé). Wijzigingen worden automatisch bewaard.',
+          'In Gegevens vul je voornamen, roepnaam (die in de boom komt), achternaam, jaren en een foto in — en ook bijnaam en naam in eigen schrift. Wijzigingen worden automatisch bewaard.',
+        ],
+        items: [
+          { text: 'Je stelt hier ook de zichtbaarheid in: familie of privé.', cloudOnly: true },
         ],
       },
       {
-        id: 'roles',
+        cloudOnly: true,
         q: 'Rollen: wie mag wat',
         p: ['Nodig familie uit via Delen. Je kiest per persoon een rol; een beheerder kan rollen later wijzigen — en een ander lid ook tot beheerder maken.'],
         blocks: [
@@ -197,6 +206,7 @@ const nl: GuideContent = {
         ],
       },
       {
+        cloudOnly: true,
         q: 'Personen importeren uit een andere boom',
         p: [
           'Heb je meer dan één eigen boom met overlappende familie? Via het familiemenu → "Personen importeren" neem je een selectie personen over uit een andere boom van jou.',
@@ -205,6 +215,7 @@ const nl: GuideContent = {
         note: 'Alleen voor de beheerder, en alleen uit bomen waarvan je zelf beheerder bent.',
       },
       {
+        cloudOnly: true,
         q: 'Families koppelen (bruggen)',
         p: [
           'Komt dezelfde persoon in twee families voor — bijvoorbeeld door een huwelijk? Dan leg je een brug: de twee bomen blijven apart, maar je kunt van de één naar de ander oversteken.',
@@ -285,7 +296,7 @@ const en: GuideContent = {
         q: '"This is me" and perspective',
         p: ['Relationships only gain meaning from someone: "Anna’s mother", "Tom’s cousin". That’s why you pick a "me".'],
         items: [
-          { label: 'This is me', text: 'links your account to a person — that becomes your fixed starting point.' },
+          { label: 'This is me', text: 'links your account to a person — that becomes your fixed starting point.', cloudOnly: true },
           { label: 'View from …', text: 'lets you temporarily look through someone else’s eyes. "Back to default" returns you to yourself.' },
         ],
       },
@@ -293,11 +304,14 @@ const en: GuideContent = {
         q: 'Adding people and relationships',
         p: [
           'Click a person and choose + parent, + partner or + child. You create a new person, or link someone already in the family.',
-          'In Details you fill in given names, a call name (shown in the tree), family name, years and a photo — plus nickname, name in native script, and the visibility (family or private). Changes are saved automatically.',
+          'In Details you fill in given names, a call name (shown in the tree), family name, years and a photo — plus nickname and name in native script. Changes are saved automatically.',
+        ],
+        items: [
+          { text: 'You also set the visibility here: family or private.', cloudOnly: true },
         ],
       },
       {
-        id: 'roles',
+        cloudOnly: true,
         q: 'Roles: who can do what',
         p: ['Invite family via Share. You pick a role per person; an admin can change roles later — and also make another member an admin.'],
         blocks: [
@@ -354,6 +368,7 @@ const en: GuideContent = {
         ],
       },
       {
+        cloudOnly: true,
         q: 'Importing people from another tree',
         p: [
           'Have more than one tree of your own with overlapping family? Via the family menu → "Import people" you bring a selection of people over from another tree of yours.',
@@ -362,6 +377,7 @@ const en: GuideContent = {
         note: 'Admin only, and only from trees you own yourself.',
       },
       {
+        cloudOnly: true,
         q: 'Linking families (bridges)',
         p: [
           'Does the same person appear in two families — through a marriage, say? Then you build a bridge: the two trees stay separate, but you can cross from one to the other.',
@@ -441,7 +457,7 @@ const zh: GuideContent = {
         q: '"这是我"与视角',
         p: ['关系只有从某个人出发才有意义："Anna 的母亲""Tom 的表弟"。因此您要选定一个"我"。'],
         items: [
-          { label: '这是我', text: '将您的账号关联到某个人 — 这将成为您固定的出发点。' },
+          { label: '这是我', text: '将您的账号关联到某个人 — 这将成为您固定的出发点。', cloudOnly: true },
           { label: '从…的视角', text: '让您暂时以他人的眼光来看。点击"恢复默认"即可回到自己。' },
         ],
       },
@@ -449,11 +465,14 @@ const zh: GuideContent = {
         q: '添加人物与关系',
         p: [
           '点击一个人，选择 +父母、+伴侣或+子女。您可以新建一个人物，或关联家庭中已有的人。',
-          '在"资料"中填写名字、常用名（显示在树中）、姓氏、年份和照片——以及昵称、母语文字姓名，和可见性（家庭或私密）。更改会自动保存。',
+          '在"资料"中填写名字、常用名（显示在树中）、姓氏、年份和照片——以及昵称和母语文字姓名。更改会自动保存。',
+        ],
+        items: [
+          { text: '您也在此设置可见性：家庭或私密。', cloudOnly: true },
         ],
       },
       {
-        id: 'roles',
+        cloudOnly: true,
         q: '角色：谁能做什么',
         p: ['通过"分享"邀请家人。可为每个人选择角色；管理员之后可更改角色——也可把另一位成员设为管理员。'],
         blocks: [
@@ -510,6 +529,7 @@ const zh: GuideContent = {
         ],
       },
       {
+        cloudOnly: true,
         q: '从另一棵树导入人物',
         p: [
           '你有不止一棵存在重叠亲属的自己的树吗？通过家庭菜单 →"导入人物"，可从你自己的另一棵树中选取人物导入。',
@@ -518,6 +538,7 @@ const zh: GuideContent = {
         note: '仅管理员可用，且只能从你自己作为管理员的树导入。',
       },
       {
+        cloudOnly: true,
         q: '连接家庭（桥接）',
         p: [
           '同一个人是否出现在两个家庭中 — 比如因为一段婚姻？那就建立一座桥：两棵树保持独立，但您可以从一棵跨越到另一棵。',
@@ -598,7 +619,7 @@ const id: GuideContent = {
         q: '"Ini saya" dan sudut pandang',
         p: ['Hubungan baru bermakna dari seseorang: "ibu Anna", "sepupu Tom". Karena itu Anda memilih sebuah "saya".'],
         items: [
-          { label: 'Ini saya', text: 'menautkan akun Anda ke seseorang — itu menjadi titik awal tetap Anda.' },
+          { label: 'Ini saya', text: 'menautkan akun Anda ke seseorang — itu menjadi titik awal tetap Anda.', cloudOnly: true },
           { label: 'Lihat dari …', text: 'membuat Anda sejenak melihat dari mata orang lain. "Kembali ke bawaan" mengembalikan Anda ke diri sendiri.' },
         ],
       },
@@ -606,11 +627,14 @@ const id: GuideContent = {
         q: 'Menambah orang dan hubungan',
         p: [
           'Klik seseorang dan pilih + orang tua, + pasangan, atau + anak. Anda membuat orang baru, atau menautkan seseorang yang sudah ada di keluarga.',
-          'Di Data Anda mengisi nama depan, nama panggilan (tampil di pohon), nama keluarga, tahun, dan foto — juga julukan, nama dalam aksara asli, dan visibilitas (keluarga atau pribadi). Perubahan tersimpan otomatis.',
+          'Di Data Anda mengisi nama depan, nama panggilan (tampil di pohon), nama keluarga, tahun, dan foto — juga julukan dan nama dalam aksara asli. Perubahan tersimpan otomatis.',
+        ],
+        items: [
+          { text: 'Anda juga mengatur visibilitas di sini: keluarga atau pribadi.', cloudOnly: true },
         ],
       },
       {
-        id: 'roles',
+        cloudOnly: true,
         q: 'Peran: siapa boleh apa',
         p: ['Undang keluarga lewat Bagikan. Anda memilih peran per orang; admin dapat mengubah peran nanti — dan juga menjadikan anggota lain admin.'],
         blocks: [
@@ -667,6 +691,7 @@ const id: GuideContent = {
         ],
       },
       {
+        cloudOnly: true,
         q: 'Mengimpor orang dari pohon lain',
         p: [
           'Punya lebih dari satu pohon sendiri dengan keluarga yang tumpang tindih? Lewat menu keluarga → "Impor orang" Anda membawa sejumlah orang dari pohon Anda yang lain.',
@@ -675,6 +700,7 @@ const id: GuideContent = {
         note: 'Hanya admin, dan hanya dari pohon yang Anda miliki sendiri.',
       },
       {
+        cloudOnly: true,
         q: 'Menautkan keluarga (jembatan)',
         p: [
           'Apakah orang yang sama muncul di dua keluarga — misalnya karena pernikahan? Maka Anda membangun jembatan: kedua pohon tetap terpisah, tetapi Anda bisa menyeberang dari satu ke yang lain.',
