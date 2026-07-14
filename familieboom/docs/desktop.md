@@ -66,6 +66,22 @@ npm run tauri:build
 De installer verschijnt in `src-tauri/target/release/bundle/…` (`.msi`/`.exe` op
 Windows, `.dmg` op macOS, `.deb`/`.AppImage` op Linux).
 
+## Nieuwe versie uitbrengen (installers voor Mac + Windows)
+
+De installers worden **automatisch** gebouwd door GitHub Actions
+(`.github/workflows/release.yml`) zodra je een versie-tag pusht. Je hoeft geen
+Windows-pc en geen handmatige versie-bump:
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+De workflow zet het versienummer uit de tag (`v0.1.1` → `0.1.1`) in
+`tauri.conf.json`, bouwt macOS (universeel) + Windows, en publiceert de installers
+als GitHub Release. De download-knoppen in de Over-kaart wijzen naar de nieuwste
+Release. Onondertekend (Gatekeeper/SmartScreen: één keer langs de waarschuwing).
+
 ## Testen zonder Tauri
 
 De lokale modus is ook in een gewone browser te bekijken met `?backend=local`

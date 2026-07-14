@@ -56,6 +56,16 @@ jobs:
         working-directory: familieboom
         run: npm run tauri icon public/pwa-512.png
 
+      # Versienummer volgt automatisch de tag: v0.1.1 → 0.1.1 in tauri.conf.json.
+      # Zo hoef je nooit handmatig een versie te bumpen — alleen een tag pushen.
+      - name: Versie uit de tag zetten
+        if: github.ref_type == 'tag'
+        shell: bash
+        working-directory: familieboom
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node --input-type=commonjs -e "const fs=require('fs');const f='src-tauri/tauri.conf.json';const j=JSON.parse(fs.readFileSync(f,'utf8'));j.version=process.argv[1];fs.writeFileSync(f,JSON.stringify(j,null,2)+'\n');console.log('versie →',j.version);" "$VERSION"
+
       - name: Bouwen + Release publiceren
         uses: tauri-apps/tauri-action@v0
         env:
