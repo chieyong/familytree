@@ -38,6 +38,7 @@ const nl = {
     more: 'Meer',
     about: 'Over de maker',
     print: 'Afdrukken',
+    downloadApp: 'App downloaden',
   },
   viewAs: {
     title: 'Bekijk als …',
@@ -163,10 +164,6 @@ const nl = {
     weeklypulse: 'WeeklyPulse',
     linkedin: 'LinkedIn',
     close: 'Sluiten',
-    downloadTitle: 'Bloom offline op je pc',
-    downloadMac: '⬇ macOS',
-    downloadWin: '⬇ Windows',
-    downloadNote: 'Onondertekend: op macOS rechtsklik → Openen; op Windows “Meer info → Toch uitvoeren”.',
   },
   auth: {
     login: 'Inloggen',
@@ -448,6 +445,7 @@ const en: Messages = {
     more: 'More',
     about: 'About the maker',
     print: 'Print',
+    downloadApp: 'Download app',
   },
   viewAs: {
     title: 'View as …',
@@ -573,10 +571,6 @@ const en: Messages = {
     weeklypulse: 'WeeklyPulse',
     linkedin: 'LinkedIn',
     close: 'Close',
-    downloadTitle: 'Bloom offline on your PC',
-    downloadMac: '⬇ macOS',
-    downloadWin: '⬇ Windows',
-    downloadNote: 'Unsigned: on macOS right-click → Open; on Windows “More info → Run anyway”.',
   },
   auth: {
     login: 'Log in',
@@ -855,6 +849,7 @@ const zh: Messages = {
     more: '更多',
     about: '关于作者',
     print: '打印',
+    downloadApp: '下载应用',
   },
   viewAs: {
     title: '以身份查看…',
@@ -979,10 +974,6 @@ const zh: Messages = {
     weeklypulse: 'WeeklyPulse',
     linkedin: 'LinkedIn',
     close: '关闭',
-    downloadTitle: '在电脑上离线使用 Bloom',
-    downloadMac: '⬇ macOS',
-    downloadWin: '⬇ Windows',
-    downloadNote: '未签名：macOS 右键 →“打开”；Windows“更多信息 → 仍要运行”。',
   },
   auth: {
     login: '登录',
@@ -1261,6 +1252,7 @@ const id: Messages = {
     more: 'Lainnya',
     about: 'Tentang pembuat',
     print: 'Cetak',
+    downloadApp: 'Unduh aplikasi',
   },
   viewAs: {
     title: 'Lihat sebagai …',
@@ -1386,10 +1378,6 @@ const id: Messages = {
     weeklypulse: 'WeeklyPulse',
     linkedin: 'LinkedIn',
     close: 'Tutup',
-    downloadTitle: 'Bloom offline di PC Anda',
-    downloadMac: '⬇ macOS',
-    downloadWin: '⬇ Windows',
-    downloadNote: 'Tanpa tanda tangan: di macOS klik kanan → Buka; di Windows “Info selengkapnya → Tetap jalankan”.',
   },
   auth: {
     login: 'Masuk',
