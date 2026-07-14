@@ -4,6 +4,10 @@ import { useT } from './useT';
 import { getLocalStore } from '../data/local/store';
 import type { FamilyGraph } from '../data/types';
 
+/** GitHub Releases (nieuwste) — hier staan de macOS- en Windows-installers + de
+ *  instructie voor de onondertekende app. */
+const RELEASES_URL = 'https://github.com/chieyong/familytree/releases/latest';
+
 interface Props {
   /** Toont de foto-schakelaar alleen als er foto's in de boom zijn. */
   photosAvailable: boolean;
@@ -186,6 +190,18 @@ export function OverflowMenu({ photosAvailable, onPrint }: Props) {
               >
                 {t.topbar.print}
               </button>
+            )}
+
+            {!isLocal && (
+              <a
+                className="more-item"
+                href={RELEASES_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setTopbarPop(null)}
+              >
+                {t.topbar.downloadApp}
+              </a>
             )}
 
             {isLocal && (
