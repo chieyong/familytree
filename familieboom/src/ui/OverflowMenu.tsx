@@ -4,9 +4,37 @@ import { useT } from './useT';
 import { getLocalStore } from '../data/local/store';
 import type { FamilyGraph } from '../data/types';
 
-/** GitHub Releases (nieuwste) — hier staan de macOS- en Windows-installers + de
- *  instructie voor de onondertekende app. */
+/** GitHub Releases (nieuwste) — installers + instructie voor de onondertekende app. */
 const RELEASES_URL = 'https://github.com/chieyong/familytree/releases/latest';
+const RELEASES_API = 'https://api.github.com/repos/chieyong/familytree/releases/latest';
+
+function detectOs(): 'mac' | 'win' | 'other' {
+  const ua = navigator.userAgent;
+  if (/Mac/i.test(ua)) return 'mac';
+  if (/Win/i.test(ua)) return 'win';
+  return 'other';
+}
+
+/**
+ * Haalt de nieuwste release op en downloadt meteen de installer voor het
+ * herkende OS (.dmg voor Mac, .exe/.msi voor Windows). Lukt dat niet — geen
+ * release, onbekend OS, of netwerk/limiet — dan opent de releasepagina.
+ */
+async function downloadForThisOs(): Promise<void> {
+  const os = detectOs();
+  try {
+    const res = await fetch(RELEASES_API, { headers: { Accept: 'application/vnd.github+json' } });
+    if (!res.ok) throw new Error('geen release');
+    const data = (await res.json()) as { assets?: { name: string; browser_download_url: string }[] };
+    const assets = data.assets ?? [];
+    const match = (re: RegExp) => assets.find((a) => re.test(a.name))?.browser_download_url;
+    const url = os === 'mac' ? match(/\.dmg$/i) : os === 'win' ? match(/\.(exe|msi)$/i) : undefined;
+    if (url) { window.location.href = url; return; }
+  } catch {
+    /* val terug op de releasepagina */
+  }
+  window.open(RELEASES_URL, '_blank', 'noopener,noreferrer');
+}
 
 interface Props {
   /** Toont de foto-schakelaar alleen als er foto's in de boom zijn. */
@@ -193,15 +221,15 @@ export function OverflowMenu({ photosAvailable, onPrint }: Props) {
             )}
 
             {!isLocal && (
-              <a
+              <button
                 className="more-item"
-                href={RELEASES_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setTopbarPop(null)}
+                onClick={() => {
+                  setTopbarPop(null);
+                  void downloadForThisOs();
+                }}
               >
                 {t.topbar.downloadApp}
-              </a>
+              </button>
             )}
 
             {isLocal && (
